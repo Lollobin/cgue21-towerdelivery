@@ -1,0 +1,3 @@
+﻿  Application.cpp
+C:\dev\Tower-Delivery\Game\src\Application.cpp(8,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  Game.vcxproj -> C:\dev\Tower-Delivery\bin\Debug-x64\Game\Game.exe

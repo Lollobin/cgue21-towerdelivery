@@ -19,6 +19,7 @@
     <ClInclude Include="src\TowerDelivery\Log.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
+    <ClInclude Include="src\tdpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TowerDelivery\Application.cpp">
@@ -27,5 +28,6 @@
     <ClCompile Include="src\TowerDelivery\Log.cpp">
       <Filter>TowerDelivery</Filter>
     </ClCompile>
+    <ClCompile Include="src\tdpch.cpp" />
   </ItemGroup>
 </Project>

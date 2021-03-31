@@ -1,5 +1,6 @@
 workspace "TowerDelivery"
 	architecture "x64"
+	startproject "Game"
 
 	configurations{
 	"Debug",
@@ -36,8 +37,9 @@ project "TowerDelivery"
 			"TD_BUILD_DLL"
 		}
 
-		postbuildcommands{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin" .. outputDirectory .. "/Game")
+		postbuildcommands
+		{
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDirectory .. "/Game")
 		}
 	
 	filter "configurations:Debug"

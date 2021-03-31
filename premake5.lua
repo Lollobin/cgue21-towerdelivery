@@ -66,12 +66,12 @@ project	"Game"
 	}
 
 	includedirs{
-		"%{prj.name}/vendor/spdlog/include",
-		"Tower-Delivery/src"
+		"TowerDelivery/vendor/spdlog/include",
+		"TowerDelivery/src"
 	}
 
 	links{
-		"Tower-Delivery"
+		"TowerDelivery"
 	}
 
 	filter "system:windows"

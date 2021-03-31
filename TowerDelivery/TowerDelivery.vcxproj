@@ -142,6 +142,17 @@
       <Command>IF EXIST ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\binDist-windows-x86_64\Game &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\binDist-windows-x86_64\Game &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\TowerDelivery.h" />
+    <ClInclude Include="src\TowerDelivery\Application.h" />
+    <ClInclude Include="src\TowerDelivery\Core.h" />
+    <ClInclude Include="src\TowerDelivery\EntryPoint.h" />
+    <ClInclude Include="src\TowerDelivery\Log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\TowerDelivery\Application.cpp" />
+    <ClCompile Include="src\TowerDelivery\Log.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

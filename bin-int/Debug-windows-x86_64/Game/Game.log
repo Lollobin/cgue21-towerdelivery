@@ -1,6 +1,7 @@
-﻿  Game.cpp
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(18,56): warning C4251: 'TowerDelivery::Log::s_ClientLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
+﻿  tdpch.cpp
+  Game.cpp
+C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(17,56): warning C4251: 'TowerDelivery::Log::s_ClientLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
 C:\dev\tower-delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(19,54): warning C4251: 'TowerDelivery::Log::s_CoreLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
+C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(18,54): warning C4251: 'TowerDelivery::Log::s_CoreLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
 C:\dev\tower-delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
   Game.vcxproj -> C:\dev\tower-delivery\bin\Debug-windows-x86_64\Game\Game.exe

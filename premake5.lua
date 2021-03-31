@@ -18,6 +18,9 @@ project "TowerDelivery"
 	targetdir ("bin/" .. outputDirectory .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDirectory .. "/%{prj.name}")
 
+	pchheader "tdpch.h"
+	pchsource "TowerDelivery/src/tdpch.cpp"
+
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
@@ -61,6 +64,9 @@ project	"Game"
 
 	targetdir ("bin/" .. outputDirectory .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDirectory .. "/%{prj.name}")
+
+	pchheader "tdpch.h"
+	pchsource "Game/src/tdpch.cpp"
 
 	files{
 		"%{prj.name}/src/**.h",

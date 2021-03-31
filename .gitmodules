@@ -1,3 +1,6 @@
 [submodule "Tower-Delivery/vendor/spdlog"]
 	path = Tower-Delivery/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "TowerDelivery/vendor/spdlog"]
+	path = TowerDelivery/vendor/spdlog
+	url = https://github.com/gabime/spdlog

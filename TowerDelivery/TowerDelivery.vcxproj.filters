@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="TowerDelivery">
+      <UniqueIdentifier>{7AEC2F4B-E6AC-AB81-AFE7-F4FE1B67F05D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\TowerDelivery.h" />
+    <ClInclude Include="src\TowerDelivery\Application.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Core.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\EntryPoint.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Log.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\TowerDelivery\Application.cpp">
+      <Filter>TowerDelivery</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TowerDelivery\Log.cpp">
+      <Filter>TowerDelivery</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

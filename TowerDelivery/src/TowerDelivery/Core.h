@@ -10,4 +10,15 @@
 	#error Tower Delivery only suppports Windows :)
 #endif
 
+#ifdef TD_ENABLE_ASSERTS
+	#define TD_ASSERT(x, ...) {if(!(x)) {TD_ERROR("Assertion Failed: {0}", __VA_ARGS; __debugbreak();}}
+	#define TD_CORE_ASSERT(x, ...) {if(!(x)) {TD_ERROR("Assertion Failed: {0}", __VA_ARGS; __debugbreak();}}
+#else
+	#define TD_ASSERT(x, ...)
+	#define TD_CORE_ASSERT(x, ...)
+#endif // TD_ENABLE_ASSERTS
+
+
+
+
 #define BIT(x) (1 << x)

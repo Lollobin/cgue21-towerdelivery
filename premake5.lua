@@ -10,6 +10,11 @@ workspace "TowerDelivery"
 
 outputDirectory = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
+
+include "TowerDelivery/vendor/GLFW"
+
 project "TowerDelivery"
 	location "TowerDelivery"
 	kind "SharedLib"
@@ -28,7 +33,13 @@ project "TowerDelivery"
 
 	includedirs{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.GLFW}"
+	}
+
+	links{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

@@ -4,19 +4,22 @@
 #include "TowerDelivery/Events/ApplicationEvent.h"
 #include "TowerDelivery/Events/MouseEvent.h"
 #include "TowerDelivery/Events/KeyEvent.h"
-#include "TowerDelivery/Log.h"
+#include <GLFW/glfw3.h>
 
 namespace TowerDelivery {
 
-	Application::Application() {}
+	Application::Application() {
+		m_Window = std::unique_ptr<Window>(Window::Create());
+	}
+
 	Application::~Application() {}
 
 	void Application::Run() {
 		
-		//test
-		WindowResizeEvent e(13, 15);
-		TD_TRACE(e);
-
-		while (true);
+		while (m_Running) {
+			glClearColor(1, 0, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_Window->OnUpdate();
+		}
 	}
 }

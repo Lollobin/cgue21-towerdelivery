@@ -4,3 +4,6 @@
 [submodule "TowerDelivery/vendor/spdlog"]
 	path = TowerDelivery/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "TowerDelivery/vendor/GLFW"]
+	path = TowerDelivery/vendor/GLFW
+	url = https://github.com/TheCherno/GLFW

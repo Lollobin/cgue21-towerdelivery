@@ -35,6 +35,8 @@
       <Filter>TowerDelivery</Filter>
     </ClInclude>
     <ClInclude Include="src\tdpch.h" />
+    <ClInclude Include="src\TowerDelivery\Window.h" />
+    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TowerDelivery\Application.cpp">
@@ -44,5 +46,6 @@
       <Filter>TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\tdpch.cpp" />
+    <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
 </Project>

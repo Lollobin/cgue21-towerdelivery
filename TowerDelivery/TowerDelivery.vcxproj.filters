@@ -4,6 +4,9 @@
     <Filter Include="TowerDelivery">
       <UniqueIdentifier>{7AEC2F4B-E6AC-AB81-AFE7-F4FE1B67F05D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TowerDelivery\Events">
+      <UniqueIdentifier>{1E8B6313-0A1A-EDDC-B338-01D89FA6FD82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\TowerDelivery.h" />
@@ -15,6 +18,18 @@
     </ClInclude>
     <ClInclude Include="src\TowerDelivery\EntryPoint.h">
       <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Events\ApplicationEvent.h">
+      <Filter>TowerDelivery\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Events\Event.h">
+      <Filter>TowerDelivery\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h">
+      <Filter>TowerDelivery\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h">
+      <Filter>TowerDelivery\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\TowerDelivery\Log.h">
       <Filter>TowerDelivery</Filter>

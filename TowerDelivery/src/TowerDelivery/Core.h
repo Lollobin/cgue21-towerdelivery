@@ -9,3 +9,5 @@
 #else
 	#error Tower Delivery only suppports Windows :)
 #endif
+
+#define BIT(x) (1 << x)

@@ -6,8 +6,7 @@
 #include "spdlog/fmt/ostr.h"
 
 namespace TowerDelivery {
-	class TOWERDELIVERY_API Log
-	{
+	class TOWERDELIVERY_API Log {
 	public:
 		static void Init();
 

@@ -61,7 +61,8 @@ namespace TowerDelivery {
 
 	class TOWERDELIVERY_API MouseButtonPressedEvent : public MouseButtonEvent {
 
-		public(int button)
+	public:
+		MouseButtonPressedEvent(int button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override {
@@ -75,7 +76,8 @@ namespace TowerDelivery {
 
 	class TOWERDELIVERY_API MouseButtonReleasedEvent : public MouseButtonEvent {
 
-		public(int button)
+	public:
+		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override {

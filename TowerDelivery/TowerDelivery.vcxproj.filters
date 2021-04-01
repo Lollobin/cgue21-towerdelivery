@@ -20,6 +20,10 @@
       <Filter>TowerDelivery</Filter>
     </ClInclude>
     <ClInclude Include="src\tdpch.h" />
+    <ClInclude Include="src\TowerDelivery\Events\Event.h" />
+    <ClInclude Include="src\TowerDelivery\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h" />
+    <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TowerDelivery\Application.cpp">

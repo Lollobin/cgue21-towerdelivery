@@ -150,6 +150,10 @@
     <ClInclude Include="src\TowerDelivery\Application.h" />
     <ClInclude Include="src\TowerDelivery\Core.h" />
     <ClInclude Include="src\TowerDelivery\EntryPoint.h" />
+    <ClInclude Include="src\TowerDelivery\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\TowerDelivery\Events\Event.h" />
+    <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h" />
+    <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h" />
     <ClInclude Include="src\TowerDelivery\Log.h" />
     <ClInclude Include="src\tdpch.h" />
   </ItemGroup>

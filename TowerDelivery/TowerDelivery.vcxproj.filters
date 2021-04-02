@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Plattform">
+      <UniqueIdentifier>{5E089A46-CA72-4EBD-13B1-FF627F5A2C12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plattform\Windows">
+      <UniqueIdentifier>{9830E16F-0447-DF05-4DBE-6A27B913B08D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="TowerDelivery">
       <UniqueIdentifier>{7AEC2F4B-E6AC-AB81-AFE7-F4FE1B67F05D}</UniqueIdentifier>
     </Filter>
@@ -9,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
+      <Filter>Plattform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h">
       <Filter>TowerDelivery</Filter>
@@ -34,11 +43,15 @@
     <ClInclude Include="src\TowerDelivery\Log.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Window.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\tdpch.h" />
-    <ClInclude Include="src\TowerDelivery\Window.h" />
-    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp">
+      <Filter>Plattform\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\TowerDelivery\Application.cpp">
       <Filter>TowerDelivery</Filter>
     </ClCompile>
@@ -46,6 +59,5 @@
       <Filter>TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\tdpch.cpp" />
-    <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
 </Project>

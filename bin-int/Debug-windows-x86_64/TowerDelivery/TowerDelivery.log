@@ -1,13 +1,5 @@
-﻿  tdpch.cpp
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(17,56): warning C4251: 'TowerDelivery::Log::s_ClientLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
-C:\dev\tower-delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Log.h(18,54): warning C4251: 'TowerDelivery::Log::s_CoreLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
-C:\dev\tower-delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
-  WindowsWindow.cpp
-  Application.cpp
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Application.h(18,35): warning C4251: 'TowerDelivery::Application::m_Window': class 'std::unique_ptr<TowerDelivery::Window,std::default_delete<TowerDelivery::Window>>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Application'
-C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Application.h(18): message : see declaration of 'std::unique_ptr<TowerDelivery::Window,std::default_delete<TowerDelivery::Window>>'
-  Log.cpp
-  Generating Code...
+﻿  Application.cpp
+C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Application.h(23,35): warning C4251: 'TowerDelivery::Application::m_Window': class 'std::unique_ptr<TowerDelivery::Window,std::default_delete<TowerDelivery::Window>>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Application'
+C:\dev\tower-delivery\TowerDelivery\src\TowerDelivery\Application.h(23): message : see declaration of 'std::unique_ptr<TowerDelivery::Window,std::default_delete<TowerDelivery::Window>>'
      Creating library ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.lib and object ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.exp
   TowerDelivery.vcxproj -> C:\dev\tower-delivery\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll

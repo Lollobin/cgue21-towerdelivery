@@ -40,6 +40,12 @@
     <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h">
       <Filter>TowerDelivery\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Layer.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\LayerStack.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Log.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
@@ -53,6 +59,12 @@
       <Filter>Plattform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\TowerDelivery\Application.cpp">
+      <Filter>TowerDelivery</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TowerDelivery\Layer.cpp">
+      <Filter>TowerDelivery</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TowerDelivery\LayerStack.cpp">
       <Filter>TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\TowerDelivery\Log.cpp">

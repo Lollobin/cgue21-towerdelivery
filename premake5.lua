@@ -59,14 +59,17 @@ project "TowerDelivery"
 	
 	filter "configurations:Debug"
 		defines "TD_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "TD_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "TD_DIST"
+		buildoptions "/MD"
 		optimize "On"
 
 project	"Game"
@@ -105,12 +108,15 @@ project	"Game"
 	
 	filter "configurations:Debug"
 		defines "TD_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "TD_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "TD_DIST"
+		buildoptions "/MD"
 		optimize "On"

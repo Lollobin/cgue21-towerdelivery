@@ -4,7 +4,7 @@
 #include "TowerDelivery/Events/ApplicationEvent.h"
 #include "TowerDelivery/Events/MouseEvent.h"
 #include "TowerDelivery/Events/KeyEvent.h"
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 
 namespace TowerDelivery {
 

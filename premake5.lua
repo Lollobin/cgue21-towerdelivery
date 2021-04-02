@@ -11,7 +11,7 @@ workspace "TowerDelivery"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include/GLFW"
+IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 
 include "TowerDelivery/vendor/GLFW"
 

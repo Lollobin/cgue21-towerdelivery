@@ -8,7 +8,7 @@ workspace "TowerDelivery"
 	"Dist"
 	}
 
-outputDirectory = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include/GLFW"
@@ -20,8 +20,8 @@ project "TowerDelivery"
 	kind "SharedLib"
 	language "C++"
 
-	targetdir ("bin/" .. outputDirectory .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputDirectory .. "/%{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "tdpch.h"
 	pchsource "TowerDelivery/src/tdpch.cpp"
@@ -54,7 +54,7 @@ project "TowerDelivery"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputDirectory .. "/Game")
+			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Game")
 		}
 	
 	filter "configurations:Debug"
@@ -74,8 +74,8 @@ project	"Game"
 	kind "ConsoleApp"
 	language "C++"
 
-	targetdir ("bin/" .. outputDirectory .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputDirectory .. "/%{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "tdpch.h"
 	pchsource "Game/src/tdpch.cpp"

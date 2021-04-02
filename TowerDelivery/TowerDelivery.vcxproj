@@ -159,8 +159,8 @@
     <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h" />
     <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h" />
     <ClInclude Include="src\TowerDelivery\Log.h" />
-    <ClInclude Include="src\tdpch.h" />
     <ClInclude Include="src\TowerDelivery\Window.h" />
+    <ClInclude Include="src\tdpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />

@@ -20,7 +20,7 @@ public:
 class Game : public TowerDelivery::Application {
 public:
 	Game() {
-		PushLayer(new ExampleLayer());
+		//PushLayer(new ExampleLayer());
 	}
 
 	~Game() {}

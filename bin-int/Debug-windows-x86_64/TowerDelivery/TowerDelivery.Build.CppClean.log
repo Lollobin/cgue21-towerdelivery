@@ -5,10 +5,10 @@ c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\tdpch.obj
 c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\log.obj
 c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\layerstack.obj
 c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\layer.obj
-c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\windowswindow.obj
 c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\application.obj
-c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.dll
+c:\dev\tower-delivery\bin-int\debug-windows-x86_64\towerdelivery\windowswindow.obj
 c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.ilk
+c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.dll
 c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.pdb
 c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.lib
 c:\dev\tower-delivery\bin\debug-windows-x86_64\towerdelivery\towerdelivery.exp

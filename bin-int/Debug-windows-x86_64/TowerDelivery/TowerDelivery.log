@@ -1,10 +1,8 @@
-﻿cl : command line warning D9025: overriding '/MTd' with '/MDd'
-  tdpch.cpp
+﻿  tdpch.cpp
 C:\dev\Tower-Delivery\TowerDelivery\src\TowerDelivery\Log.h(17,56): warning C4251: 'TowerDelivery::Log::s_ClientLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
 C:\dev\Tower-Delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
 C:\dev\Tower-Delivery\TowerDelivery\src\TowerDelivery\Log.h(18,54): warning C4251: 'TowerDelivery::Log::s_CoreLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Log'
 C:\dev\Tower-Delivery\TowerDelivery\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
-cl : command line warning D9025: overriding '/MTd' with '/MDd'
   WindowsWindow.cpp
   Application.cpp
 C:\dev\Tower-Delivery\TowerDelivery\src\TowerDelivery\Layer.h(21,26): warning C4251: 'TowerDelivery::Layer::m_DebugName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'TowerDelivery::Layer'

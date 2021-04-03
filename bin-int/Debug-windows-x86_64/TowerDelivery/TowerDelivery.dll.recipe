@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev\tower-delivery\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll</FullPath>
+      <FullPath>C:\dev\Tower-Delivery\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

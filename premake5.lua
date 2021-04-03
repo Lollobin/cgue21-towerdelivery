@@ -12,8 +12,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
+IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
 
 include "TowerDelivery/vendor/GLFW"
+include "TowerDelivery/vendor/Glad"
 
 project "TowerDelivery"
 	location "TowerDelivery"
@@ -34,11 +36,13 @@ project "TowerDelivery"
 	includedirs{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 
@@ -49,7 +53,8 @@ project "TowerDelivery"
 
 		defines{
 			"TD_PLATFORM_WINDOWS",
-			"TD_BUILD_DLL"
+			"TD_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands

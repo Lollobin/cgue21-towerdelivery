@@ -14,13 +14,16 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
 
-include "TowerDelivery/vendor/GLFW"
-include "TowerDelivery/vendor/Glad"
+group "Dependencies"
+	include "TowerDelivery/vendor/GLFW"
+	include "TowerDelivery/vendor/Glad"
+group ""
 
 project "TowerDelivery"
 	location "TowerDelivery"
 	kind "SharedLib"
 	language "C++"
+	cppdialect "C++17"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -29,37 +32,35 @@ project "TowerDelivery"
 	pchheader "tdpch.h"
 	pchsource "TowerDelivery/src/tdpch.cpp"
 
-	files{
+	files {
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs{
+	includedirs {
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}"
 	}
 
-	links{
+	links {
 		"GLFW",
 		"Glad",
 		"opengl32.lib"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
-		defines{
+		defines {
 			"TD_PLATFORM_WINDOWS",
 			"TD_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Game")
+		postbuildcommands {
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Game/\"")
 		}
 	
 	filter "configurations:Debug"
@@ -81,6 +82,7 @@ project	"Game"
 	location "Game"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -89,26 +91,25 @@ project	"Game"
 	pchheader "tdpch.h"
 	pchsource "Game/src/tdpch.cpp"
 
-	files{
+	files {
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs{
+	includedirs {
 		"TowerDelivery/vendor/spdlog/include",
 		"TowerDelivery/src"
 	}
 
-	links{
+	links {
 		"TowerDelivery"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
-		defines{
-			"TD_PLATFORM_WINDOWS",
+		defines {
+			"TD_PLATFORM_WINDOWS"
 		}
 	
 	filter "configurations:Debug"

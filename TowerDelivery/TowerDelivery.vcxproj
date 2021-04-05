@@ -79,7 +79,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -93,7 +93,7 @@
       <ImportLibrary>..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Debug-windows-x86_64\Game &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Debug-windows-x86_64\Game &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Debug-windows-x86_64\Game\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Debug-windows-x86_64\Game\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -101,7 +101,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -119,7 +119,7 @@
       <ImportLibrary>..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Release-windows-x86_64\Game &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Release-windows-x86_64\Game &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Release-windows-x86_64\Game\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Release-windows-x86_64\Game\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -127,7 +127,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -145,7 +145,7 @@
       <ImportLibrary>..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Dist-windows-x86_64\Game &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll ..\bin\Dist-windows-x86_64\Game &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Dist-windows-x86_64\Game\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\TowerDelivery\TowerDelivery.dll "..\bin\Dist-windows-x86_64\Game\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

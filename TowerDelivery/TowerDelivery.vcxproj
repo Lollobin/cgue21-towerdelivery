@@ -79,8 +79,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -101,8 +101,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -127,8 +127,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>tdpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TD_PLATFORM_WINDOWS;TD_BUILD_DLL;GLFW_INCLUDE_NONE;TD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -149,6 +149,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h" />
     <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="src\TowerDelivery\Events\Event.h" />
     <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h" />
     <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h" />
+    <ClInclude Include="src\TowerDelivery\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\TowerDelivery\Layer.h" />
     <ClInclude Include="src\TowerDelivery\LayerStack.h" />
     <ClInclude Include="src\TowerDelivery\Log.h" />
@@ -165,8 +167,10 @@
     <ClInclude Include="src\tdpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.cpp" />
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\TowerDelivery\Application.cpp" />
+    <ClCompile Include="src\TowerDelivery\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\TowerDelivery\Layer.cpp" />
     <ClCompile Include="src\TowerDelivery\LayerStack.cpp" />
     <ClCompile Include="src\TowerDelivery\Log.cpp" />
@@ -180,6 +184,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

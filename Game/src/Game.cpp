@@ -21,6 +21,7 @@ class Game : public TowerDelivery::Application {
 public:
 	Game() {
 		//PushLayer(new ExampleLayer());
+		PushOverlay(new TowerDelivery::ImGuiLayer());
 	}
 
 	~Game() {}

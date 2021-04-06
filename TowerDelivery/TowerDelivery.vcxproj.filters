@@ -59,6 +59,8 @@
       <Filter>TowerDelivery</Filter>
     </ClInclude>
     <ClInclude Include="src\tdpch.h" />
+    <ClInclude Include="src\TowerDelivery\KeyCodes.h" />
+    <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp">

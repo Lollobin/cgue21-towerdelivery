@@ -18,6 +18,9 @@
     <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
       <Filter>Plattform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Plattform\Windows\WindowsInput.h">
+      <Filter>Plattform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h">
       <Filter>TowerDelivery</Filter>
@@ -40,6 +43,9 @@
     <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h">
       <Filter>TowerDelivery\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Input.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Layer.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
@@ -55,6 +61,9 @@
     <ClInclude Include="src\tdpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp">
+      <Filter>Plattform\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp">
       <Filter>Plattform\Windows</Filter>
     </ClCompile>

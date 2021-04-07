@@ -31,7 +31,7 @@ namespace TowerDelivery {
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
 	class TOWERDELIVERY_API Event {
-		friend class EventDispatcher;
+
 	public:
 		bool Handled = false;
 
@@ -55,8 +55,10 @@ namespace TowerDelivery {
 		}
 
 		template<typename T>
-		bool Dispatch(EventFn<T> func) {
-			if (m_Event.GetEventType() == T::GetStaticType()) {
+		bool Dispatch(EventFn<T> func)
+		{
+			if (m_Event.GetEventType() == T::GetStaticType())
+			{
 				m_Event.Handled = func(*(T*)&m_Event);
 				return true;
 			}
@@ -66,7 +68,7 @@ namespace TowerDelivery {
 		Event& m_Event;
 	};
 
-	inline std::ostream& operator <<(std::ostream& os, const Event& e) {
+	inline std::ostream& operator<<(std::ostream& os, const Event& e) {
 		return os << e.ToString();
 	}
 }

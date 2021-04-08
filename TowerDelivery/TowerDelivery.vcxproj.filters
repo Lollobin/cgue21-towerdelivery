@@ -27,6 +27,9 @@
     <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
       <Filter>Plattform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Plattform\Windows\WindowsInput.h">
+      <Filter>Plattform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h">
       <Filter>TowerDelivery</Filter>
@@ -65,6 +68,8 @@
       <Filter>TowerDelivery</Filter>
     </ClInclude>
     <ClInclude Include="src\tdpch.h" />
+    <ClInclude Include="src\TowerDelivery\KeyCodes.h" />
+    <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.cpp">

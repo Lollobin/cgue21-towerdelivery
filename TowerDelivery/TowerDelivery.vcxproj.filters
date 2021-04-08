@@ -24,7 +24,7 @@
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>Plattform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h">
+    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
       <Filter>Plattform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h">
@@ -55,6 +55,12 @@
     <ClInclude Include="src\TowerDelivery\ImGui\ImGuiLayer.h">
       <Filter>TowerDelivery\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Input.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\KeyCodes.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Layer.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
@@ -64,17 +70,20 @@
     <ClInclude Include="src\TowerDelivery\Log.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h">
+      <Filter>TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Window.h">
       <Filter>TowerDelivery</Filter>
     </ClInclude>
     <ClInclude Include="src\tdpch.h" />
-    <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h" />
-    <ClInclude Include="src\TowerDelivery\Input.h" />
-    <ClInclude Include="src\TowerDelivery\KeyCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.cpp">
       <Filter>Plattform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp">
+      <Filter>Plattform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp">
       <Filter>Plattform\Windows</Filter>
@@ -95,6 +104,5 @@
       <Filter>TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\tdpch.cpp" />
-    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp" />
   </ItemGroup>
 </Project>

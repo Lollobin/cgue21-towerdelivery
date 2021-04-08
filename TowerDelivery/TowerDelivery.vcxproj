@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h" />

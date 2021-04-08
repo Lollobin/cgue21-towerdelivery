@@ -14,6 +14,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
 IncludeDir["ImGui"] = "TowerDelivery/vendor/imgui"
+IncludeDir["glm"] = "TowerDelivery/vendor/glm"
 
 group "Dependencies"
 	include "TowerDelivery/vendor/GLFW"
@@ -36,7 +37,9 @@ project "TowerDelivery"
 
 	files {
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs {
@@ -44,7 +47,8 @@ project "TowerDelivery"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links {
@@ -102,7 +106,8 @@ project	"Game"
 
 	includedirs {
 		"TowerDelivery/vendor/spdlog/include",
-		"TowerDelivery/src"
+		"TowerDelivery/src",
+		"%{IncludeDir.glm}"
 	}
 
 	links {

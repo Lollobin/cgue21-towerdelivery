@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
+    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h" />
@@ -161,6 +161,8 @@
     <ClInclude Include="src\TowerDelivery\Events\KeyEvent.h" />
     <ClInclude Include="src\TowerDelivery\Events\MouseEvent.h" />
     <ClInclude Include="src\TowerDelivery\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\TowerDelivery\Input.h" />
+    <ClInclude Include="src\TowerDelivery\KeyCodes.h" />
     <ClInclude Include="src\TowerDelivery\Layer.h" />
     <ClInclude Include="src\TowerDelivery\LayerStack.h" />
     <ClInclude Include="src\TowerDelivery\Log.h" />
@@ -170,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.cpp" />
+    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\TowerDelivery\Application.cpp" />
     <ClCompile Include="src\TowerDelivery\ImGui\ImGuiLayer.cpp" />

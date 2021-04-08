@@ -24,10 +24,10 @@ group ""
 
 project "TowerDelivery"
 	location "TowerDelivery"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "off"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -40,6 +40,10 @@ project "TowerDelivery"
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
+	}
+
+	defines {
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs {
@@ -64,34 +68,31 @@ project "TowerDelivery"
 		defines {
 			"TD_PLATFORM_WINDOWS",
 			"TD_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
-		}
-
-		postbuildcommands {
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Game/\"")
+			"GLFW_INCLUDE_NONE",
+			
 		}
 	
 	filter "configurations:Debug"
 		defines "TD_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "TD_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "TD_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 project	"Game"
 	location "Game"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "off"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -107,6 +108,7 @@ project	"Game"
 	includedirs {
 		"TowerDelivery/vendor/spdlog/include",
 		"TowerDelivery/src",
+		"TowerDelivery/vendor",
 		"%{IncludeDir.glm}"
 	}
 
@@ -124,14 +126,14 @@ project	"Game"
 	filter "configurations:Debug"
 		defines "TD_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "TD_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "TD_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

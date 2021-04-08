@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Event.h"
-#include "tdpch.h"
+
 
 namespace TowerDelivery {
 
@@ -86,7 +86,7 @@ namespace TowerDelivery {
 			return ss.str();
 		}
 
-		EVENT_CLASS_TYPE(MouseButtonPressed)
+		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 
 }

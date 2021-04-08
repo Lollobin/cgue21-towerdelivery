@@ -22,7 +22,6 @@
 	#define TD_CORE_ASSERT(x, ...)
 #endif // TD_ENABLE_ASSERTS
 
-
-
-
 #define BIT(x) (1 << x)
+
+#define TD_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

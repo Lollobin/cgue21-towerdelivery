@@ -7,3 +7,6 @@
 [submodule "TowerDelivery/vendor/GLFW"]
 	path = TowerDelivery/vendor/GLFW
 	url = https://github.com/TheCherno/GLFW
+[submodule "TowerDelivery/vendor/imgui"]
+	path = TowerDelivery/vendor/imgui
+	url = https://github.com/ocornut/imgui

@@ -38,6 +38,8 @@ namespace TowerDelivery {
 
 		LayerStack m_LayerStack;
 
+		std::unique_ptr<Shader> m_Shader;
+
 	private:
 		static Application* s_Instance;
 	};

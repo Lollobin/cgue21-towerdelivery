@@ -9,6 +9,9 @@
 
 #include "Input.h"
 
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
+
 namespace TowerDelivery {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -50,7 +53,15 @@ namespace TowerDelivery {
 	}
 
 	void Application::Run() {
-		
+		/*
+		btDefaultCollisionConfiguration* collision_configuration = new btDefaultCollisionConfiguration();
+		btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collision_configuration);
+		btDbvtBroadphase* broadphase = new btDbvtBroadphase();
+		btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+		btDiscreteDynamicsWorld* dynamics_world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_configuration);
+		dynamics_world->setGravity(btVector3(0, -10, 0));
+		*/
+
 		while (m_Running) {
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);

@@ -49,10 +49,15 @@ project "TowerDelivery"
 	includedirs {
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/vendor/bullet",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}"
+	}
+
+	libdirs {
+	"%{prj.name}/vendor/bulletLibs"
 	}
 
 	links {
@@ -68,8 +73,7 @@ project "TowerDelivery"
 		defines {
 			"TD_PLATFORM_WINDOWS",
 			"TD_BUILD_DLL",
-			"GLFW_INCLUDE_NONE",
-			
+			"GLFW_INCLUDE_NONE"
 		}
 	
 	filter "configurations:Debug"
@@ -77,15 +81,33 @@ project "TowerDelivery"
 		runtime "Debug"
 		symbols "on"
 
+		links {
+			"BulletCollision_vs2010_x64_debug.lib",
+			"BulletDynamics_vs2010_x64_debug.lib",
+			"LinearMath_vs2010_x64_debug.lib"
+		}
+
 	filter "configurations:Release"
 		defines "TD_RELEASE"
 		runtime "Release"
 		optimize "on"
 
+		links {
+			"BulletCollision_vs2010_x64_release.lib",
+			"BulletDynamics_vs2010_x64_release.lib",
+			"LinearMath_vs2010_x64_release.lib"
+		}
+
 	filter "configurations:Dist"
 		defines "TD_DIST"
 		runtime "Release"
 		optimize "on"
+
+		links {
+			"BulletCollision_vs2010_x64_release.lib",
+			"BulletDynamics_vs2010_x64_release.lib",
+			"LinearMath_vs2010_x64_release.lib"
+		}
 
 project	"Game"
 	location "Game"
@@ -106,9 +128,10 @@ project	"Game"
 	}
 
 	includedirs {
-		"TowerDelivery/vendor/spdlog/include",
 		"TowerDelivery/src",
 		"TowerDelivery/vendor",
+		"TowerDelivery/vendor/bullet",
+		"TowerDelivery/vendor/spdlog/include",
 		"%{IncludeDir.glm}"
 	}
 

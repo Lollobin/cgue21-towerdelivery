@@ -9,6 +9,8 @@
 
 #include "Input.h"
 
+#include "TowerDelivery/Shader.h"
+
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 

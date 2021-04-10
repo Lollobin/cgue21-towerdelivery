@@ -99,6 +99,9 @@
     <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h">
       <Filter>src\TowerDelivery</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Shader.h">
+      <Filter>src\TowerDelivery</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Window.h">
       <Filter>src\TowerDelivery</Filter>
     </ClInclude>
@@ -1368,6 +1371,9 @@
       <Filter>src\TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\TowerDelivery\Log.cpp">
+      <Filter>src\TowerDelivery</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TowerDelivery\Shader.cpp">
       <Filter>src\TowerDelivery</Filter>
     </ClCompile>
     <ClCompile Include="src\tdpch.cpp">

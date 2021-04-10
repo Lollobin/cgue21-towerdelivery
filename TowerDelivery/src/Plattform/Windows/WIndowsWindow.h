@@ -1,7 +1,10 @@
 #pragma once
 
 #include "TowerDelivery/Window.h"
-#include "GLFW/glfw3.h"
+#include "TowerDelivery/Rendering/RenderingContext.h"
+
+#include <GLFW/glfw3.h>
+
 
 namespace TowerDelivery {
 
@@ -34,6 +37,7 @@ namespace TowerDelivery {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+		RenderingContext* m_Context;
 
 		struct WindowData {
 			std::string Title;
@@ -43,5 +47,6 @@ namespace TowerDelivery {
 		};
 
 		WindowData m_Data;
+
 	};
 }

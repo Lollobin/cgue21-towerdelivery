@@ -15,9 +15,6 @@ namespace TowerDelivery {
 	{
 	}
 
-	ImGuiLayer::~ImGuiLayer() {
-	}
-
 	void ImGuiLayer::OnAttach()
 	{
 		ImGui::CreateContext();

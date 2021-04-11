@@ -45,8 +45,6 @@ namespace TowerDelivery {
 		m_IndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
 	}
 
-	Application::~Application() {}
-
 	void Application::PushLayer(Layer* layer) {
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();

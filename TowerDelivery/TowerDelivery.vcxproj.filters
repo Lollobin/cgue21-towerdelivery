@@ -51,7 +51,7 @@
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>src\Plattform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
+    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h">
       <Filter>src\Plattform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h">

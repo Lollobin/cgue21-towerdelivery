@@ -22,6 +22,9 @@
     <Filter Include="src\TowerDelivery\ImGui">
       <UniqueIdentifier>{BB2F7E56-2767-C6ED-3071-2A119C27EDE6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\TowerDelivery\Rendering">
+      <UniqueIdentifier>{5E64F60D-CA71-24F4-5358-20DFBF64F0AA}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -48,7 +51,7 @@
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>src\Plattform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h">
+    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h">
       <Filter>src\Plattform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h">
@@ -98,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h">
       <Filter>src\TowerDelivery</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Rendering\RenderingContext.h">
+      <Filter>src\TowerDelivery\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\TowerDelivery\Shader.h">
       <Filter>src\TowerDelivery</Filter>
@@ -1372,6 +1378,9 @@
     </ClCompile>
     <ClCompile Include="src\TowerDelivery\Log.cpp">
       <Filter>src\TowerDelivery</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TowerDelivery\Rendering\RenderingContext.cpp">
+      <Filter>src\TowerDelivery\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="src\TowerDelivery\Shader.cpp">
       <Filter>src\TowerDelivery</Filter>

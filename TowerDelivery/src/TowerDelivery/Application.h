@@ -38,8 +38,7 @@ namespace TowerDelivery {
 
 		LayerStack m_LayerStack;
 
-		std::unique_ptr<Shader> m_Shader;
-
+		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 	private:
 		static Application* s_Instance;
 	};

@@ -7,6 +7,8 @@
 #include "TowerDelivery/Events/Event.h"
 #include "TowerDelivery/Events/ApplicationEvent.h"
 
+#include "TowerDelivery/Rendering/Buffer.h"
+
 
 namespace TowerDelivery {
 
@@ -38,7 +40,10 @@ namespace TowerDelivery {
 
 		LayerStack m_LayerStack;
 
-		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		unsigned int m_VertexArray;
+
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 
 	private:
 		static Application* s_Instance;

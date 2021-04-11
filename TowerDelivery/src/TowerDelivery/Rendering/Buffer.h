@@ -16,7 +16,7 @@ namespace TowerDelivery {
 
 	class IndexBuffer {
 	public:
-		IndexBuffer(float* indices, uint32_t count);
+		IndexBuffer(uint32_t* indices, uint32_t count);
 		virtual ~IndexBuffer();
 
 		virtual void Bind() const;

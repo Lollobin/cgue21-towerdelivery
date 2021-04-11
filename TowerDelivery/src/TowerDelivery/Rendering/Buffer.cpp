@@ -26,7 +26,7 @@ namespace TowerDelivery {
 
 	//Index Buffer
 
-	IndexBuffer::IndexBuffer(float* indices, uint32_t count)
+	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
 		: m_Count(count)
 	{
 		glCreateBuffers(1, &m_RendererID);

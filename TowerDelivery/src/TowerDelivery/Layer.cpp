@@ -7,9 +7,4 @@ namespace TowerDelivery {
 		: m_DebugName(debugName)
 	{
 	}
-
-	Layer::~Layer()
-	{
-
-	}
 }

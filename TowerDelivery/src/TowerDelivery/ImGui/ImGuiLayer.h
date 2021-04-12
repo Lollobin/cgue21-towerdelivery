@@ -12,7 +12,7 @@ namespace TowerDelivery {
 
 	public:
 		ImGuiLayer();
-		~ImGuiLayer();
+		~ImGuiLayer() = default;
 
 		virtual void OnAttach();
 		virtual void OnDetach();

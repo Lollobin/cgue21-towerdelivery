@@ -144,7 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Plattform\OpenGL\ImGuiOpenGLRenderer.h" />
-    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\Plattform\Windows\WIndowsWindow.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
     <ClInclude Include="src\TowerDelivery.h" />
     <ClInclude Include="src\TowerDelivery\Application.h" />
@@ -161,8 +161,10 @@
     <ClInclude Include="src\TowerDelivery\LayerStack.h" />
     <ClInclude Include="src\TowerDelivery\Log.h" />
     <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h" />
+    <ClInclude Include="src\TowerDelivery\Rendering\Buffer.h" />
     <ClInclude Include="src\TowerDelivery\Rendering\RenderingContext.h" />
-    <ClInclude Include="src\TowerDelivery\Shader.h" />
+    <ClInclude Include="src\TowerDelivery\Rendering\Shader.h" />
+    <ClInclude Include="src\TowerDelivery\Rendering\VertexArray.h" />
     <ClInclude Include="src\TowerDelivery\Window.h" />
     <ClInclude Include="src\tdpch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
@@ -588,8 +590,10 @@
     <ClCompile Include="src\TowerDelivery\Layer.cpp" />
     <ClCompile Include="src\TowerDelivery\LayerStack.cpp" />
     <ClCompile Include="src\TowerDelivery\Log.cpp" />
+    <ClCompile Include="src\TowerDelivery\Rendering\Buffer.cpp" />
     <ClCompile Include="src\TowerDelivery\Rendering\RenderingContext.cpp" />
-    <ClCompile Include="src\TowerDelivery\Shader.cpp" />
+    <ClCompile Include="src\TowerDelivery\Rendering\Shader.cpp" />
+    <ClCompile Include="src\TowerDelivery\Rendering\VertexArray.cpp" />
     <ClCompile Include="src\tdpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

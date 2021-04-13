@@ -13,7 +13,7 @@ void main()
 	vec3 lightColor = vec3(1,1,1);
 
     // ambient
-    vec3 ambient = ambientStrength * lightColor;
+    vec3 ambient = 1 * lightColor;
   	
     // diffuse 
     vec3 norm = normalize(Normal);

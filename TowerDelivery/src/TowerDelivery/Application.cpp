@@ -38,25 +38,6 @@ namespace TowerDelivery {
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-
-		/*
-	glGenVertexArrays(1, &m_VertexArray);
-	glBindVertexArray(m_VertexArray);
-
-	float vertices[3 * 3] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
-	};
-
-	m_VertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-	uint32_t indices[3] = { 0,1,2 };
-	m_IndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
-	*/
 	}
 
 	void Application::PushLayer(Layer* layer) {
@@ -73,8 +54,6 @@ namespace TowerDelivery {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		//TD_CORE_TRACE("{0}", e);
-
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(e);
@@ -84,14 +63,6 @@ namespace TowerDelivery {
 	}
 
 	void Application::Run() {
-		/*
-		btDefaultCollisionConfiguration* collision_configuration = new btDefaultCollisionConfiguration();
-		btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collision_configuration);
-		btDbvtBroadphase* broadphase = new btDbvtBroadphase();
-		btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-		btDiscreteDynamicsWorld* dynamics_world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_configuration);
-		dynamics_world->setGravity(btVector3(0, -10, 0));
-		*/
 		float w = 0.3f;
 		float h = 0.3f;
 		float d = 0.3f;
@@ -191,19 +162,30 @@ namespace TowerDelivery {
 		0,0,-1
 			});
 
-		Shader shader("assets/shader/color.vert", "assets/shader/color.frag");
 		VertexArray cube = VertexArray(positions, indices, normals);
+
+		Shader shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl");
+
+		glm::mat4 projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		shader.Bind();
 		
 		while (m_Running) {
+			camera.OnUpdate();
+			
 			glClearColor(0.2f, 0.2f, 0.2f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			shader.Bind();
+			glm::mat4 vpMatrix = projectionMatrix * camera.GetViewMatrix();
+
+			GLint location = glGetUniformLocation(shader.m_RendererID, "vpMatrix");
+			glUniformMatrix4fv(location, 1, GL_FALSE, &vpMatrix[0][0]);
+
+			glm::vec3 color = glm::vec3(0.8, 0.1, 0.2);
+			location = glGetUniformLocation(shader.m_RendererID, "color");
+			glUniform3fv(location, 1, &color[0]);
+
 			cube.draw();
-			/*
-			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
-			*/
+			
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();

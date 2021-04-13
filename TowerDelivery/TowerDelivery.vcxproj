@@ -162,6 +162,7 @@
     <ClInclude Include="src\TowerDelivery\Log.h" />
     <ClInclude Include="src\TowerDelivery\MouseButtonCodes.h" />
     <ClInclude Include="src\TowerDelivery\Rendering\Buffer.h" />
+    <ClInclude Include="src\TowerDelivery\Rendering\Camera.h" />
     <ClInclude Include="src\TowerDelivery\Rendering\RenderingContext.h" />
     <ClInclude Include="src\TowerDelivery\Rendering\Shader.h" />
     <ClInclude Include="src\TowerDelivery\Rendering\VertexArray.h" />
@@ -612,4 +613,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

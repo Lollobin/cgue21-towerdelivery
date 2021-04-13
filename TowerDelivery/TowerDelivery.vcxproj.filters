@@ -105,6 +105,9 @@
     <ClInclude Include="src\TowerDelivery\Rendering\Buffer.h">
       <Filter>src\TowerDelivery\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="src\TowerDelivery\Rendering\Camera.h">
+      <Filter>src\TowerDelivery\Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="src\TowerDelivery\Rendering\RenderingContext.h">
       <Filter>src\TowerDelivery\Rendering</Filter>
     </ClInclude>

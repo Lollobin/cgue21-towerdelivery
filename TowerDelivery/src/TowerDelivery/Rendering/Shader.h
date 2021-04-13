@@ -5,7 +5,7 @@ namespace TowerDelivery {
 
 	class Shader {
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		Shader(const char* vertexSrc, const char* fragmentSrc);
 		~Shader();
 
 		void Bind() const;

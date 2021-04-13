@@ -13,12 +13,22 @@
 
 #include "Rendering/Shader.h"
 #include "Rendering/VertexArray.h"
+#include "Rendering/Camera.h"
 
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 
 namespace TowerDelivery {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+
+	// settings
+	const unsigned int SCR_WIDTH = 800;
+	const unsigned int SCR_HEIGHT = 600;
+	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	float lastX = SCR_WIDTH / 2.0f;
+	float lastY = SCR_HEIGHT / 2.0f;
+	bool firstMouse = true;
+
 
 	Application* Application::s_Instance = nullptr;
 
@@ -181,13 +191,14 @@ namespace TowerDelivery {
 		0,0,-1
 			});
 
-
+		Shader shader("assets/shader/color.vert", "assets/shader/color.frag");
 		VertexArray cube = VertexArray(positions, indices, normals);
 		
 		while (m_Running) {
 			glClearColor(0.2f, 0.2f, 0.2f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			shader.Bind();
 			cube.draw();
 			/*
 			glBindVertexArray(m_VertexArray);

@@ -1,5 +1,7 @@
 #include "tdpch.h"
 #include "Shader.h"
+#include <fstream>
+#include <sstream>
 
 #include "glad/glad.h"
 
@@ -7,13 +9,42 @@
 
 namespace TowerDelivery {
 
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc){
+	Shader::Shader(const char* vertexPath, const char* fragmentPath){
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
+		// 1. retrieve the vertex/fragment source code from filePath
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
+		// ensure ifstream objects can throw exceptions:
+		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			// open files
+			vShaderFile.open(vertexPath);
+			fShaderFile.open(fragmentPath);
+			std::stringstream vShaderStream, fShaderStream;
+			// read file's buffer contents into streams
+			vShaderStream << vShaderFile.rdbuf();
+			fShaderStream << fShaderFile.rdbuf();
+			// close file handlers
+			vShaderFile.close();
+			fShaderFile.close();
+			// convert stream into string
+			vertexCode = vShaderStream.str();
+			fragmentCode = fShaderStream.str();
+		}
+		catch (std::ifstream::failure& e)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+		}
+
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar* source = vertexSrc.c_str();
+		const GLchar* source = vertexCode.c_str();
 		glShaderSource(vertexShader, 1, &source, 0);
 
 		// Compile the vertex shader
@@ -43,7 +74,7 @@ namespace TowerDelivery {
 
 		// Send the fragment shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		source = fragmentSrc.c_str();
+		source = fragmentCode.c_str();
 		glShaderSource(fragmentShader, 1, &source, 0);
 
 		// Compile the fragment shader

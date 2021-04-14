@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
-
+#include <vector>
 
 namespace TowerDelivery {
 
@@ -13,12 +13,12 @@ namespace TowerDelivery {
 		void draw();
 
 	protected:
-		GLuint _vao;
-		GLuint _vboPositions;
-		GLuint _vboNormals;
+		GLuint vao;
+		GLuint vboPositions;
+		GLuint vboNormals;
 		//GLuint _vboUVs;
-		GLuint _vboIndices;
-		unsigned int _elements;
+		GLuint vboIndices;
+		unsigned int elements;
 	};
 
 }

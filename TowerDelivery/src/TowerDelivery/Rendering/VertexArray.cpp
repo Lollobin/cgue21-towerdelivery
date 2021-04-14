@@ -2,19 +2,17 @@
 #include "VertexArray.h"
 
 namespace TowerDelivery {
-
 	VertexArray::VertexArray(std::vector<float> positions, std::vector<unsigned int> indices,
 		std::vector<float> normals)
-		: _elements(indices.size())
+		: elements(indices.size())
 	{
-		
 		// create VAO
-		glGenVertexArrays(1, &_vao);
-		glBindVertexArray(_vao);
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
 
 		// create positions VBO
-		glGenBuffers(1, &_vboPositions);
-		glBindBuffer(GL_ARRAY_BUFFER, _vboPositions);
+		glGenBuffers(1, &vboPositions);
+		glBindBuffer(GL_ARRAY_BUFFER, vboPositions);
 		glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_STATIC_DRAW);
 
 		// bind positions to location 0
@@ -22,8 +20,8 @@ namespace TowerDelivery {
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		// create normals VBO
-		glGenBuffers(1, &_vboNormals);
-		glBindBuffer(GL_ARRAY_BUFFER, _vboNormals);
+		glGenBuffers(1, &vboNormals);
+		glBindBuffer(GL_ARRAY_BUFFER, vboNormals);
 		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
 
 		// bind normals to location 1
@@ -40,27 +38,25 @@ namespace TowerDelivery {
 		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		// create and bind indices VBO
-		glGenBuffers(1, &_vboIndices);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vboIndices);
+		glGenBuffers(1, &vboIndices);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIndices);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	}
 
 	VertexArray::~VertexArray() {
-		glDeleteBuffers(1, &_vboPositions);
-		glDeleteBuffers(1, &_vboNormals);
+		glDeleteBuffers(1, &vboPositions);
+		glDeleteBuffers(1, &vboNormals);
 		//glDeleteBuffers(1, &_vboUVs);
-		glDeleteBuffers(1, &_vboIndices);
-		glDeleteVertexArrays(1, &_vao);
+		glDeleteBuffers(1, &vboIndices);
+		glDeleteVertexArrays(1, &vao);
 	}
 
 	void VertexArray::draw() {
-		glBindVertexArray(_vao);
-		glDrawElements(GL_TRIANGLES, _elements, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(vao);
+		glDrawElements(GL_TRIANGLES, elements, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-
 }

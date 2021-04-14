@@ -43,7 +43,8 @@ project "TowerDelivery"
 	}
 
 	defines {
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
 	}
 
 	includedirs {
@@ -72,8 +73,7 @@ project "TowerDelivery"
 
 		defines {
 			"TD_PLATFORM_WINDOWS",
-			"TD_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"TD_BUILD_DLL"
 		}
 	
 	filter "configurations:Debug"
@@ -119,9 +119,6 @@ project	"Game"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "tdpch.h"
-	pchsource "Game/src/tdpch.cpp"
-
 	files {
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
@@ -132,7 +129,8 @@ project	"Game"
 		"TowerDelivery/vendor",
 		"TowerDelivery/vendor/bullet",
 		"TowerDelivery/vendor/spdlog/include",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links {

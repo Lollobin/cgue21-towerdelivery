@@ -5,10 +5,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "TowerDelivery/Core.h"
+#include "TowerDelivery/Core/Timestep.h"
 #include "TowerDelivery/KeyCodes.h"
 #include "TowerDelivery/MouseButtonCodes.h"
 #include "TowerDelivery/Input.h"
-
 #include <vector>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
@@ -22,8 +23,8 @@ enum Camera_Movement {
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 0.5f;
-const float SENSITIVITY = 0.1f;
+const float SPEED = 2.0f;
+const float SENSITIVITY = 3.0f;
 const float ZOOM = 45.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
@@ -71,8 +72,8 @@ public:
 		return glm::lookAt(Position, Position + Front, Up);
 	}
 
-	void OnUpdate() {
-		float velocity = MovementSpeed;
+	void OnUpdate(TowerDelivery::Timestep ts) {
+		float velocity = MovementSpeed * ts;
 
 		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_W))
 			Position += Front * velocity;
@@ -86,7 +87,6 @@ public:
 		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_D))
 			Position += Right * velocity;
 
-
 		if (!TowerDelivery::Input::IsMouseButtonPressed(TD_MOUSE_BUTTON_LEFT)) {
 			lastX = TowerDelivery::Input::GetMouseX();
 			lastY = TowerDelivery::Input::GetMouseY();
@@ -98,8 +98,8 @@ public:
 		lastX = TowerDelivery::Input::GetMouseX();
 		lastY = TowerDelivery::Input::GetMouseY();
 
-		Yaw += xoffset * MouseSensitivity;
-		Pitch += yoffset * MouseSensitivity;
+		Yaw += xoffset * MouseSensitivity * ts;
+		Pitch += yoffset * MouseSensitivity * ts;
 
 		// make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (true)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TowerDelivery/Core.h"
+#include "TowerDelivery/Core/Timestep.h"
 #include "TowerDelivery/Events/Event.h"
 
 namespace TowerDelivery {
@@ -12,7 +13,7 @@ namespace TowerDelivery {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep timestep) {}
 		virtual void OnEvent(Event& event) {}
 
 		inline const std::string& GetName() const { return m_DebugName; }

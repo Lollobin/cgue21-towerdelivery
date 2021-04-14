@@ -121,8 +121,10 @@ public:
 		shader->Bind();	
 	}
 	  
-	void OnUpdate() override {
-		camera.OnUpdate();
+	void OnUpdate(TowerDelivery::Timestep ts) override {
+		//TD_TRACE("Delta time: {0}s ({1})ms)", ts.GetSeconds(), ts.GetMilliseconds());
+		
+		camera.OnUpdate(ts);
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);

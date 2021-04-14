@@ -7,6 +7,8 @@
 #include "TowerDelivery/Events/Event.h"
 #include "TowerDelivery/Events/ApplicationEvent.h"
 
+#include "TowerDelivery/Core/Timestep.h"
+
 #include "TowerDelivery/Rendering/Buffer.h"
 
 namespace TowerDelivery {
@@ -34,6 +36,7 @@ namespace TowerDelivery {
 		std::unique_ptr<Window> m_Window;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
+		float m_LastFrameTime;
 
 	private:
 		static Application* s_Instance;

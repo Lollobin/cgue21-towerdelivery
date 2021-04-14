@@ -32,8 +32,6 @@ namespace TowerDelivery {
 		m_Data.Width = props.Width;
 
 		TD_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
-		
-		
 
 		if (!s_GLFWInitialized) {
 			int success = glfwInit();
@@ -42,6 +40,12 @@ namespace TowerDelivery {
 			s_GLFWInitialized = true;
 		}
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Request OpenGL version 4.3
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Create an OpenGL debug context 
+		glfwWindowHint(GLFW_SAMPLES, 4);
+
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
 		m_Context = new RenderingContext(m_Window);
@@ -49,6 +53,7 @@ namespace TowerDelivery {
 		
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
+
 
 		//GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {

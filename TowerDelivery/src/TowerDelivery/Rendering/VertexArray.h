@@ -6,11 +6,36 @@
 
 namespace TowerDelivery {
 
+	/*!
+ * Stores all data for a geometry object
+ */
+	struct VertexData {
+		/*!
+		 * Vertex positions
+		 */
+		std::vector<glm::vec3> positions;
+		/*!
+		 * Geometry indices
+		 */
+		std::vector<unsigned int> indices;
+		/*!
+		 * Vertex normals
+		 */
+		std::vector<glm::vec3> normals;
+		/*!
+		 * Vertex UV coordinates
+		 */
+		//std::vector<glm::vec2> uvs;
+	};
+
+
 	class VertexArray {
 	public:
-		VertexArray(std::vector<float> positions, std::vector<unsigned int> indices, std::vector<float> normals);
+		VertexArray(VertexData data);
 		~VertexArray();
+
 		void draw();
+		static VertexData createCubeVertexArray(float width, float height, float depth);
 
 	protected:
 		GLuint vao;

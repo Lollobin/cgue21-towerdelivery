@@ -6,8 +6,8 @@ public:
 		:Layer("Example")
 	{
 		// proj-Matrix settings
-		const unsigned int SCR_WIDTH = 800;
-		const unsigned int SCR_HEIGHT = 600;
+		const unsigned int SCR_WIDTH = 1280;
+		const unsigned int SCR_HEIGHT = 720;
 		float lastX = SCR_WIDTH / 2.0f;
 		float lastY = SCR_HEIGHT / 2.0f;
 		bool firstMouse = true;
@@ -16,14 +16,13 @@ public:
 
 		projectionMatrix = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-		cube.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(3.0f, 1.0f, 0.5f)));
+		cube.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f)));
 
 		shader.reset(new TowerDelivery::Shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl"));
 
 		shader->Bind();
 
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -40,7 +39,7 @@ public:
 		shader->setFloat("material.specular", 1.0f);
 
 		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		shader->setVec3("dirLight.ambient", 0.1f, 0.1f, 0.1f);
 		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
 		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 

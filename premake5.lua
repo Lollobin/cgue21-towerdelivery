@@ -51,6 +51,7 @@ project "TowerDelivery"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{prj.name}/vendor/bullet",
+		"%{prj.name}/vendor/assimp",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -58,7 +59,8 @@ project "TowerDelivery"
 	}
 
 	libdirs {
-	"%{prj.name}/vendor/bulletLibs"
+	"%{prj.name}/vendor/bulletLibs",
+	"%{prj.name}/vendor/assimpLibs"
 	}
 
 	links {
@@ -84,7 +86,11 @@ project "TowerDelivery"
 		links {
 			"BulletCollision_vs2010_x64_debug.lib",
 			"BulletDynamics_vs2010_x64_debug.lib",
-			"LinearMath_vs2010_x64_debug.lib"
+			"LinearMath_vs2010_x64_debug.lib",
+			"assimp-vc142-mtd.lib",
+			"IrrXMLd.lib",
+			"zlibd.lib",
+			"zlibstaticd.lib"
 		}
 
 	filter "configurations:Release"
@@ -95,7 +101,11 @@ project "TowerDelivery"
 		links {
 			"BulletCollision_vs2010_x64_release.lib",
 			"BulletDynamics_vs2010_x64_release.lib",
-			"LinearMath_vs2010_x64_release.lib"
+			"LinearMath_vs2010_x64_release.lib",
+			"assimp-vc142-mt.lib",
+			"IrrXML.lib",
+			"zlib.lib",
+			"zlibstatic.lib"
 		}
 
 	filter "configurations:Dist"
@@ -106,7 +116,11 @@ project "TowerDelivery"
 		links {
 			"BulletCollision_vs2010_x64_release.lib",
 			"BulletDynamics_vs2010_x64_release.lib",
-			"LinearMath_vs2010_x64_release.lib"
+			"LinearMath_vs2010_x64_release.lib",
+			"assimp-vc142-mt.lib",
+			"IrrXML.lib",
+			"zlib.lib",
+			"zlibstatic.lib"
 		}
 
 project	"Game"
@@ -128,6 +142,7 @@ project	"Game"
 		"TowerDelivery/src",
 		"TowerDelivery/vendor",
 		"TowerDelivery/vendor/bullet",
+		"TowerDelivery/vendor/assimp",
 		"TowerDelivery/vendor/spdlog/include",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Glad}"

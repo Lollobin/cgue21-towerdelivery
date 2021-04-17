@@ -6,6 +6,8 @@
 #include "Input.h"
 
 #include "GLFW/glfw3.h"
+#include "assimp/Importer.hpp"
+#include "TowerDelivery/Rendering/Mesh.h"
 
 namespace TowerDelivery {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)

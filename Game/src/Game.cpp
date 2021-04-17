@@ -81,19 +81,21 @@ public:
 		floor.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(20.0f, 1.0f, 20.0f)));
 
 		shader.reset(new TowerDelivery::Shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl"));
-		shader->Bind();
+		//shader.reset(new TowerDelivery::Shader("assets/shader/texture.vs", "assets/shader/texture.fs"));
 
 		glEnable(GL_DEPTH_TEST);
 
-		std::string path("assets/textures/container2.png");
+		std::string path("assets/textures/container3.png");
 
 		unsigned int diffuseTex = loadTexture(path.c_str());
-		
+
 		shader->setInt("material.diffuse", 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseTex);
-		
+
+		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/backpack/backpack.obj");
+		ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -107,18 +109,27 @@ public:
 		glClearColor(0.2f, 0.2f, 0.2f, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		shader->Bind();
+
 		shader->setVec3("viewPos", camera.Position);
-
-		shader->setFloat("material.shininess", 1.0f);
-
-		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		shader->setVec3("dirLight.ambient", 1.1f, 1.1f, 1.1f);
-		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-
 		shader->setMat4("view", camera.GetViewMatrix());
 		shader->setMat4("projection", projectionMatrix);
 
+		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		shader->setVec3("dirLight.ambient", 0.1f, 0.1f, 0.1f);
+		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+		glm::mat4 model = glm::mat4(1.0f);
+		shader->setMat4("model", model);
+
+		shader->setFloat("material.shininess", 1.0f);
+
+		ourModel->Draw(*shader);
+
+		
+
+		/*
 		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[0];
 		btRigidBody* body = btRigidBody::upcast(obj);
 		btTransform trans;
@@ -129,23 +140,18 @@ public:
 		glm::mat4 model = glm::mat4(1.0f);
 		model = btScalar2mat4(btModelMatrix);
 
-		
-
 		shader->setMat4("model", model);
-		cube->draw();
+		//cube->draw();
 
 		obj = dynamicsWorld->getCollisionObjectArray()[1];
 		body = btRigidBody::upcast(obj);
-
 		body->getMotionState()->getWorldTransform(trans);
-
 		trans.getOpenGLMatrix(btModelMatrix);
-
 		model = btScalar2mat4(btModelMatrix);
 
 		shader->setMat4("model", model);
-		floor->draw();
-
+		//floor->draw();
+		*/
 		camera.OnUpdate(ts);
 	}
 
@@ -211,6 +217,8 @@ private:
 	btRigidBody* btCube;
 	btRigidBody* btFloor;
 	TowerDelivery::CharacterController* character;
+
+	TowerDelivery::Model* ourModel;
 };
 
 class Game : public TowerDelivery::Application {

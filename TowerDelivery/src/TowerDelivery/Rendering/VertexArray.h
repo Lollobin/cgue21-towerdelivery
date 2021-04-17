@@ -25,7 +25,7 @@ namespace TowerDelivery {
 		/*!
 		 * Vertex UV coordinates
 		 */
-		//std::vector<glm::vec2> uvs;
+		std::vector<glm::vec2> uvs;
 	};
 
 
@@ -41,7 +41,7 @@ namespace TowerDelivery {
 		GLuint vao;
 		GLuint vboPositions;
 		GLuint vboNormals;
-		//GLuint _vboUVs;
+		GLuint _vboUVs;
 		GLuint vboIndices;
 		unsigned int elements;
 	};

@@ -28,13 +28,13 @@ namespace TowerDelivery {
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		// create uvs VBO
-		//glGenBuffers(1, &_vboUVs);
-		//glBindBuffer(GL_ARRAY_BUFFER, _vboUVs);
-		//glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), uvs.data(), GL_STATIC_DRAW);
+		glGenBuffers(1, &_vboUVs);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboUVs);
+		glBufferData(GL_ARRAY_BUFFER, data.uvs.size() * sizeof(glm::vec2), data.uvs.data(), GL_STATIC_DRAW);
 
 		// bind uvs to location 2
-		//glEnableVertexAttribArray(2);
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		// create and bind indices VBO
 		glGenBuffers(1, &vboIndices);
@@ -48,7 +48,7 @@ namespace TowerDelivery {
 	VertexArray::~VertexArray() {
 		glDeleteBuffers(1, &vboPositions);
 		glDeleteBuffers(1, &vboNormals);
-		//glDeleteBuffers(1, &_vboUVs);
+		glDeleteBuffers(1, &_vboUVs);
 		glDeleteBuffers(1, &vboIndices);
 		glDeleteVertexArrays(1, &vao);
 	}
@@ -129,7 +129,7 @@ namespace TowerDelivery {
 			glm::vec3(0, -1, 0)
 		};
 
-		/*
+		
 		data.uvs = {
 			// front
 			glm::vec2(0, 0),
@@ -162,7 +162,7 @@ namespace TowerDelivery {
 			glm::vec2(1, 1),
 			glm::vec2(0, 1)
 		};
-		*/
+		
 		data.indices = {
 			// front
 			0, 1, 2,

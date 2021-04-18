@@ -1,0 +1,2 @@
+C:\dev\tower-delivery\TowerDelivery\vendor\Glad\bin\Debug-windows-x86_64\Glad\Glad.pdb
+C:\dev\tower-delivery\TowerDelivery\vendor\Glad\bin-int\Debug-windows-x86_64\Glad\Glad.pdb

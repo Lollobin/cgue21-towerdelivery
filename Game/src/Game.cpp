@@ -80,8 +80,8 @@ public:
 		cube.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f)));
 		floor.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(20.0f, 1.0f, 20.0f)));
 
-		shader.reset(new TowerDelivery::Shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl"));
-		//shader.reset(new TowerDelivery::Shader("assets/shader/texture.vs", "assets/shader/texture.fs"));
+		//shader.reset(new TowerDelivery::Shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl"));
+		shader.reset(new TowerDelivery::Shader("assets/shader/texture.vs", "assets/shader/texture.fs"));
 
 		glEnable(GL_DEPTH_TEST);
 
@@ -94,8 +94,8 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseTex);
 
-		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/backpack/backpack.obj");
-		ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
+		ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/backpack/backpack.obj");
+		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {

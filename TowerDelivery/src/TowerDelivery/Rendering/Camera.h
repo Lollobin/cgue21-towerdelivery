@@ -87,6 +87,12 @@ public:
 		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_D))
 			Position += Right * velocity;
 
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_SPACE))
+			Position += Up * velocity;
+
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_LEFT_SHIFT))
+			Position -= Up * velocity;
+
 		if (!TowerDelivery::Input::IsMouseButtonPressed(TD_MOUSE_BUTTON_LEFT)) {
 			lastX = TowerDelivery::Input::GetMouseX();
 			lastY = TowerDelivery::Input::GetMouseY();

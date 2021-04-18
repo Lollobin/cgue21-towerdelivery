@@ -94,8 +94,9 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseTex);
 
-		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/backpack/backpack.obj");
-		ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
+		stbi_set_flip_vertically_on_load(true);
+		ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/backpack/backpack.obj");
+		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -116,7 +117,7 @@ public:
 		shader->setMat4("projection", projectionMatrix);
 
 		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		shader->setVec3("dirLight.ambient", 0.1f, 0.1f, 0.1f);
+		shader->setVec3("dirLight.ambient", 1.1f, 1.1f, 1.1f);
 		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
 		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
@@ -217,7 +218,6 @@ private:
 	btRigidBody* btCube;
 	btRigidBody* btFloor;
 	TowerDelivery::CharacterController* character;
-
 	TowerDelivery::Model* ourModel;
 };
 

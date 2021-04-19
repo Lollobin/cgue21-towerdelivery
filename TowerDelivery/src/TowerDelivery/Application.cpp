@@ -8,6 +8,8 @@
 #include "GLFW/glfw3.h"
 #include "assimp/Importer.hpp"
 #include "TowerDelivery/Rendering/Mesh.h"
+#include "TowerDelivery/Events/KeyEvent.h"
+#include "TowerDelivery/KeyCodes.h"
 
 namespace TowerDelivery {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -32,6 +34,7 @@ namespace TowerDelivery {
 
 	void Application::OnEvent(Event& e) {
 		EventDispatcher dispatcher(e);
+
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -53,6 +56,10 @@ namespace TowerDelivery {
 				layer->OnUpdate(timestep);
 
 			m_Window->OnUpdate();
+
+			if (Input::IsKeyPressed(TD_KEY_ESCAPE)) {
+				m_Running = false;
+			}
 		}
 	}
 

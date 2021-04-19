@@ -87,10 +87,10 @@ public:
 		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_RIGHT))
 			Position += Right * velocity;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_SPACE))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_RIGHT_SHIFT))
 			Position += Up * velocity;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_LEFT_SHIFT))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_RIGHT_CONTROL))
 			Position -= Up * velocity;
 
 		if (!TowerDelivery::Input::IsMouseButtonPressed(TD_MOUSE_BUTTON_LEFT)) {

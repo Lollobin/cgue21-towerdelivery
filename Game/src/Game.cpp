@@ -58,11 +58,10 @@ public:
 
 		//create model for floor
 		objectModel.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f)));
-		
+
 		//TowerDelivery::VertexArray floor(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f));
 		vertexArrays.push_back(*objectModel);
 
-		
 		//create collision shape for box 1
 		{
 			btCollisionShape* boxShape = new btBoxShape(btVector3(2.0f, 2.0f, 2.0f));
@@ -122,12 +121,23 @@ public:
 			shader->setMat4("view", playerCamera->GetViewMatrix());
 		}
 
-		//set lighting
+		//set directional lighting
 		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		shader->setVec3("dirLight.ambient", 1.1f, 1.1f, 1.1f);
+		shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
 		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
 		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-		shader->setFloat("material.shininess", 1.0f);
+
+		//set point lights
+		shader->setVec3("pointLights[0].position", 0.0f, 3.0f, 0.0f);
+		shader->setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		shader->setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		shader->setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		shader->setFloat("pointLights[0].constant", 1.0f);
+		shader->setFloat("pointLights[0].linear", 0.09);
+		shader->setFloat("pointLights[0].quadratic", 0.032);
+
+		//set shininess for all models
+		shader->setFloat("material.shininess", 5.0f);
 
 		//ourModel->Draw(*shader);
 

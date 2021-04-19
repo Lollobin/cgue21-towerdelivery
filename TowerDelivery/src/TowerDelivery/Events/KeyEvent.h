@@ -5,7 +5,7 @@
 
 namespace TowerDelivery {
 
-	class TOWERDELIVERY_API KeyEvent : public Event {
+	class KeyEvent : public Event {
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
 
@@ -18,7 +18,7 @@ namespace TowerDelivery {
 
 	};
 
-	class TOWERDELIVERY_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
 	public:
 		KeyPressedEvent(int keycode, int repeatCount)
@@ -38,7 +38,7 @@ namespace TowerDelivery {
 		int m_RepeatCount;
 	};
 
-	class TOWERDELIVERY_API KeyReleasedEvent : public KeyEvent
+	class  KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode)

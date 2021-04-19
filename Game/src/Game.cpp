@@ -180,6 +180,11 @@ public:
 			vertexArrays[i].draw();
 		}
 
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -3.0f));
+		shader->setMat4("model", model);
+		ourModel->Draw(*shader);
+
+
 		if (useDebugCamera)
 			camera.OnUpdate(ts);
 		else
@@ -260,7 +265,7 @@ private:
 	//opengl models
 	std::shared_ptr<TowerDelivery::VertexArray> objectModel;
 	vector<TowerDelivery::VertexArray> vertexArrays;
-	//list<TowerDelivery::VertexArray> vertexArrays;
+	TowerDelivery::Model* ourModel;
 
 	//bullet
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;

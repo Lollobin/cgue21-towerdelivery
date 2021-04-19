@@ -8,79 +8,159 @@
 #include "TowerDelivery/Log.h"
 
 namespace TowerDelivery {
-
 	CharacterController::CharacterController(float radius, float height, float mass, btVector3 spawnPos, btDiscreteDynamicsWorld* dynamicsWorld)
-		:m_DynamicsWorld(dynamicsWorld)
+		:m_pDynamicsWorld(dynamicsWorld), m_maxSpeed(4.0f), m_deceleration(10.0f), m_manualVelocity(0.0f, 0.0f, 0.0f),
+		m_jumpImpulse(500.0f), m_jumpRechargeTime(1.0f), m_jumpRechargeTimer(0.0f), m_onGround(true), m_lookDir(glm::vec2(0.0f, 0.0f)),
+		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f)
 	{
+		m_pCollisionShape = new btCapsuleShape(radius, height);
 
-		m_CollisionShape = new btCapsuleShape(radius, height);
-
-		m_MotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
+		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 
 		btVector3 inertia;
 
-		m_CollisionShape->calculateLocalInertia(mass, inertia);
+		m_pCollisionShape->calculateLocalInertia(mass, inertia);
 
-		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, m_MotionState, m_CollisionShape, inertia);
+		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, m_pMotionState, m_pCollisionShape, inertia);
 
 		rigidBodyCI.m_friction = 0.0f;
 		rigidBodyCI.m_linearDamping = 0.0f;
 
-		m_RigidBody = new btRigidBody(rigidBodyCI);
+		m_pRigidBody = new btRigidBody(rigidBodyCI);
 
-		m_RigidBody->setAngularFactor(0.0f);
+		m_pRigidBody->setAngularFactor(0.0f);
 
-		m_RigidBody->setActivationState(DISABLE_DEACTIVATION);
+		m_pRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
-		m_DynamicsWorld->addRigidBody(m_RigidBody);
+		m_pDynamicsWorld->addRigidBody(m_pRigidBody);
 	}
 
 	CharacterController::~CharacterController() {
+		m_pDynamicsWorld->removeRigidBody(m_pRigidBody);
 
-		m_DynamicsWorld->removeRigidBody(m_RigidBody);
-
-		delete m_MotionState;
-		delete m_RigidBody;
+		delete m_pMotionState;
+		delete m_pRigidBody;
 	}
 
-	void CharacterController::OnUpdate(Timestep ts){
-		UpdatePosition(ts);
+	void CharacterController::OnUpdate(Timestep ts) {
+		//check arrow keys for walking
+		if (Input::IsKeyPressed(TD_KEY_W))
+			Walk(m_lookDir);
+		if (Input::IsKeyPressed(TD_KEY_S))
+			Walk(glm::vec2(-m_lookDir[0], -m_lookDir[1]));
+		if (Input::IsKeyPressed(TD_KEY_A))
+			Walk(glm::vec2(m_lookDir[1], -m_lookDir[0]));
+		if (Input::IsKeyPressed(TD_KEY_D))
+			Walk(glm::vec2(-m_lookDir[1], m_lookDir[0]));
 
-		
-	}
+		//check space key for jumping
+		if (Input::IsKeyPressed(TD_KEY_SPACE))
+			Jump();
 
-	void CharacterController::UpdatePosition(Timestep ts){
-		
-		velocity = 1;
-
-
-		btTransform transform;
-		m_MotionState->getWorldTransform(transform);
-		btVector3 location = transform.getOrigin();
-
-		btVector3 vel(m_RigidBody->getLinearVelocity());
-
-		
-
-		if (Input::IsKeyPressed(TD_KEY_UP)) {
-			
-			vel.setX(vel.x() * +0.5);
-			/*
-			float x = location.getX();
-			x += velocity * ts;
-			location.setX(x);
-			*/
+		//update rotation based on mouse X
+		if (m_firstUpdate) {
+			m_previousMouseX = Input::GetMouseX();
+			m_firstUpdate = false;
 		}
 
-		transform.setOrigin(location);
-		m_MotionState->setWorldTransform(transform);
+		m_rotation += (m_previousMouseX - Input::GetMouseX()) * ts.GetSeconds() * m_mouseSensitivity;
 
-		//TD_CORE_TRACE("Character Position: {0}, {1}, {2}", float(transform.getOrigin().getX()), float(transform.getOrigin().getY()), float(transform.getOrigin().getZ()));
-	
-		m_previousPosition = m_RigidBody->getWorldTransform().getOrigin();
+		if (m_rotation > 360.0f || m_rotation < -360.0f)
+			m_rotation = 0.001;
+
+		m_previousMouseX = Input::GetMouseX();
+
+		//TD_TRACE("Rotation: {0}", m_rotation);
+
+		//update Transform
+		m_pMotionState->getWorldTransform(m_motionTransform);
+
+		/*
+		//update angle
+		btQuaternion quat;
+		quat.setRotation(btVector3(0.0f, 1.0f, 0.0f), 45.0f);
+		m_motionTransform.setRotation(quat);
+
+		m_pRigidBody->setCenterOfMassTransform(m_motionTransform);
+		*/
+
+
+		UpdatePosition(ts);
+		UpdateVelocity(ts);
+		UpdateLookDir();
+
+		//TD_TRACE("Looking in Direction: {0}, {1}", m_lookDir[0], m_lookDir[1]);
+
+		// Update jump timer
+		if (m_jumpRechargeTimer < m_jumpRechargeTime)
+			m_jumpRechargeTimer += ts.GetSeconds();
 	}
 
+	void CharacterController::Walk(const glm::vec2 dir)
+	{
+		glm::vec2 velocityXZ(dir + glm::vec2(m_manualVelocity.x, m_manualVelocity.z));
 
+		float speedXZ = float(velocityXZ.length());
 
+		if (speedXZ > m_maxSpeed)
+			velocityXZ = velocityXZ / speedXZ * m_maxSpeed;
 
+		m_manualVelocity.x = velocityXZ[0];
+		m_manualVelocity.z = velocityXZ[1];
+	}
+
+	void CharacterController::Jump()
+	{
+		if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
+		{
+			m_jumpRechargeTimer = 0.0f;
+			m_pRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
+
+			// Move upwards slightly so velocity isn't immediately canceled when it detects it as on ground next frame
+			const float jumpYOffset = 0.01f;
+
+			float previousY = m_pRigidBody->getWorldTransform().getOrigin().getY();
+
+			m_pRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
+		}
+	}
+
+	glm::vec3 CharacterController::GetPosition(){
+		btVector3 position = m_motionTransform.getOrigin();
+		return glm::vec3(position.x(), position.y(), position.z());
+	}
+
+	glm::vec2 CharacterController::GetOrientation()
+	{
+		return m_lookDir;
+	}
+
+	float CharacterController::GetRotation()
+	{
+		return m_rotation;
+	}
+
+	void CharacterController::UpdatePosition(Timestep ts) {
+		//m_previousPosition = m_pRigidBody->getWorldTransform().getOrigin();
+	}
+
+	void CharacterController::UpdateVelocity(Timestep ts)
+	{
+		//adjust only xz velocity
+		m_manualVelocity.y = m_pRigidBody->getLinearVelocity().getY();
+
+		//set velocity
+		m_pRigidBody->setLinearVelocity(btVector3(m_manualVelocity.x, m_manualVelocity.y, m_manualVelocity.z));
+
+		m_manualVelocity -= m_manualVelocity * m_deceleration * ts.GetSeconds();
+	}
+
+	void CharacterController::UpdateLookDir() {
+		//calculate x
+		m_lookDir[0] = -glm::sin(glm::radians(m_rotation));
+
+		//calculate z
+		m_lookDir[1] = -glm::cos(glm::radians(m_rotation));
+		//TD_TRACE(m_lookDir[1]);
+	}
 }

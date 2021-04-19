@@ -13,13 +13,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
-IncludeDir["ImGui"] = "TowerDelivery/vendor/imgui"
 IncludeDir["glm"] = "TowerDelivery/vendor/glm"
 
 group "Dependencies"
 	include "TowerDelivery/vendor/GLFW"
 	include "TowerDelivery/vendor/Glad"
-	include "TowerDelivery/vendor/imgui"
 	include "TowerDelivery/vendor/assimp"
 group ""
 
@@ -55,7 +53,6 @@ project "TowerDelivery"
 		"%{prj.name}/vendor/assimp/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}"
 	}
 
@@ -66,7 +63,6 @@ project "TowerDelivery"
 	links {
 		"GLFW",
 		"Glad",
-		"ImGui",
 		"opengl32.lib",
 		"assimp"
 	}

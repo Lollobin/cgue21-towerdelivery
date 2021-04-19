@@ -75,16 +75,16 @@ public:
 	void OnUpdate(TowerDelivery::Timestep ts) {
 		float velocity = MovementSpeed * ts;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_W))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_UP))
 			Position += Front * velocity;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_S))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_DOWN))
 			Position -= Front * velocity;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_A))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_LEFT))
 			Position -= Right * velocity;
 
-		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_D))
+		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_RIGHT))
 			Position += Right * velocity;
 
 		if (TowerDelivery::Input::IsKeyPressed(TD_KEY_SPACE))

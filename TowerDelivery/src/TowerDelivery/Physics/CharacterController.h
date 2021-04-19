@@ -7,7 +7,6 @@
 #include "glm/glm.hpp"
 
 namespace TowerDelivery {
-
 	class CharacterController
 	{
 	public:
@@ -16,22 +15,43 @@ namespace TowerDelivery {
 
 		void OnUpdate(Timestep ts);
 
+		void Walk(const glm::vec2 dir);
+		void Jump();
+
+		glm::vec3 GetPosition();
+		glm::vec2 GetOrientation();
+		float GetRotation();
 
 	private:
-		btCollisionShape* m_CollisionShape;
-		btDefaultMotionState* m_MotionState;
-		btRigidBody* m_RigidBody;
-		btDynamicsWorld* m_DynamicsWorld;
-
-		btVector3 m_previousPosition;
-
-		btTransform m_motionTransform;
-
-		float velocity;
-
 		void UpdatePosition(Timestep ts);
 		void UpdateVelocity(Timestep ts);
+		void UpdateLookDir();
+
+	private:
+		btCollisionShape* m_pCollisionShape;
+		btDefaultMotionState* m_pMotionState;
+		btRigidBody* m_pRigidBody;
+		btDynamicsWorld* m_pDynamicsWorld;
+
+		btVector3 m_previousPosition;
+		btTransform m_motionTransform;
+
+		glm::vec3 m_manualVelocity;
+
+		float m_maxSpeed;
+		float m_deceleration;
+		float m_jumpImpulse;
+		float m_jumpRechargeTime;
+		float m_jumpRechargeTimer;
+		bool m_onGround;
+		float m_previousMouseX;
+		bool m_firstUpdate;
+		float m_mouseSensitivity;
+
+		float m_rotation;
+
+		glm::vec2 m_lookDir;
+
 
 	};
-
 }

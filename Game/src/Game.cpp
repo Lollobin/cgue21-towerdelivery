@@ -97,9 +97,10 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseTex);
 
-		//stbi_set_flip_vertically_on_load(true);
+		stbi_set_flip_vertically_on_load(true);
+		ourModel = new TowerDelivery::Model("assets/models/character/character.obj");
 		//ourModel = new TowerDelivery::Model("assets/models/backpack/backpack.obj");
-		//ourModel = new TowerDelivery::Model("C:/dev/tower-delivery/Game/assets/models/tower1.obj");
+		//ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {

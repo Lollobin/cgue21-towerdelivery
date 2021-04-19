@@ -6,6 +6,7 @@
 #include "TowerDelivery/Input.h"
 
 #include "TowerDelivery/Log.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace TowerDelivery {
 	CharacterController::CharacterController(float radius, float height, float mass, btVector3 spawnPos, btDiscreteDynamicsWorld* dynamicsWorld)
@@ -13,7 +14,8 @@ namespace TowerDelivery {
 		m_jumpImpulse(500.0f), m_jumpRechargeTime(1.0f), m_jumpRechargeTimer(0.0f), m_onGround(true), m_lookDir(glm::vec2(0.0f, 0.0f)),
 		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f)
 	{
-		m_pCollisionShape = new btCapsuleShape(radius, height);
+		//m_pCollisionShape = new btCapsuleShape(radius, height);
+		m_pCollisionShape = new btBoxShape(btVector3(1.17f*0.5f,1.23f*0.5f,1.8f*0.5f));
 
 		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 
@@ -75,16 +77,6 @@ namespace TowerDelivery {
 		//update Transform
 		m_pMotionState->getWorldTransform(m_motionTransform);
 
-		/*
-		//update angle
-		btQuaternion quat;
-		quat.setRotation(btVector3(0.0f, 1.0f, 0.0f), 45.0f);
-		m_motionTransform.setRotation(quat);
-
-		m_pRigidBody->setCenterOfMassTransform(m_motionTransform);
-		*/
-
-
 		UpdatePosition(ts);
 		UpdateVelocity(ts);
 		UpdateLookDir();
@@ -133,6 +125,22 @@ namespace TowerDelivery {
 	glm::vec2 CharacterController::GetOrientation()
 	{
 		return m_lookDir;
+	}
+
+	glm::mat4 CharacterController::GetModelMatrix()
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		btTransform trans;
+		btScalar btModelMatrix[16];
+
+		m_pMotionState->getWorldTransform(trans);
+		trans.getOpenGLMatrix(btModelMatrix);		
+		
+		model = btScalar2mat4(btModelMatrix);
+
+		model = glm::rotate(model, glm::radians(m_rotation), glm::vec3(0.0f, -1.0f, 0.0f));
+
+		return model;
 	}
 
 	float CharacterController::GetRotation()

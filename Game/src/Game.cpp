@@ -27,11 +27,16 @@ public:
 		//setup cameras
 		playerCamera = new TowerDelivery::PlayerCamera(characterController);
 		camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
-		projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+		projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 768.0f, 0.1f, 100.0f);
+
+		//load model of tower
+		stbi_set_flip_vertically_on_load(true);
+		ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
+
 
 		//create collision shape for Floor
 		{
-			btCollisionShape* groundShape = new btBoxShape(btVector3(50.0f, 0.5f, 50.0f));
+			btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
 
 			collisionShapes.push_back(groundShape);
 
@@ -50,20 +55,20 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-			floorBt = new btRigidBody(rbInfo);
+			bt_floor = new btRigidBody(rbInfo);
 
-			dynamicsWorld->addRigidBody(floorBt);
+			dynamicsWorld->addRigidBody(bt_floor);
 		}
 
 		//create model for floor
 
-		floorModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f));
+		gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
 
 
 
-		//create collision shape for cube 1
+		//create collision shape for static cube
 		{
-			btCollisionShape* boxShape = new btBoxShape(btVector3(2.0f, 2.0f, 2.0f));
+			btCollisionShape* boxShape = new btBoxShape(btVector3(2.5f, 2.5f, 2.5f));
 
 			btTransform startTransform;
 			startTransform.setIdentity();
@@ -76,30 +81,77 @@ public:
 
 			boxShape->calculateLocalInertia(mass, localInertia);
 
-			startTransform.setOrigin(btVector3(10, 2, 5));
+			startTransform.setOrigin(btVector3(10.5f, 2.5f, -10.5f));
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-			cube1Bt = new btRigidBody(rbInfo);
+			bt_staticCube = new btRigidBody(rbInfo);
 
-			dynamicsWorld->addRigidBody(cube1Bt);
+			dynamicsWorld->addRigidBody(bt_staticCube);
 		}
 
-		cube1Model = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(4.0f, 4.0f, 4.0f));
+		gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
 
+		//create collision shape for dynamic cube
+		{
+			btCollisionShape* boxShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
 
+			btTransform startTransform;
+			startTransform.setIdentity();
 
-		//bind textures
-		std::string path("assets/textures/container2.png");
-		unsigned int diffuseTex = loadTexture(path.c_str());
+			btScalar mass(50.f);
+
+			bool isDynamic = true;
+
+			btVector3 localInertia(0, 0, 0);
+
+			boxShape->calculateLocalInertia(mass, localInertia);
+
+			startTransform.setOrigin(btVector3(0, 5, -4));
+
+			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
+			bt_dynamicCube = new btRigidBody(rbInfo);
+
+			dynamicsWorld->addRigidBody(bt_dynamicCube);
+		}
+
+		gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(2.0f, 2.0f, 2.0f));
+
+		//create collision shape for platform
+		{
+			btCollisionShape* boxShape = new btBoxShape(btVector3(2.5f, 0.1f, 2.5f));
+
+			btTransform startTransform;
+			startTransform.setIdentity();
+
+			btScalar mass(0.f);
+
+			bool isDynamic = false;
+
+			btVector3 localInertia(0, 0, 0);
+
+			boxShape->calculateLocalInertia(mass, localInertia);
+
+			startTransform.setOrigin(btVector3(5.5f, 7.0f, -17.5f));
+
+			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
+			bt_platform = new btRigidBody(rbInfo);
+
+			dynamicsWorld->addRigidBody(bt_platform);
+		}
+
+		gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
+
+		//setup textures
 		shader->setInt("material.diffuse", 0);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseTex);
+		
+		//load textures
+		tex_container = loadTexture("assets/textures/container_diffuse.png");
+		tex_pavement = loadTexture("assets/textures/pavement_diffuse.png");
 
-		stbi_set_flip_vertically_on_load(true);
-		ourModel = new TowerDelivery::Model("assets/models/character/character.obj");
-		//ourModel = new TowerDelivery::Model("assets/models/backpack/backpack.obj");
-		//ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -108,7 +160,7 @@ public:
 		characterController->OnUpdate(ts);
 
 		//prepare for rendering
-		glClearColor(0.2f, 0.2f, 0.2f, 1);
+		glClearColor(0.3f, 0.3f, 0.3f, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader->Bind();
 		shader->setMat4("projection", projectionMatrix);
@@ -124,22 +176,44 @@ public:
 		//set directional lighting
 		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
 		shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		shader->setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
 		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
 		//set point lights
+		
 		shader->setVec3("pointLights[0].position", 0.0f, 3.0f, 0.0f);
 		shader->setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-		shader->setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		shader->setVec3("pointLights[0].diffuse", 1.0f, 1.0f, 1.0f);
+		shader->setVec3("pointLights[0].specular", 2.0f, 2.0f, 2.0f);
 		shader->setFloat("pointLights[0].constant", 1.0f);
 		shader->setFloat("pointLights[0].linear", 0.09);
 		shader->setFloat("pointLights[0].quadratic", 0.032);
+		
+
+		shader->setVec3("pointLights[1].position", 5.5f, 9.0f, -17.5f);
+		shader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+		shader->setVec3("pointLights[1].diffuse", 0.9f, 0.9f, 0.9f);
+		shader->setVec3("pointLights[1].specular", 2.0f, 2.0f, 2.0f);
+		shader->setFloat("pointLights[1].constant", 1.0f);
+		shader->setFloat("pointLights[1].linear", 0.09);
+		shader->setFloat("pointLights[1].quadratic", 0.032);
+
+		/*
+		//set spotlight
+
+		shader->setVec3("Spotlight.position", 0.0f, 3.0f, 0.0f);
+		shader->setVec3("Spotlight.direction", 0.0f, -1.0f, 0.0f);
+		
+		shader->setFloat("Spotlight.cutOff", 30.0f);
+		shader->setFloat("Spotlight.outerCutOff", 50.0f);
+
+		shader->setFloat("Spotlight.constant", 1.0f);
+		shader->setFloat("Spotlight.linear", 0.09);
+		shader->setFloat("Spotlight.quadratic", 0.032);
+		*/
 
 		//set shininess for all models
 		shader->setFloat("material.shininess", 5.0f);
-
-		//ourModel->Draw(*shader);
 
 		//prepare drawing objects
 		btCollisionObject* obj;
@@ -152,42 +226,34 @@ public:
 		shader->setMat4("model", characterController->GetModelMatrix());
 		characterModel->Draw(*shader);
 
-		//draw cube1
-		model = getRigidBodyModelMatrix(cube1Bt);
-		shader->setMat4("model", model);
-		cube1Model->draw();
-
-		//draw floor
-		model = getRigidBodyModelMatrix(floorBt);
-		shader->setMat4("model", model);
-		floorModel->draw();
-
-		/*
-		for (int i = 0; i < vertexArrays.size(); i++) {
-			obj = dynamicsWorld->getCollisionObjectArray()[i + 1];
-			body = btRigidBody::upcast(obj);
-
-			if (body && body->getMotionState()) {
-				body->getMotionState()->getWorldTransform(trans);
-			}
-			else {
-				trans = obj->getWorldTransform();
-			}
-
-			trans.getOpenGLMatrix(btModelMatrix);
-			model = btScalar2mat4(btModelMatrix);
-
-			shader->setMat4("model", model);
-
-			vertexArrays[i].draw();
-		}
-		*/
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -3.0f));
+		//draw tower
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f));
 		shader->setMat4("model", model);
 		ourModel->Draw(*shader);
 
+		//draw dynamic cube
+		glBindTexture(GL_TEXTURE_2D, tex_container);
+		model = getRigidBodyModelMatrix(bt_dynamicCube);
+		shader->setMat4("model", model);
+		gl_dynamicCube->draw();
 
+		//draw static cube
+		glBindTexture(GL_TEXTURE_2D, tex_pavement);
+		model = getRigidBodyModelMatrix(bt_staticCube);
+		shader->setMat4("model", model);
+		gl_staticCube->draw();
+
+		//draw platform
+		model = getRigidBodyModelMatrix(bt_platform);
+		shader->setMat4("model", model);
+		gl_platform->draw();
+
+		//draw floor
+		model = getRigidBodyModelMatrix(bt_floor);
+		shader->setMat4("model", model);
+		gl_floor->draw();
+
+		
 		if (useDebugCamera)
 			camera->OnUpdate(ts);
 		else
@@ -291,11 +357,18 @@ private:
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
 	//temporary bullet and opengl objects
-	btRigidBody* floorBt;
-	btRigidBody* cube1Bt;
+	btRigidBody* bt_floor;
+	btRigidBody* bt_dynamicCube;
+	btRigidBody* bt_staticCube;
+	btRigidBody* bt_platform;
 
-	TowerDelivery::VertexArray* floorModel;
-	TowerDelivery::VertexArray* cube1Model;
+	TowerDelivery::VertexArray* gl_floor;
+	TowerDelivery::VertexArray* gl_dynamicCube;
+	TowerDelivery::VertexArray* gl_staticCube;
+	TowerDelivery::VertexArray* gl_platform;
+
+	unsigned int tex_container;
+	unsigned int tex_pavement;
 
 };
 

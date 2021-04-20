@@ -5,6 +5,7 @@
 
 namespace TowerDelivery {
 
+	//Class to handle Key/Mouse Inputs in the Window
 	class WindowsInput : public Input {
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) override;

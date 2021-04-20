@@ -3,6 +3,7 @@
 #include "Event.h"
 #include "tdpch.h"
 
+//defines different Key events (Pressed, Released) and sets getter for KeyCode
 namespace TowerDelivery {
 
 	class KeyEvent : public Event {

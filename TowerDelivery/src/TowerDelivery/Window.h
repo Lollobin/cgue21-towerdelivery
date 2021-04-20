@@ -2,7 +2,7 @@
 
 #include "tdpch.h"
 
-#include "TowerDelivery/Core.h"
+#include "TowerDelivery/Core/Core.h"
 #include "TowerDelivery/Events/Event.h"
 
 namespace TowerDelivery {

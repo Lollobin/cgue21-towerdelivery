@@ -1,5 +1,6 @@
 #pragma once
 
+//vertext and Index Buffer Class to handle the binding and unbinding
 namespace TowerDelivery {
 	
 	class VertexBuffer {

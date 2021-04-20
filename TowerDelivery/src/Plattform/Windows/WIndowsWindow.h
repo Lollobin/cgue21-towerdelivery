@@ -5,7 +5,6 @@
 
 #include <GLFW/glfw3.h>
 
-
 namespace TowerDelivery {
 
 	class WindowsWindow : public Window {

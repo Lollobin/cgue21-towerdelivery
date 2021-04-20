@@ -2,6 +2,7 @@
 
 #include "Event.h"
 
+//defines Events that can happen to the Window/Appliaction (Resizing, Closing,..)
 namespace TowerDelivery {
 
 	class TOWERDELIVERY_API WindowResizeEvent : public Event {

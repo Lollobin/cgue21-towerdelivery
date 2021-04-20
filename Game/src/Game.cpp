@@ -22,7 +22,7 @@ public:
 
 		//setup character
 		characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
-		characterModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
+		characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 		//setup cameras
 		playerCamera = new TowerDelivery::PlayerCamera(characterController);
@@ -31,7 +31,7 @@ public:
 
 		//create collision shape for Floor
 		{
-			btCollisionShape* groundShape = new btBoxShape(btVector3(50, 1, 50));
+			btCollisionShape* groundShape = new btBoxShape(btVector3(50.0f, 0.5f, 50.0f));
 
 			collisionShapes.push_back(groundShape);
 
@@ -46,22 +46,22 @@ public:
 
 			groundShape->calculateLocalInertia(mass, localInertia);
 
-			startTransform.setOrigin(btVector3(0, -1, 0));
+			startTransform.setOrigin(btVector3(0.0f, -0.5f, 0.0f));
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-			btRigidBody* body = new btRigidBody(rbInfo);
+			floorBt = new btRigidBody(rbInfo);
 
-			dynamicsWorld->addRigidBody(body);
+			dynamicsWorld->addRigidBody(floorBt);
 		}
 
 		//create model for floor
-		objectModel.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f)));
 
-		//TowerDelivery::VertexArray floor(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f));
-		vertexArrays.push_back(*objectModel);
+		floorModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 1.0f, 100.0f));
 
-		//create collision shape for box 1
+
+
+		//create collision shape for cube 1
 		{
 			btCollisionShape* boxShape = new btBoxShape(btVector3(2.0f, 2.0f, 2.0f));
 
@@ -80,14 +80,14 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-			btRigidBody* body = new btRigidBody(rbInfo);
+			cube1Bt = new btRigidBody(rbInfo);
 
-			dynamicsWorld->addRigidBody(body);
+			dynamicsWorld->addRigidBody(cube1Bt);
 		}
 
-		TowerDelivery::VertexArray cube1(TowerDelivery::VertexArray::createCubeVertexArray(4.0f, 4.0f, 4.0f));
-		//ObjectModel.reset(new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(4.0f, 4.0f, 4.0f)));
-		//vertexArrays.push_back(cube1);
+		cube1Model = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(4.0f, 4.0f, 4.0f));
+
+
 
 		//bind textures
 		std::string path("assets/textures/container2.png");
@@ -149,17 +149,20 @@ public:
 		glm::mat4 model = glm::mat4(1.0f);
 
 		//draw character
-		obj = dynamicsWorld->getCollisionObjectArray()[0];
-		body = btRigidBody::upcast(obj);
-		body->getMotionState()->getWorldTransform(trans);
-		trans.getOpenGLMatrix(btModelMatrix);
-		model = btScalar2mat4(btModelMatrix);
+		shader->setMat4("model", characterController->GetModelMatrix());
+		characterModel->Draw(*shader);
 
-		model = glm::rotate(model, glm::radians(characterController->GetRotation()), glm::vec3(0.0f, -1.0f, 0.0f));
-
+		//draw cube1
+		model = getRigidBodyModelMatrix(cube1Bt);
 		shader->setMat4("model", model);
-		characterModel->draw();
+		cube1Model->draw();
 
+		//draw floor
+		model = getRigidBodyModelMatrix(floorBt);
+		shader->setMat4("model", model);
+		floorModel->draw();
+
+		/*
 		for (int i = 0; i < vertexArrays.size(); i++) {
 			obj = dynamicsWorld->getCollisionObjectArray()[i + 1];
 			body = btRigidBody::upcast(obj);
@@ -178,6 +181,7 @@ public:
 
 			vertexArrays[i].draw();
 		}
+		*/
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -3.0f));
 		shader->setMat4("model", model);
@@ -196,20 +200,36 @@ public:
 		dispatcher.Dispatch<TowerDelivery::KeyPressedEvent>(TD_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
 	}
 
-	glm::mat4 btScalar2mat4(btScalar* matrix) {
-		return glm::mat4(
-			matrix[0], matrix[1], matrix[2], matrix[3],
-			matrix[4], matrix[5], matrix[6], matrix[7],
-			matrix[8], matrix[9], matrix[10], matrix[11],
-			matrix[12], matrix[13], matrix[14], matrix[15]);
-	}
-
 	bool OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
 		if (event.GetKeyCode() == TD_KEY_F2) {
 			useDebugCamera = !useDebugCamera;
 		}
 		return true;
 	}
+
+	glm::mat4 btScalar2mat4(btScalar* matrix) {
+		return glm::mat4(
+			matrix[0], matrix[1], matrix[2], matrix[3],
+			matrix[4], matrix[5], matrix[6], matrix[7],
+			matrix[8], matrix[9], matrix[10], matrix[11],
+			matrix[12], matrix[13], matrix[14], matrix[15]);
+	};
+
+	glm::mat4 getRigidBodyModelMatrix(btRigidBody* body) {
+
+		btTransform trans;
+		btScalar btModelMatrix[16];
+		glm::mat4 model = glm::mat4(1.0f);
+		
+		body->getMotionState()->getWorldTransform(trans);
+
+
+		trans.getOpenGLMatrix(btModelMatrix);
+		model = btScalar2mat4(btModelMatrix);
+
+		return model;
+	}
+
 
 	unsigned int loadTexture(char const* path)
 	{
@@ -259,7 +279,7 @@ private:
 
 	//character
 	TowerDelivery::CharacterController* characterController;
-	TowerDelivery::VertexArray* characterModel;
+	TowerDelivery::Model* characterModel;
 
 	//opengl models
 	std::shared_ptr<TowerDelivery::VertexArray> objectModel;
@@ -269,6 +289,14 @@ private:
 	//bullet
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
+
+	//temporary bullet and opengl objects
+	btRigidBody* floorBt;
+	btRigidBody* cube1Bt;
+
+	TowerDelivery::VertexArray* floorModel;
+	TowerDelivery::VertexArray* cube1Model;
+
 };
 
 class Game : public TowerDelivery::Application {

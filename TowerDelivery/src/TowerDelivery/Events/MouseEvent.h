@@ -2,7 +2,7 @@
 
 #include "Event.h"
 
-
+//defines different Mouse Events (Move, Scroll, Press, Release)
 namespace TowerDelivery {
 
 	class TOWERDELIVERY_API MouseMovedEvent : public Event {

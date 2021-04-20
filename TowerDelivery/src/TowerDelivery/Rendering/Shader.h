@@ -2,6 +2,7 @@
 #include <string>
 #include "glm/glm.hpp"
 
+//Shader Class
 namespace TowerDelivery {
 
 	class Shader {

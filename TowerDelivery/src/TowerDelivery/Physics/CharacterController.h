@@ -6,6 +6,8 @@
 #include "TowerDelivery/Core/Timestep.h"
 #include "glm/glm.hpp"
 
+//Header for a bullet Character Controller; used so that our player character can move throught the world and has Physics applied to them
+//enables walking, jumping and rotating of our Character
 namespace TowerDelivery {
 	class CharacterController
 	{

@@ -1,4 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
 #include <TowerDelivery.h>
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
@@ -27,7 +26,7 @@ public:
 
 		//setup cameras
 		playerCamera = new TowerDelivery::PlayerCamera(characterController);
-		camera = Camera(glm::vec3(0.0f, 1.0f, 4.0f));
+		camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
 		projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
 
 		//create collision shape for Floor
@@ -114,8 +113,8 @@ public:
 		shader->Bind();
 		shader->setMat4("projection", projectionMatrix);
 		if (useDebugCamera) {
-			shader->setVec3("viewPos", camera.Position);
-			shader->setMat4("view", camera.GetViewMatrix());
+			shader->setVec3("viewPos", camera->Position);
+			shader->setMat4("view", camera->GetViewMatrix());
 		}
 		else {
 			shader->setVec3("viewPos", playerCamera->GetPosition());
@@ -190,7 +189,7 @@ public:
 
 
 		if (useDebugCamera)
-			camera.OnUpdate(ts);
+			camera->OnUpdate(ts);
 		else
 			playerCamera->OnUpdate(ts);
 	}
@@ -272,7 +271,7 @@ public:
 
 private:
 	//rendering
-	Camera camera;
+	TowerDelivery::Camera* camera;
 	TowerDelivery::PlayerCamera* playerCamera;
 	bool useDebugCamera;
 	glm::mat4 projectionMatrix;

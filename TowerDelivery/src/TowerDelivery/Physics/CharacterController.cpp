@@ -8,12 +8,16 @@
 #include "TowerDelivery/Log.h"
 #include "glm/gtc/matrix_transform.hpp"
 
+//Character Controller Class, implements CharacterController.h
 namespace TowerDelivery {
+
+	//Constructor, that takes radius, height, mass, spawn Position and which Wolrd we are in and sets speed, deceleration, jump impuls, rotation and mouse Sensivity to fixed values
 	CharacterController::CharacterController(float radius, float height, float mass, btVector3 spawnPos, btDiscreteDynamicsWorld* dynamicsWorld)
 		:m_pDynamicsWorld(dynamicsWorld), m_maxSpeed(4.0f), m_deceleration(10.0f), m_manualVelocity(0.0f, 0.0f, 0.0f),
 		m_jumpImpulse(500.0f), m_jumpRechargeTime(1.0f), m_jumpRechargeTimer(0.0f), m_onGround(true), m_lookDir(glm::vec2(0.0f, 0.0f)),
 		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f)
 	{
+
 		//m_pCollisionShape = new btCapsuleShape(radius, height);
 		m_pCollisionShape = new btBoxShape(btVector3(1.17f*0.5f,1.23f*0.5f,1.8f*0.5f));
 
@@ -37,6 +41,7 @@ namespace TowerDelivery {
 		m_pDynamicsWorld->addRigidBody(m_pRigidBody);
 	}
 
+	//deconstructor for deleting the Character Controller
 	CharacterController::~CharacterController() {
 		m_pDynamicsWorld->removeRigidBody(m_pRigidBody);
 
@@ -44,6 +49,7 @@ namespace TowerDelivery {
 		delete m_pRigidBody;
 	}
 
+	//sets Keybinds for walking and jumping lets the Player control which way the character faces by mouse position
 	void CharacterController::OnUpdate(Timestep ts) {
 		//check arrow keys for walking
 		if (Input::IsKeyPressed(TD_KEY_W))
@@ -80,8 +86,6 @@ namespace TowerDelivery {
 		UpdatePosition(ts);
 		UpdateVelocity(ts);
 		UpdateLookDir();
-
-		//TD_TRACE("Looking in Direction: {0}, {1}", m_lookDir[0], m_lookDir[1]);
 
 		// Update jump timer
 		if (m_jumpRechargeTimer < m_jumpRechargeTime)

@@ -7,16 +7,16 @@
 
 namespace TowerDelivery {
 
+	//Consturctor reads vertex and fragment shader from path, 
 	Shader::Shader(const char* vertexPath, const char* fragmentPath){
-		// Create an empty vertex shader handle
+		
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-		// 1. retrieve the vertex/fragment source code from filePath
 		std::string vertexCode;
 		std::string fragmentCode;
 		std::ifstream vShaderFile;
 		std::ifstream fShaderFile;
-		// ensure ifstream objects can throw exceptions:
+		
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
@@ -41,7 +41,6 @@ namespace TowerDelivery {
 		}
 
 		// Send the vertex shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
 		const GLchar* source = vertexCode.c_str();
 		glShaderSource(vertexShader, 1, &source, 0);
 
@@ -71,7 +70,6 @@ namespace TowerDelivery {
 		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 		// Send the fragment shader source code to GL
-		// Note that std::string's .c_str is NULL character terminated.
 		source = fragmentCode.c_str();
 		glShaderSource(fragmentShader, 1, &source, 0);
 
@@ -88,19 +86,15 @@ namespace TowerDelivery {
 			std::vector<GLchar> infoLog(maxLength);
 			glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
 
-			// We don't need the shader anymore.
+
 			glDeleteShader(fragmentShader);
-			// Either of them. Don't leak shaders.
-			glDeleteShader(vertexShader);
 
 			TD_CORE_ERROR("{0}", infoLog.data());
 			TD_CORE_ASSERT(false, "Fragment Shader Compilation failed");
 			return;
 		}
 
-		// Vertex and fragment shaders are successfully compiled.
-		// Now time to link them together into a program.
-		// Get a program object.
+		
 		m_RendererID = glCreateProgram();
 		GLuint program = m_RendererID;
 

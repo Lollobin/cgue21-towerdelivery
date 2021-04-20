@@ -1,4 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
 #include <TowerDelivery.h>
 #include <bullet/btBulletCollisionCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>

@@ -4,8 +4,7 @@ workspace "TowerDelivery"
 
 	configurations{
 	"Debug",
-	"Release",
-	"Dist"
+	"Release"
 	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -15,6 +14,10 @@ IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
 IncludeDir["glm"] = "TowerDelivery/vendor/glm"
 IncludeDir["stb_image"] = "TowerDelivery/vendor/stb_image"
+IncludeDir["spdlog"] = "TowerDelivery/vendor/spdlog/include"
+IncludeDir["bullet"] = "TowerDelivery/vendor/bullet"
+IncludeDir["assimp"] = "TowerDelivery/vendor/assimp/include"
+
 
 group "Dependencies"
 	include "TowerDelivery/vendor/GLFW"
@@ -51,13 +54,13 @@ project "TowerDelivery"
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/vendor/bullet",
-		"%{prj.name}/vendor/assimp/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.bullet}",
+		"%{IncludeDir.assimp}"
 	}
 
 	libdirs {
@@ -101,16 +104,6 @@ project "TowerDelivery"
 			"LinearMath_vs2010_x64_release.lib"
 		}
 
-	filter "configurations:Dist"
-		defines "TD_DIST"
-		runtime "Release"
-		optimize "on"
-
-		links {
-			"BulletCollision_vs2010_x64_release.lib",
-			"BulletDynamics_vs2010_x64_release.lib",
-			"LinearMath_vs2010_x64_release.lib"
-		}
 
 project	"Game"
 	location "Game"
@@ -130,11 +123,11 @@ project	"Game"
 	includedirs {
 		"TowerDelivery/src",
 		"TowerDelivery/vendor",
-		"TowerDelivery/vendor/bullet",
-		"TowerDelivery/vendor/spdlog/include",
-		"TowerDelivery/vendor/assimp/include",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.bullet}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.assimp}",
 		"%{IncludeDir.Glad}"
 	}
 
@@ -156,10 +149,5 @@ project	"Game"
 
 	filter "configurations:Release"
 		defines "TD_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "TD_DIST"
 		runtime "Release"
 		optimize "on"

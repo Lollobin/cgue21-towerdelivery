@@ -45,12 +45,14 @@ namespace TowerDelivery {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Create an OpenGL debug context 
 		glfwWindowHint(GLFW_SAMPLES, 4);
+		
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
 		m_Context = new RenderingContext(m_Window);
 		m_Context->Init();
-		
+
+		glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 

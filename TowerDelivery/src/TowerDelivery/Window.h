@@ -14,7 +14,7 @@ namespace TowerDelivery {
 
 		WindowProps(const std::string& title = "TowerDelivery Engine",
 					unsigned int width = 1280,
-					unsigned int height = 720)
+					unsigned int height = 768)
 					: Title(title), Width(width), Height(height) {
 		}
 	};

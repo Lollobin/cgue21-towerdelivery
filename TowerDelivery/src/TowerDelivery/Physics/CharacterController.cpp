@@ -19,7 +19,7 @@ namespace TowerDelivery {
 	{
 
 		//m_pCollisionShape = new btCapsuleShape(radius, height);
-		m_pCollisionShape = new btBoxShape(btVector3(1.17f*0.5f,1.23f*0.5f,1.8f*0.5f));
+		m_pCollisionShape = new btBoxShape(btVector3(1.17f/2.0f,1.8f,1.23f/2.0f));
 
 		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 
@@ -139,7 +139,7 @@ namespace TowerDelivery {
 
 		m_pMotionState->getWorldTransform(trans);
 		trans.getOpenGLMatrix(btModelMatrix);		
-		
+
 		model = btScalar2mat4(btModelMatrix);
 
 		model = glm::rotate(model, glm::radians(m_rotation), glm::vec3(0.0f, -1.0f, 0.0f));

@@ -225,7 +225,7 @@ public:
 
 		shader->setVec3("pointLights[1].position", -6.5f, 2.0f, -10.0f);
 		shader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[1].diffuse", 1.0f, 1.0f, 1.0f);
+		shader->setVec3("pointLights[1].diffuse", 10.0f, 10.0f, 10.0f);
 		shader->setVec3("pointLights[1].specular", 2.0f, 2.0f, 2.0f);
 		shader->setFloat("pointLights[1].constant", 1.0f);
 		shader->setFloat("pointLights[1].linear", 0.09);
@@ -295,7 +295,7 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, colorBuffer);
 		hdrShader->setInt("hdr", true);
-		hdrShader->setFloat("exposure", 0.1f);
+		hdrShader->setFloat("exposure", 1.0f);
 		renderQuad();
 		
 		if (useDebugCamera)

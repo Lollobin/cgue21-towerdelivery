@@ -11,6 +11,8 @@
 #include "TowerDelivery/KeyCodes.h"
 #include "TowerDelivery/MouseButtonCodes.h"
 
+#include "TowerDelivery/GameObject.h"
+
 // ---Events------------------------
 #include "TowerDelivery/Events/Event.h"
 #include "TowerDelivery/Events/ApplicationEvent.h"

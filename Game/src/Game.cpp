@@ -16,11 +16,12 @@ public:
 		dynamicsWorld.reset(new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_configuration));
 		dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
-		//setup rendering context
+		//setup shaders
 		glEnable(GL_DEPTH_TEST);
-		shader.reset(new TowerDelivery::Shader("assets/shader/vs_main.glsl", "assets/shader/fs_main.glsl"));
-		shaderHDR.reset(new TowerDelivery::Shader("assets/shader/vs_hdr.glsl", "assets/shader/fs_hdr.glsl"));
-		shaderLight.reset(new TowerDelivery::Shader("assets/shader/vs_main.glsl", "assets/shader/fs_light.glsl"));
+		shader.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/main.frag"));
+		shaderLight.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/light_source.frag"));
+		shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
+		shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 
 		//setup character
 		characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -31,7 +32,7 @@ public:
 		camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
 		projectionMatrix = glm::perspective(glm::radians(45.0f), window_width / window_height, 0.1f, 100.0f);
 
-		//setup model for lighting
+		//setup model for point lights
 		lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
 
 		//load model of tower
@@ -39,9 +40,7 @@ public:
 		ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
 
 		//load textures
-		//tex_container = loadTexture("assets/textures/container_diffuse.png");
-		tex_pavement = loadTexture("assets/textures/pavement_diffuse.png");
-
+		tex_diff_pavement = loadTexture("assets/textures/pavement_diffuse.png");
 		tex_diff_container = loadTexture("assets/textures/container_diffuse.png");
 		tex_spec_container = loadTexture("assets/textures/container_specular.png");
 
@@ -71,7 +70,7 @@ public:
 			dynamicsWorld->addRigidBody(bt_floor);
 
 			TowerDelivery::VertexArray* gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
-			TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, bt_floor, &tex_pavement);
+			TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, bt_floor, &tex_diff_pavement);
 			m_gameObjects.push_back(m_floor);
 		}
 
@@ -99,7 +98,7 @@ public:
 			dynamicsWorld->addRigidBody(bt_staticCube);
 
 			TowerDelivery::VertexArray* gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
-			TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, bt_staticCube, &tex_pavement);
+			TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, bt_staticCube, &tex_diff_pavement);
 			m_gameObjects.push_back(m_staticCube);
 		}
 
@@ -155,37 +154,71 @@ public:
 			dynamicsWorld->addRigidBody(bt_platform);
 
 			TowerDelivery::VertexArray* gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
-			TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, bt_platform, &tex_pavement);
+			TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, bt_platform, &tex_diff_pavement);
 			m_gameObjects.push_back(m_platform);
 		}
 
-		//setup floating point framebuffer for hdr shader
+		// configure (floating point) framebuffers
+		// ---------------------------------------
 		glGenFramebuffers(1, &hdrFBO);
-		// create floating point color buffer
-		glGenTextures(1, &colorBuffer);
-		glBindTexture(GL_TEXTURE_2D, colorBuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// create depth buffer (renderbuffer)
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
+		// create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
+		glGenTextures(2, colorBuffers);
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// attach texture to framebuffer
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+		}
+
+		// create depth buffer (renderbuffer)
 		glGenRenderbuffers(1, &rboDepth);
 		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)window_width, (GLsizei)window_height);
-		// attach buffers
-		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+		// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+		unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glDrawBuffers(2, attachments);
+
+		// finally check if framebuffer is complete
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete!" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// ping-pong-framebuffer for blurring
+		glGenFramebuffers(2, pingpongFBO);
+		glGenTextures(2, pingpongColorbuffers);
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+			glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+			// also check if framebuffers are complete (no need for depth buffer)
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				std::cout << "Framebuffer not complete!" << std::endl;
+		}
 
 		//shader configuration
 		shader->Bind();
 		shader->setInt("material.diffuse", 0);
 		shader->setInt("material.specular", 1);
-		shaderHDR->Bind();
-		shaderHDR->setInt("hdrBuffer", 0);
+		shaderBlur->Bind();
+		shaderBlur->setInt("image", 0);
+		shaderFinal->Bind();
+		shaderFinal->setInt("scene", 0);
+		shaderFinal->setInt("bloomBlur", 1);
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -198,6 +231,7 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// 1. render scene into floating point framebuffer
+		// -----------------------------------------------
 		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -214,6 +248,8 @@ public:
 
 			shaderLight->Bind();
 			shaderLight->setMat4("view", camera->GetViewMatrix());
+
+			camera->OnUpdate(ts);
 		}
 		else {
 			shader->Bind();
@@ -222,6 +258,8 @@ public:
 
 			shaderLight->Bind();
 			shaderLight->setMat4("view", playerCamera->GetViewMatrix());
+
+			playerCamera->OnUpdate(ts);
 		}
 
 		shader->Bind();
@@ -244,7 +282,7 @@ public:
 
 		shader->setVec3("pointLights[1].position", -6.5f, 2.0f, -10.0f);
 		shader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[1].diffuse", 10.0f, 10.0f, 10.0f);
+		shader->setVec3("pointLights[1].diffuse", 5.0f, 5.0f, 5.0f);
 		shader->setVec3("pointLights[1].specular", 2.0f, 2.0f, 2.0f);
 		shader->setFloat("pointLights[1].constant", 1.0f);
 		shader->setFloat("pointLights[1].linear", 0.09f);
@@ -290,26 +328,44 @@ public:
 		shaderLight->Bind();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(-6.5f, 2.0f, -10.0f));
-		model = glm::scale(model, glm::vec3(0.25f));
+		model = glm::scale(model, glm::vec3(0.5f));
 		shaderLight->setMat4("model", model);
 		shaderLight->setVec3("lightColor", glm::vec3(10.0f, 10.0f, 10.0f));
 		lightModel->draw();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// 2. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shaderHDR->Bind();
+		
+		// 2. blur bright fragments with two-pass Gaussian Blur
+		// --------------------------------------------------
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, colorBuffer);
-		shaderHDR->setInt("hdr", true);
-		shaderHDR->setFloat("exposure", 1.0f);
-		renderQuad();
+		bool horizontal = true, first_iteration = true;
+		unsigned int amount = 10;
+		shaderBlur->Bind();
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+			shaderBlur->setBool("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+			renderQuad();
+			horizontal = !horizontal;
+			if (first_iteration)
+				first_iteration = false;
+		}
 
-		if (useDebugCamera)
-			camera->OnUpdate(ts);
-		else
-			playerCamera->OnUpdate(ts);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+		// --------------------------------------------------------------------------------------------------------------------------
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shaderFinal->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[horizontal]);
+		shaderFinal->setBool("bloom", bloom);
+		shaderFinal->setFloat("exposure", exposure);
+		renderQuad();
 	}
 
 	void OnEvent(TowerDelivery::Event& event) override {
@@ -393,7 +449,8 @@ public:
 private:
 	//settings
 	bool useDebugCamera;
-	bool useHDR;
+	bool bloom = true;
+	float exposure = 1.0f;
 	float window_width = 1280.0f;
 	float window_height = 768.0f;
 
@@ -404,19 +461,22 @@ private:
 	glm::mat4 projectionMatrix;
 
 	std::shared_ptr<TowerDelivery::Shader> shader;
-	std::shared_ptr<TowerDelivery::Shader> shaderHDR;
 	std::shared_ptr<TowerDelivery::Shader> shaderLight;
+	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
+	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
 
 	unsigned int hdrFBO;
-	unsigned int colorBuffer;
+	unsigned int colorBuffers[2];
 	unsigned int rboDepth;
 	unsigned int quadVAO = 0;
 	unsigned int quadVBO;
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongColorbuffers[2];
 
 	//character
 	TowerDelivery::CharacterController* characterController;
 	TowerDelivery::Model* characterModel;
-	
+
 	//opengl models
 	TowerDelivery::Model* ourModel;
 	TowerDelivery::VertexArray* lightModel;
@@ -428,7 +488,7 @@ private:
 	//textures
 	unsigned int tex_diff_container;
 	unsigned int tex_spec_container;
-	unsigned int tex_pavement;
+	unsigned int tex_diff_pavement;
 
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;

@@ -16,9 +16,12 @@ public:
 		dynamicsWorld.reset(new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_configuration));
 		dynamicsWorld->setGravity(btVector3(0, -10, 0));
 
-		//setup rendering context
-		shader.reset(new TowerDelivery::Shader("assets/shader/vertex.glsl", "assets/shader/fragment.glsl"));
+		//setup shaders
 		glEnable(GL_DEPTH_TEST);
+		shader.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/main.frag"));
+		shaderLight.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/light_source.frag"));
+		shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
+		shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 
 		//setup character
 		characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -27,14 +30,21 @@ public:
 		//setup cameras
 		playerCamera = new TowerDelivery::PlayerCamera(characterController);
 		camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
-		projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 768.0f, 0.1f, 100.0f);
+		projectionMatrix = glm::perspective(glm::radians(45.0f), window_width / window_height, 0.1f, 100.0f);
+
+		//setup model for point lights
+		lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
 
 		//load model of tower
 		stbi_set_flip_vertically_on_load(true);
 		ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
 
+		//load textures
+		tex_diff_pavement = loadTexture("assets/textures/pavement_diffuse.png");
+		tex_diff_container = loadTexture("assets/textures/container_diffuse.png");
+		tex_spec_container = loadTexture("assets/textures/container_specular.png");
 
-		//create collision shape for Floor
+		//create floor
 		{
 			btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
 
@@ -55,18 +65,16 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-			bt_floor = new btRigidBody(rbInfo);
+			btRigidBody* bt_floor = new btRigidBody(rbInfo);
 
 			dynamicsWorld->addRigidBody(bt_floor);
+
+			TowerDelivery::VertexArray* gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
+			TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, bt_floor, &tex_diff_pavement);
+			m_gameObjects.push_back(m_floor);
 		}
 
-		//create model for floor
-
-		gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
-
-
-
-		//create collision shape for static cube
+		//create static cube
 		{
 			btCollisionShape* boxShape = new btBoxShape(btVector3(2.5f, 2.5f, 2.5f));
 
@@ -85,21 +93,23 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-			bt_staticCube = new btRigidBody(rbInfo);
+			btRigidBody* bt_staticCube = new btRigidBody(rbInfo);
 
 			dynamicsWorld->addRigidBody(bt_staticCube);
+
+			TowerDelivery::VertexArray* gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
+			TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, bt_staticCube, &tex_diff_pavement);
+			m_gameObjects.push_back(m_staticCube);
 		}
 
-		gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
-
-		//create collision shape for dynamic cube
+		//create dynamic cube
 		{
 			btCollisionShape* boxShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
 
 			btTransform startTransform;
 			startTransform.setIdentity();
 
-			btScalar mass(50.f);
+			btScalar mass(100.f);
 
 			bool isDynamic = true;
 
@@ -111,14 +121,16 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-			bt_dynamicCube = new btRigidBody(rbInfo);
+			btRigidBody* bt_dynamicCube = new btRigidBody(rbInfo);
 
 			dynamicsWorld->addRigidBody(bt_dynamicCube);
+
+			TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(2.0f, 2.0f, 2.0f));
+			TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, bt_dynamicCube, &tex_diff_container, &tex_spec_container);
+			m_gameObjects.push_back(m_dynamicCube);
 		}
 
-		gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(2.0f, 2.0f, 2.0f));
-
-		//create collision shape for platform
+		//create platform
 		{
 			btCollisionShape* boxShape = new btBoxShape(btVector3(2.5f, 0.1f, 2.5f));
 
@@ -137,21 +149,76 @@ public:
 
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-			bt_platform = new btRigidBody(rbInfo);
+			btRigidBody* bt_platform = new btRigidBody(rbInfo);
 
 			dynamicsWorld->addRigidBody(bt_platform);
+
+			TowerDelivery::VertexArray* gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
+			TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, bt_platform, &tex_diff_pavement);
+			m_gameObjects.push_back(m_platform);
 		}
 
-		gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
+		// configure (floating point) framebuffers
+		// ---------------------------------------
+		glGenFramebuffers(1, &hdrFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 
-		//setup textures
+		// create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
+		glGenTextures(2, colorBuffers);
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// attach texture to framebuffer
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+		}
+
+		// create depth buffer (renderbuffer)
+		glGenRenderbuffers(1, &rboDepth);
+		glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)window_width, (GLsizei)window_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+		// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+		unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glDrawBuffers(2, attachments);
+
+		// finally check if framebuffer is complete
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// ping-pong-framebuffer for blurring
+		glGenFramebuffers(2, pingpongFBO);
+		glGenTextures(2, pingpongColorbuffers);
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+			glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+			// also check if framebuffers are complete (no need for depth buffer)
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+				std::cout << "Framebuffer not complete!" << std::endl;
+		}
+
+		//shader configuration
+		shader->Bind();
 		shader->setInt("material.diffuse", 0);
-		glActiveTexture(GL_TEXTURE0);
-		
-		//load textures
-		tex_container = loadTexture("assets/textures/container_diffuse.png");
-		tex_pavement = loadTexture("assets/textures/pavement_diffuse.png");
-
+		shader->setInt("material.specular", 1);
+		shaderBlur->Bind();
+		shaderBlur->setInt("image", 0);
+		shaderFinal->Bind();
+		shaderFinal->setInt("scene", 0);
+		shaderFinal->setInt("bloomBlur", 1);
 	}
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
@@ -160,50 +227,73 @@ public:
 		characterController->OnUpdate(ts);
 
 		//prepare for rendering
-		glClearColor(0.3f, 0.3f, 0.3f, 1);
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// 1. render scene into floating point framebuffer
+		// -----------------------------------------------
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		shader->Bind();
 		shader->setMat4("projection", projectionMatrix);
+
+		shaderLight->Bind();
+		shaderLight->setMat4("projection", projectionMatrix);
+
 		if (useDebugCamera) {
+			shader->Bind();
 			shader->setVec3("viewPos", camera->Position);
 			shader->setMat4("view", camera->GetViewMatrix());
+
+			shaderLight->Bind();
+			shaderLight->setMat4("view", camera->GetViewMatrix());
+
+			camera->OnUpdate(ts);
 		}
 		else {
+			shader->Bind();
 			shader->setVec3("viewPos", playerCamera->GetPosition());
 			shader->setMat4("view", playerCamera->GetViewMatrix());
+
+			shaderLight->Bind();
+			shaderLight->setMat4("view", playerCamera->GetViewMatrix());
+
+			playerCamera->OnUpdate(ts);
 		}
+
+		shader->Bind();
 
 		//set directional lighting
 		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
 		shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
+		shader->setVec3("dirLight.diffuse", 0.1f, 0.1f, 0.1f);
 		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
 		//set point lights
-		
+
 		shader->setVec3("pointLights[0].position", 0.0f, 3.0f, 0.0f);
 		shader->setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
 		shader->setVec3("pointLights[0].diffuse", 1.0f, 1.0f, 1.0f);
 		shader->setVec3("pointLights[0].specular", 2.0f, 2.0f, 2.0f);
 		shader->setFloat("pointLights[0].constant", 1.0f);
-		shader->setFloat("pointLights[0].linear", 0.09);
-		shader->setFloat("pointLights[0].quadratic", 0.032);
-		
+		shader->setFloat("pointLights[0].linear", 0.09f);
+		shader->setFloat("pointLights[0].quadratic", 0.032f);
 
-		shader->setVec3("pointLights[1].position", 5.5f, 9.0f, -17.5f);
+		shader->setVec3("pointLights[1].position", -6.5f, 2.0f, -10.0f);
 		shader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[1].diffuse", 0.9f, 0.9f, 0.9f);
+		shader->setVec3("pointLights[1].diffuse", 5.0f, 5.0f, 5.0f);
 		shader->setVec3("pointLights[1].specular", 2.0f, 2.0f, 2.0f);
 		shader->setFloat("pointLights[1].constant", 1.0f);
-		shader->setFloat("pointLights[1].linear", 0.09);
-		shader->setFloat("pointLights[1].quadratic", 0.032);
+		shader->setFloat("pointLights[1].linear", 0.09f);
+		shader->setFloat("pointLights[1].quadratic", 0.032f);
 
 		/*
 		//set spotlight
 
 		shader->setVec3("Spotlight.position", 0.0f, 3.0f, 0.0f);
 		shader->setVec3("Spotlight.direction", 0.0f, -1.0f, 0.0f);
-		
+
 		shader->setFloat("Spotlight.cutOff", 30.0f);
 		shader->setFloat("Spotlight.outerCutOff", 50.0f);
 
@@ -213,13 +303,9 @@ public:
 		*/
 
 		//set shininess for all models
-		shader->setFloat("material.shininess", 5.0f);
+		shader->setFloat("material.shininess", 1.0f);
 
 		//prepare drawing objects
-		btCollisionObject* obj;
-		btRigidBody* body;
-		btTransform trans;
-		btScalar btModelMatrix[16];
 		glm::mat4 model = glm::mat4(1.0f);
 
 		//draw character
@@ -231,33 +317,55 @@ public:
 		shader->setMat4("model", model);
 		ourModel->Draw(*shader);
 
-		//draw dynamic cube
-		glBindTexture(GL_TEXTURE_2D, tex_container);
-		model = getRigidBodyModelMatrix(bt_dynamicCube);
-		shader->setMat4("model", model);
-		gl_dynamicCube->draw();
+		//draw game objects
+		for each (TowerDelivery::GameObject * gameObject in m_gameObjects)
+		{
+			gameObject->OnUpdate();
+			gameObject->Draw(shader.get());
+		}
 
-		//draw static cube
-		glBindTexture(GL_TEXTURE_2D, tex_pavement);
-		model = getRigidBodyModelMatrix(bt_staticCube);
-		shader->setMat4("model", model);
-		gl_staticCube->draw();
+		//draw point light as cube
+		shaderLight->Bind();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-6.5f, 2.0f, -10.0f));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shaderLight->setMat4("model", model);
+		shaderLight->setVec3("lightColor", glm::vec3(10.0f, 10.0f, 10.0f));
+		lightModel->draw();
 
-		//draw platform
-		model = getRigidBodyModelMatrix(bt_platform);
-		shader->setMat4("model", model);
-		gl_platform->draw();
-
-		//draw floor
-		model = getRigidBodyModelMatrix(bt_floor);
-		shader->setMat4("model", model);
-		gl_floor->draw();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		
-		if (useDebugCamera)
-			camera->OnUpdate(ts);
-		else
-			playerCamera->OnUpdate(ts);
+		// 2. blur bright fragments with two-pass Gaussian Blur
+		// --------------------------------------------------
+		glActiveTexture(GL_TEXTURE0);
+		bool horizontal = true, first_iteration = true;
+		unsigned int amount = 10;
+		shaderBlur->Bind();
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+			shaderBlur->setBool("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+			renderQuad();
+			horizontal = !horizontal;
+			if (first_iteration)
+				first_iteration = false;
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+		// --------------------------------------------------------------------------------------------------------------------------
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shaderFinal->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[horizontal]);
+		shaderFinal->setBool("bloom", bloom);
+		shaderFinal->setFloat("exposure", exposure);
+		renderQuad();
 	}
 
 	void OnEvent(TowerDelivery::Event& event) override {
@@ -273,29 +381,32 @@ public:
 		return true;
 	}
 
-	glm::mat4 btScalar2mat4(btScalar* matrix) {
-		return glm::mat4(
-			matrix[0], matrix[1], matrix[2], matrix[3],
-			matrix[4], matrix[5], matrix[6], matrix[7],
-			matrix[8], matrix[9], matrix[10], matrix[11],
-			matrix[12], matrix[13], matrix[14], matrix[15]);
-	};
-
-	glm::mat4 getRigidBodyModelMatrix(btRigidBody* body) {
-
-		btTransform trans;
-		btScalar btModelMatrix[16];
-		glm::mat4 model = glm::mat4(1.0f);
-		
-		body->getMotionState()->getWorldTransform(trans);
-
-
-		trans.getOpenGLMatrix(btModelMatrix);
-		model = btScalar2mat4(btModelMatrix);
-
-		return model;
+	void renderQuad()
+	{
+		if (quadVAO == 0)
+		{
+			float quadVertices[] = {
+				// positions        // texture Coords
+				-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+				 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+				 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			};
+			// setup plane VAO
+			glGenVertexArrays(1, &quadVAO);
+			glGenBuffers(1, &quadVBO);
+			glBindVertexArray(quadVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		}
+		glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindVertexArray(0);
 	}
-
 
 	unsigned int loadTexture(char const* path)
 	{
@@ -336,40 +447,51 @@ public:
 	}
 
 private:
+	//settings
+	bool useDebugCamera;
+	bool bloom = true;
+	float exposure = 1.0f;
+	float window_width = 1280.0f;
+	float window_height = 768.0f;
+
 	//rendering
 	TowerDelivery::Camera* camera;
 	TowerDelivery::PlayerCamera* playerCamera;
-	bool useDebugCamera;
+
 	glm::mat4 projectionMatrix;
+
 	std::shared_ptr<TowerDelivery::Shader> shader;
+	std::shared_ptr<TowerDelivery::Shader> shaderLight;
+	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
+	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
+
+	unsigned int hdrFBO;
+	unsigned int colorBuffers[2];
+	unsigned int rboDepth;
+	unsigned int quadVAO = 0;
+	unsigned int quadVBO;
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongColorbuffers[2];
 
 	//character
 	TowerDelivery::CharacterController* characterController;
 	TowerDelivery::Model* characterModel;
 
 	//opengl models
-	std::shared_ptr<TowerDelivery::VertexArray> objectModel;
-	vector<TowerDelivery::VertexArray> vertexArrays;
 	TowerDelivery::Model* ourModel;
+	TowerDelivery::VertexArray* lightModel;
 
 	//bullet
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
-	//temporary bullet and opengl objects
-	btRigidBody* bt_floor;
-	btRigidBody* bt_dynamicCube;
-	btRigidBody* bt_staticCube;
-	btRigidBody* bt_platform;
+	//textures
+	unsigned int tex_diff_container;
+	unsigned int tex_spec_container;
+	unsigned int tex_diff_pavement;
 
-	TowerDelivery::VertexArray* gl_floor;
-	TowerDelivery::VertexArray* gl_dynamicCube;
-	TowerDelivery::VertexArray* gl_staticCube;
-	TowerDelivery::VertexArray* gl_platform;
-
-	unsigned int tex_container;
-	unsigned int tex_pavement;
-
+	//game objects
+	std::vector<TowerDelivery::GameObject*> m_gameObjects;
 };
 
 class Game : public TowerDelivery::Application {

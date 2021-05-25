@@ -1,13 +1,30 @@
 #include <TowerDelivery.h>
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
 
 class ExampleLayer : public TowerDelivery::Layer {
 public:
-	ExampleLayer()
-		:Layer("Example"),
-		useDebugCamera(false)
+	ExampleLayer(TowerDelivery::Application* game)
+		:Layer("Example"), useDebugCamera(false), m_Game(game)
 	{
+		//load config
+		INIReader reader("assets/settings.ini");
+		window_width = reader.GetInteger("window", "width", 1280);
+		window_height = reader.GetInteger("window", "height", 768);
+		refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
+		fullscreen = reader.GetBoolean("window", "fullscreen", false);
+		exposure = (float)reader.GetReal("rendering", "exposure", 1.0f);
+
+		if (fullscreen) {
+			game->GetWindow().SetFullscreen(fullscreen);
+			unsigned int* size = game->GetWindow().GetScreenSize();
+			TowerDelivery::WindowResizeEvent event(size[0], size[1]);
+			OnWindowResizeEvent(event);
+		}
+		else {
+			game->GetWindow().SetSize(window_width, window_height);
+		}
+
+		game->GetWindow().SetRefreshRate(refresh_rate);
+
 		//setup bullet world
 		btDefaultCollisionConfiguration* collision_configuration = new btDefaultCollisionConfiguration();
 		btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collision_configuration);
@@ -30,7 +47,7 @@ public:
 		//setup cameras
 		playerCamera = new TowerDelivery::PlayerCamera(characterController);
 		camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
-		projectionMatrix = glm::perspective(glm::radians(45.0f), window_width / window_height, 0.1f, 100.0f);
+		projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
 
 		//setup model for point lights
 		lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
@@ -223,7 +240,7 @@ public:
 
 	void OnUpdate(TowerDelivery::Timestep ts) override {
 		//update world and character
-		dynamicsWorld->stepSimulation(1.f / 60.f);
+		dynamicsWorld->stepSimulation(1.0f / 60.0f);
 		characterController->OnUpdate(ts);
 
 		//prepare for rendering
@@ -335,7 +352,6 @@ public:
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		
 		// 2. blur bright fragments with two-pass Gaussian Blur
 		// --------------------------------------------------
 		glActiveTexture(GL_TEXTURE0);
@@ -372,6 +388,7 @@ public:
 		//TD_TRACE("{0}", event);
 		TowerDelivery::EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<TowerDelivery::KeyPressedEvent>(TD_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<TowerDelivery::WindowResizeEvent>(TD_BIND_EVENT_FN(ExampleLayer::OnWindowResizeEvent));
 	}
 
 	bool OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
@@ -379,6 +396,29 @@ public:
 			useDebugCamera = !useDebugCamera;
 		}
 		return true;
+	}
+
+	bool OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event) {
+		window_width = event.GetWidth();
+		window_height = event.GetHeight();
+
+		//TD_WARN("triggered resize event: {0}, {1}", window_width, window_height);
+
+		projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)window_width, (GLsizei)window_height);
+
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[1]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		return false;
 	}
 
 	void renderQuad()
@@ -448,11 +488,15 @@ public:
 
 private:
 	//settings
+	unsigned int window_width;
+	unsigned int window_height;
+	unsigned int refresh_rate;
+	bool fullscreen;
+
+	float exposure;
+
 	bool useDebugCamera;
 	bool bloom = true;
-	float exposure = 1.0f;
-	float window_width = 1280.0f;
-	float window_height = 768.0f;
 
 	//rendering
 	TowerDelivery::Camera* camera;
@@ -472,6 +516,8 @@ private:
 	unsigned int quadVBO;
 	unsigned int pingpongFBO[2];
 	unsigned int pingpongColorbuffers[2];
+
+	TowerDelivery::Application* m_Game;
 
 	//character
 	TowerDelivery::CharacterController* characterController;
@@ -497,7 +543,7 @@ private:
 class Game : public TowerDelivery::Application {
 public:
 	Game() {
-		PushLayer(new ExampleLayer());
+		PushLayer(new ExampleLayer(this));
 	}
 
 	~Game() {}

@@ -14,6 +14,7 @@ IncludeDir["GLFW"] = "TowerDelivery/vendor/GLFW/include"
 IncludeDir["Glad"] = "TowerDelivery/vendor/Glad/include"
 IncludeDir["glm"] = "TowerDelivery/vendor/glm"
 IncludeDir["stb_image"] = "TowerDelivery/vendor/stb_image"
+IncludeDir["inih"] = "TowerDelivery/vendor/inih/include"
 IncludeDir["spdlog"] = "TowerDelivery/vendor/spdlog/include"
 IncludeDir["bullet"] = "TowerDelivery/vendor/bullet"
 IncludeDir["assimp"] = "TowerDelivery/vendor/assimp/include"
@@ -23,6 +24,7 @@ group "Dependencies"
 	include "TowerDelivery/vendor/GLFW"
 	include "TowerDelivery/vendor/Glad"
 	include "TowerDelivery/vendor/assimp"
+	include "TowerDelivery/vendor/inih"
 group ""
 
 project "TowerDelivery"
@@ -58,6 +60,7 @@ project "TowerDelivery"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.inih}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.bullet}",
 		"%{IncludeDir.assimp}"
@@ -70,6 +73,7 @@ project "TowerDelivery"
 	links {
 		"GLFW",
 		"Glad",
+		"inih",
 		"opengl32.lib",
 		"assimp"
 	}
@@ -125,6 +129,7 @@ project	"Game"
 		"TowerDelivery/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.inih}",
 		"%{IncludeDir.bullet}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.assimp}",

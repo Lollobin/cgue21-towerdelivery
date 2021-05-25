@@ -7,7 +7,6 @@
 #include "TowerDelivery/Events/MouseEvent.h"
 
 namespace TowerDelivery {
-
 	static bool s_GLFWInitialized = false;
 
 	static void GLFWErrorCallback(int error, const char* description) {
@@ -22,7 +21,7 @@ namespace TowerDelivery {
 		Init(props);
 	}
 
-	WindowsWindow::~WindowsWindow(){
+	WindowsWindow::~WindowsWindow() {
 		Shutdown();
 	}
 
@@ -43,12 +42,11 @@ namespace TowerDelivery {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Request OpenGL version 4.3
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Create an OpenGL debug context 
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Create an OpenGL debug context
 		glfwWindowHint(GLFW_SAMPLES, 4);
-		
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		
+
 		m_Context = new RenderingContext(m_Window);
 		m_Context->Init();
 
@@ -56,23 +54,22 @@ namespace TowerDelivery {
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
-
 		//GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			data.Width = width;
 			data.Height = height;
 
 			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
-		});
+			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
 			data.EventCallback(event);
-		});
+			});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanncode, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -95,7 +92,7 @@ namespace TowerDelivery {
 				break;
 			}
 			}
-		});
+			});
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 			{
@@ -104,7 +101,6 @@ namespace TowerDelivery {
 				KeyTypedEvent event(keycode);
 				data.EventCallback(event);
 			});
-
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -120,23 +116,23 @@ namespace TowerDelivery {
 				MouseButtonReleasedEvent event(button);
 				data.EventCallback(event);
 				break;
-			}	
 			}
-		});
+			}
+			});
 
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
-		});
+			});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
-		});
+			});
 	}
 
 	void WindowsWindow::Shutdown() {
@@ -146,6 +142,28 @@ namespace TowerDelivery {
 	void WindowsWindow::OnUpdate() {
 		glfwPollEvents();
 		m_Context->SwapBuffers();
+	}
+
+	void WindowsWindow::SetFullscreen(bool fullscreen) {
+		if (IsFullscreen() == fullscreen)
+			return;
+
+		if (fullscreen) {
+			// backup window position and window size
+			glfwGetWindowPos(m_Window, &m_WindowPos[0], &m_WindowPos[1]);
+			glfwGetWindowSize(m_Window, &m_WindowSize[0], &m_WindowSize[1]);
+
+			// get resolution of monitor
+			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+			m_Data.Monitor = glfwGetPrimaryMonitor();
+
+			// switch to full screen
+			glfwSetWindowMonitor(m_Window, m_Data.Monitor, 0, 0, mode->width, mode->height, 0);
+		} else {
+			// restore last window size and position
+			glfwSetWindowMonitor(m_Window, nullptr, m_WindowPos[0], m_WindowPos[1], m_WindowSize[0], m_WindowSize[1], 0);
+		}
 	}
 
 	void WindowsWindow::SetVSync(bool enabled) {
@@ -159,6 +177,11 @@ namespace TowerDelivery {
 
 	bool WindowsWindow::IsVSync() const {
 		return m_Data.VSync;
+	}
+
+	void WindowsWindow::SetRefreshRate(unsigned int rate) const {
+		glfwWindowHint(GLFW_REFRESH_RATE, rate);
+		TD_WARN("Set Refresh rate to {0}", rate);
 	}
 
 }

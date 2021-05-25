@@ -4,6 +4,7 @@
 #include "TowerDelivery/Log.h"
 
 #include "Input.h"
+#include "glad/glad.h"
 
 #include "GLFW/glfw3.h"
 #include "assimp/Importer.hpp"
@@ -36,6 +37,7 @@ namespace TowerDelivery {
 		EventDispatcher dispatcher(e);
 
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
@@ -66,5 +68,11 @@ namespace TowerDelivery {
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		m_Running = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e) {
+		glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+
+		return false;
 	}
 }

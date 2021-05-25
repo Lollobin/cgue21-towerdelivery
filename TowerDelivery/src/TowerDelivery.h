@@ -6,6 +6,7 @@
 #include "TowerDelivery/Log.h"
 
 #include "TowerDelivery/Core/Timestep.h"
+#include "TowerDelivery/Core/INIReader.h"
 
 #include "TowerDelivery/Input.h"
 #include "TowerDelivery/KeyCodes.h"

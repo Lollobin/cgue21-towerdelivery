@@ -1,7 +1,7 @@
 #include "tdpch.h"
 #include "WindowsInput.h"
 
-#include "TowerDelivery/Application.h"
+#include "TowerDelivery/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 //abstraction from glfw so that we don't have to inlcude it in Game

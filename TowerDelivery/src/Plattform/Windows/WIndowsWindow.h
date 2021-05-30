@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TowerDelivery/Window.h"
+#include "TowerDelivery/Core/Window.h"
 #include "TowerDelivery/Rendering/RenderingContext.h"
 
 #include <GLFW/glfw3.h>

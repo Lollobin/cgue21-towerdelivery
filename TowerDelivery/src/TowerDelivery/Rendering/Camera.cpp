@@ -1,8 +1,8 @@
 #include "tdpch.h"
 #include "Camera.h"
-#include "TowerDelivery/KeyCodes.h"
-#include "TowerDelivery/MouseButtonCodes.h"
-#include "TowerDelivery/Input.h"
+#include "TowerDelivery/Core/KeyCodes.h"
+#include "TowerDelivery/Core/MouseButtonCodes.h"
+#include "TowerDelivery/Core/Input.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

@@ -3,7 +3,7 @@
 #include "glm/glm.hpp"
 
 #include "TowerDelivery/Core/Timestep.h"
-#include "TowerDelivery/Physics/CharacterController.h"
+#include "TowerDelivery/Scene/CharacterController.h"
 
 namespace TowerDelivery {
 	class PlayerCamera {

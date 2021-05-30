@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TowerDelivery/Input.h"
+#include "TowerDelivery/Core/Input.h"
 #include "GLFW/glfw3.h"
 
 namespace TowerDelivery {

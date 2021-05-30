@@ -1,7 +1,7 @@
 #include "tdpch.h"
 #include "Application.h"
 
-#include "TowerDelivery/Log.h"
+#include "TowerDelivery/Core/Log.h"
 
 #include "Input.h"
 #include "glad/glad.h"
@@ -10,7 +10,7 @@
 #include "assimp/Importer.hpp"
 #include "TowerDelivery/Rendering/Mesh.h"
 #include "TowerDelivery/Events/KeyEvent.h"
-#include "TowerDelivery/KeyCodes.h"
+#include "TowerDelivery/Core/KeyCodes.h"
 
 namespace TowerDelivery {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)

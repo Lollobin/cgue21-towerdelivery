@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "TowerDelivery/Log.h"
+#include "TowerDelivery/Core/Log.h"
 
 #ifdef TD_PLATFORM_WINDOWS
 	#include <Windows.h>

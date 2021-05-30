@@ -1,11 +1,11 @@
 #include "tdpch.h"
 #include "CharacterController.h"
 
-#include "TowerDelivery/KeyCodes.h"
-#include "TowerDelivery/MouseButtonCodes.h"
-#include "TowerDelivery/Input.h"
+#include "TowerDelivery/Core/KeyCodes.h"
+#include "TowerDelivery/Core/MouseButtonCodes.h"
+#include "TowerDelivery/Core/Input.h"
 
-#include "TowerDelivery/Log.h"
+#include "TowerDelivery/Core/Log.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 //Character Controller Class, implements CharacterController.h

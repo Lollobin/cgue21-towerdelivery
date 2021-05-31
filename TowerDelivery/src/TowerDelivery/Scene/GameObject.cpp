@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 namespace TowerDelivery {
-	GameObject::GameObject(VertexArray* vertexArray, btRigidBody* bulletBody, unsigned int* diffuseTex, unsigned int* specularTex)
+	GameObject::GameObject(VertexArray* vertexArray, unsigned int* diffuseTex, btRigidBody* bulletBody, unsigned int* specularTex)
 		: m_pVertexArray(vertexArray), m_pBulletBody(bulletBody), m_modelMatrix(glm::mat4(1.0f)),
 		m_pTextureDiffuse(diffuseTex), m_pTextureSpecular(specularTex)
 	{
@@ -15,7 +15,9 @@ namespace TowerDelivery {
 	void GameObject::OnUpdate()
 	{
 		//update model matrix
-		m_modelMatrix = getRigidBodyModelMatrix(m_pBulletBody);
+		if (m_pBulletBody) {
+			m_modelMatrix = getRigidBodyModelMatrix(m_pBulletBody);
+		}
 	}
 
 	void GameObject::Draw(Shader* shader)
@@ -30,7 +32,7 @@ namespace TowerDelivery {
 			glBindTexture(GL_TEXTURE_2D, *m_pTextureSpecular);
 		else
 			glBindTexture(GL_TEXTURE_2D, 0);
-		
+
 		//set model matrix
 		shader->setMat4("model", m_modelMatrix);
 		m_pVertexArray->draw();
@@ -40,5 +42,9 @@ namespace TowerDelivery {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	void GameObject::SetModelMatrix(glm::mat4 modelMatrix)
+	{
+		m_modelMatrix = modelMatrix;
 	}
 }

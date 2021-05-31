@@ -13,11 +13,13 @@ namespace TowerDelivery {
 	{
 	public:
 
-		GameObject(VertexArray* vertexArray, btRigidBody* bulletBody, unsigned int* diffuseTex, unsigned int* specularTex = nullptr);
+		GameObject(VertexArray* vertexArray, unsigned int* diffuseTex, btRigidBody* bulletBody = nullptr, unsigned int* specularTex = nullptr);
 		~GameObject();
 
 		void OnUpdate();
 		void Draw(Shader* shader);
+
+		void SetModelMatrix(glm::mat4 modelMatrix);
 
 	private:
 
@@ -52,6 +54,4 @@ namespace TowerDelivery {
 			return model;
 		};
 	};
-
 }
-

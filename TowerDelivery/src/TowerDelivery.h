@@ -1,6 +1,6 @@
 #pragma once
 
-//only for TowerDelivery Applications
+// ---Core----------------------------
 #include "TowerDelivery/Core/Application.h"
 #include "TowerDelivery/Core/Layer.h"
 #include "TowerDelivery/Core/Log.h"
@@ -11,17 +11,16 @@
 #include "TowerDelivery/Core/Input.h"
 #include "TowerDelivery/Core/KeyCodes.h"
 #include "TowerDelivery/Core/MouseButtonCodes.h"
+// -----------------------------------
 
-
-
-// ---Events------------------------
+// ---Events--------------------------
 #include "TowerDelivery/Events/Event.h"
 #include "TowerDelivery/Events/ApplicationEvent.h"
 #include "TowerDelivery/Events/KeyEvent.h"
 #include "TowerDelivery/Events/MouseEvent.h"
 // -----------------------------------
 
-// ---Renderer------------------------
+// ---Rendering-----------------------
 #include "TowerDelivery/Rendering/Buffer.h"
 #include "TowerDelivery/Rendering/Camera.h"
 #include "TowerDelivery/Rendering/PlayerCamera.h"
@@ -30,5 +29,8 @@
 #include "TowerDelivery/Rendering/Model.h"
 // -----------------------------------
 
+// ---Scene---------------------------
 #include "TowerDelivery/Scene/CharacterController.h"
 #include "TowerDelivery/Scene/GameObject.h"
+#include "TowerDelivery/Scene/DetectionArea.h"
+// -----------------------------------

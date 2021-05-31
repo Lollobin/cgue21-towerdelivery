@@ -59,6 +59,15 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_container = loadTexture("assets/textures/container_diffuse.png");
 	tex_spec_container = loadTexture("assets/textures/container_specular.png");
 
+	//create areas for win and lose condition
+	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
+
+	TowerDelivery::VertexArray* gl_loseArea = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 20.0f, 100.0f));
+	TowerDelivery::GameObject* m_loseArea = new TowerDelivery::GameObject(gl_loseArea, &tex_diff_container);
+
+	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
+	m_gameObjects.push_back(m_loseArea);
+
 	//create floor
 	{
 		btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
@@ -85,7 +94,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		dynamicsWorld->addRigidBody(bt_floor);
 
 		TowerDelivery::VertexArray* gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
-		TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, bt_floor, &tex_diff_pavement);
+		TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, &tex_diff_pavement, bt_floor);
 		m_gameObjects.push_back(m_floor);
 	}
 
@@ -113,7 +122,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		dynamicsWorld->addRigidBody(bt_staticCube);
 
 		TowerDelivery::VertexArray* gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
-		TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, bt_staticCube, &tex_diff_pavement);
+		TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, &tex_diff_pavement, bt_staticCube);
 		m_gameObjects.push_back(m_staticCube);
 	}
 
@@ -141,7 +150,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		dynamicsWorld->addRigidBody(bt_dynamicCube);
 
 		TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(2.0f, 2.0f, 2.0f));
-		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, bt_dynamicCube, &tex_diff_container, &tex_spec_container);
+		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, &tex_diff_container, bt_dynamicCube, &tex_spec_container);
 		m_gameObjects.push_back(m_dynamicCube);
 	}
 
@@ -169,7 +178,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		dynamicsWorld->addRigidBody(bt_platform);
 
 		TowerDelivery::VertexArray* gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
-		TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, bt_platform, &tex_diff_pavement);
+		TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, &tex_diff_pavement, bt_platform);
 		m_gameObjects.push_back(m_platform);
 	}
 
@@ -248,6 +257,12 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//update world and character
 	dynamicsWorld->stepSimulation(1.0f / 60.0f);
 	characterController->OnUpdate(ts);
+
+	//check win and lose conditions
+	if (loseArea->Contains(characterController) && !lost) {
+		lost = true;
+		TD_TRACE("You lost the game!");
+	}
 
 	//prepare for rendering
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);

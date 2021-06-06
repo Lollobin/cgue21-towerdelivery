@@ -37,6 +37,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderLight.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/light_source.frag"));
 	shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
+	shaderText.reset(new TowerDelivery::Shader("assets/shader/text.vert", "assets/shader/text.frag"));
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -70,7 +71,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//create HUD
 	{
-	
+		TextRendering(shaderText, "Test", 0.0f, 0.0f, 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
+		TextRendering(shaderText, "Test2", 300.0f, 0.0f, 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
 	}
 
 	//create floor

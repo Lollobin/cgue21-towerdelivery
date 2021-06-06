@@ -11,7 +11,6 @@
 #include FT_FREETYPE_H
 
 #include "TowerDelivery/Rendering/Shader.h"
-#include <TowerDelivery.h>
 
 namespace TowerDeliver {
 

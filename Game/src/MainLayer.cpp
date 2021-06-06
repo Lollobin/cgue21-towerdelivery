@@ -68,6 +68,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
 
+	//create HUD
+	{
+	
+	}
+
 	//create floor
 	{
 		btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));

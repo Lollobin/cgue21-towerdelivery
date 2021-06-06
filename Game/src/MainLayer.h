@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderLight;
 	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
+	std::shared_ptr<TowerDelivery::Shader> shaderText;
 
 	unsigned int hdrFBO;
 	unsigned int colorBuffers[2];

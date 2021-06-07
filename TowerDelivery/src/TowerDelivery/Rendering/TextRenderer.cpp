@@ -8,10 +8,9 @@
 #include "TextRenderer.h"
 
 namespace TowerDelivery {
+
     TextRenderer::TextRenderer(int width, int height)
     {
-        Shader shader("assets/shader/text.vert", "assets/shader/text.frag");
-        this->TextShader = shader;
         this->TextShader.setMat4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f));
         this->TextShader.setInt("text", 0);
         // configure VAO/VBO for texture quads
@@ -90,8 +89,8 @@ namespace TowerDelivery {
     void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
     {
         // activate corresponding render state	
-        this->TextShader.Bind();
-        this->TextShader.setVec3("textColor", color);
+        TextShader.Bind();
+        TextShader.setVec3("textColor", color);
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(this->VAO);
 

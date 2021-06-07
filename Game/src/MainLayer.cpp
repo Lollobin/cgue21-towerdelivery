@@ -75,7 +75,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//create HUD
 	{
-		text.RenderText("text", 5.0f, 5.0f, 2.0f);
+		text.RenderText("text", 250.0f, 180.0f, 5.0f);
 	}
 
 	//create floor

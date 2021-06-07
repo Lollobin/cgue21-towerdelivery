@@ -25,7 +25,7 @@ namespace TowerDelivery {
         // holds a list of pre-compiled Characters
         std::map<char, Character> Characters;
         // shader used for text rendering
-        Shader TextShader;
+        Shader TextShader = Shader("assets/shader/text.vert", "assets/shader/text.frag");
         // constructor
         TextRenderer(int width, int height);
         // pre-compiles a list of characters from the given font

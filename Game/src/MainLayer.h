@@ -47,6 +47,8 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
 	std::shared_ptr<TowerDelivery::Shader> shaderText;
 
+	TowerDelivery::TextRenderer text;
+
 	unsigned int hdrFBO;
 	unsigned int colorBuffers[2];
 	unsigned int rboDepth;

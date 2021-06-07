@@ -39,6 +39,10 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 	shaderText.reset(new TowerDelivery::Shader("assets/shader/text.vert", "assets/shader/text.frag"));
 
+	//set up Text
+	TowerDelivery::TextRenderer text(window_width, window_height);
+	text.Load("assets/fonts/OCRAEXT.TTF", 24);
+
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
@@ -71,8 +75,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//create HUD
 	{
-		TextRendering(shaderText, "Test", 0.0f, 0.0f, 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
-		TextRendering(shaderText, "Test2", 300.0f, 0.0f, 1.0f, glm::vec3(0.5f, 0.8f, 0.2f));
+		text.RenderText("text", 5.0f, 5.0f, 2.0f);
 	}
 
 	//create floor

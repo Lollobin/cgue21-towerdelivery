@@ -77,6 +77,9 @@ private:
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;
 
+	//Text Renderer
+	TowerDelivery::TextRenderer* text;
+
 	//detection areas
 	TowerDelivery::DetectionArea* loseArea;
 	bool lost = false;

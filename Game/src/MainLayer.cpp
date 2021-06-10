@@ -40,8 +40,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderText.reset(new TowerDelivery::Shader("assets/shader/text.vert", "assets/shader/text.frag"));
 
 	//set up Text
-	TowerDelivery::TextRenderer text(window_width, window_height);
-	text.Load("assets/fonts/OCRAEXT.TTF", 24);
+	text = new TowerDelivery::TextRenderer(window_width, window_height);
+	text->Load("assets/fonts/OCRAEXT.TTF", 12);
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -73,10 +73,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
 
-	//create HUD
-	{
-		text.RenderText("text", 250.0f, 180.0f, 5.0f);
-	}
 
 	//create floor
 	{
@@ -277,11 +273,16 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//prepare for rendering
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	// 1. render scene into floating point framebuffer
 	// -----------------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	text->RenderText("test", 250.0f, 180.0f, 5.0f, glm::vec3(1.0f,0.0f,0.0f));
+	text->RenderText("text", 0.0f, 0.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	text->RenderText("text", 1280.0f, 720.0f, 7.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	text->RenderText("text", 100.0f, 100.0f, 3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	shader->Bind();
 	shader->setMat4("projection", projectionMatrix);
@@ -356,6 +357,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//prepare drawing objects
 	glm::mat4 model = glm::mat4(1.0f);
 
+	shader->Bind();
 	//draw character
 	shader->setMat4("model", characterController->GetModelMatrix());
 	characterModel->Draw(*shader);
@@ -382,7 +384,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	lightModel->draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+		/*
 	// 2. blur bright fragments with two-pass Gaussian Blur
 	// --------------------------------------------------
 	glActiveTexture(GL_TEXTURE0);
@@ -401,7 +403,8 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	*/
+bool horizontal = true;
 	// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
 	// --------------------------------------------------------------------------------------------------------------------------
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -413,6 +416,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderFinal->setBool("bloom", bloom);
 	shaderFinal->setFloat("exposure", exposure);
 	renderQuad();
+	
 }
 
 void MainLayer::OnEvent(TowerDelivery::Event& event) {

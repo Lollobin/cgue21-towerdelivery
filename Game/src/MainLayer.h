@@ -75,6 +75,12 @@ private:
 	unsigned int tex_diff_container;
 	unsigned int tex_spec_container;
 	unsigned int tex_diff_pavement;
+	unsigned int albedo;
+	unsigned int normal;
+	unsigned int metallic;
+	unsigned int roughness;
+	unsigned int ao;
+
 
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;

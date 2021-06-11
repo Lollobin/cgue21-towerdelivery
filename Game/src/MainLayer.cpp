@@ -84,11 +84,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	// load PBR material textures
 	// --------------------------
-	unsigned int albedo = loadTexture("assets/textures/rustediron_albedo.png");
-	unsigned int normal = loadTexture("assets/textures/rustediron_normal.png");
-	unsigned int metallic = loadTexture("assets/textures/rustediron_metallic.png");
-	unsigned int roughness = loadTexture("assets/textures/rustediron_roughness.png");
-	unsigned int ao = loadTexture("assets/textures/rustediron_ao.png");
+	albedo = loadTexture("assets/textures/rustediron_albedo.png");
+	normal = loadTexture("assets/textures/rustediron_normal.png");
+	metallic = loadTexture("assets/textures/rustediron_metallic.png");
+	roughness = loadTexture("assets/textures/rustediron_roughness.png");
+	ao = loadTexture("assets/textures/rustediron_ao.png");
 
 
 	glActiveTexture(GL_TEXTURE0);
@@ -373,8 +373,8 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	//set point lights PBR
 	shaderPBR->Bind();
-	shaderPBR->setVec3("lightPositions[1]", 0.0f, 3.0f, 0.0f);
-	shaderPBR->setVec3("lightColors[1]", 1.0f, 1.0f, 1.0f);
+	shaderPBR->setVec3("lightPosition", 0.0f, 3.0f, 0.0f);
+	shaderPBR->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
 	
 	/*
@@ -401,11 +401,13 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//draw character
 	shader->setMat4("model", characterController->GetModelMatrix());
 	characterModel->Draw(*shader);
-
+	
+	/*
 	//draw tower
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f));
 	shader->setMat4("model", model);
 	ourModel->Draw(*shader);
+	*/
 
 	//draw game objects
 	for each (TowerDelivery::GameObject * gameObject in m_gameObjects)
@@ -414,8 +416,21 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->Draw(shader.get());
 	}
 
-	//draw random cute to test pbr + texture
+
+	//draw random cube to test pbr + texture
 	shaderPBR->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, albedo);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, normal);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, metallic);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ao);
+
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-0.5f, 2.0f, -10.0f));
 	model = glm::scale(model, glm::vec3(0.5f));
@@ -463,6 +478,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderFinal->setBool("bloom", bloom);
 	shaderFinal->setFloat("exposure", exposure);
 	renderQuad();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void MainLayer::OnEvent(TowerDelivery::Event& event) {

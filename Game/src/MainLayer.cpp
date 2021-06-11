@@ -84,11 +84,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	// load PBR material textures
 	// --------------------------
-	unsigned int albedo = loadTexture("resources/textures/pbr/rusted_iron/albedo.png");
-	unsigned int normal = loadTexture("resources/textures/pbr/rusted_iron/normal.png");
-	unsigned int metallic = loadTexture("resources/textures/pbr/rusted_iron/metallic.png");
-	unsigned int roughness = loadTexture("resources/textures/pbr/rusted_iron/roughness.png");
-	unsigned int ao = loadTexture("resources/textures/pbr/rusted_iron/ao.png");
+	unsigned int albedo = loadTexture("assets/textures/rustediron_albedo.png");
+	unsigned int normal = loadTexture("assets/textures/rustediron_normal.png");
+	unsigned int metallic = loadTexture("assets/textures/rustediron_metallic.png");
+	unsigned int roughness = loadTexture("assets/textures/rustediron_roughness.png");
+	unsigned int ao = loadTexture("assets/textures/rustediron_ao.png");
 
 
 	glActiveTexture(GL_TEXTURE0);
@@ -417,7 +417,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//draw random cute to test pbr + texture
 	shaderPBR->Bind();
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-6.5f, 2.0f, -10.0f));
+	model = glm::translate(model, glm::vec3(-0.5f, 2.0f, -10.0f));
 	model = glm::scale(model, glm::vec3(0.5f));
 	shaderPBR->setMat4("model", model);
 	cubeModel->draw();

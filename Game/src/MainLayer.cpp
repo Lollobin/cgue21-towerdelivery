@@ -38,6 +38,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 
+	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
+
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
@@ -67,6 +69,39 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
+
+
+	//TEST PB RENDER
+	cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
+
+
+	shaderPBR->Bind();
+	shaderPBR->setInt("albedoMap", 0);
+	shaderPBR->setInt("normalMap", 1);
+	shaderPBR->setInt("metallicMap", 2);
+	shaderPBR->setInt("roughnessMap", 3);
+	shaderPBR->setInt("aoMap", 4);
+
+	// load PBR material textures
+	// --------------------------
+	unsigned int albedo = loadTexture("resources/textures/pbr/rusted_iron/albedo.png");
+	unsigned int normal = loadTexture("resources/textures/pbr/rusted_iron/normal.png");
+	unsigned int metallic = loadTexture("resources/textures/pbr/rusted_iron/metallic.png");
+	unsigned int roughness = loadTexture("resources/textures/pbr/rusted_iron/roughness.png");
+	unsigned int ao = loadTexture("resources/textures/pbr/rusted_iron/ao.png");
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, albedo);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, normal);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, metallic);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ao);
+
 
 	//create floor
 	{
@@ -279,6 +314,12 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->Bind();
 	shaderLight->setMat4("projection", projectionMatrix);
 
+
+	// initialize static shader uniforms before rendering
+	// --------------------------------------------------
+	shaderPBR->Bind();
+	shaderPBR->setMat4("projection", projectionMatrix);
+
 	if (useDebugCamera) {
 		shader->Bind();
 		shader->setVec3("viewPos", camera->Position);
@@ -293,6 +334,10 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		shader->Bind();
 		shader->setVec3("viewPos", playerCamera->GetPosition());
 		shader->setMat4("view", playerCamera->GetViewMatrix());
+
+		shaderPBR->Bind();
+		shaderPBR->setVec3("camPos", playerCamera->GetPosition());
+		shaderPBR->setMat4("view", playerCamera->GetViewMatrix());
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", playerCamera->GetViewMatrix());
@@ -326,6 +371,12 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shader->setFloat("pointLights[1].linear", 0.09f);
 	shader->setFloat("pointLights[1].quadratic", 0.032f);
 
+	//set point lights PBR
+	shaderPBR->Bind();
+	shaderPBR->setVec3("lightPositions[1]", 0.0f, 3.0f, 0.0f);
+	shaderPBR->setVec3("lightColors[1]", 1.0f, 1.0f, 1.0f);
+
+	
 	/*
 	//set spotlight
 
@@ -341,6 +392,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	*/
 
 	//set shininess for all models
+	shader->Bind();
 	shader->setFloat("material.shininess", 1.0f);
 
 	//prepare drawing objects
@@ -361,6 +413,14 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
 	}
+
+	//draw random cute to test pbr + texture
+	shaderPBR->Bind();
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-6.5f, 2.0f, -10.0f));
+	model = glm::scale(model, glm::vec3(0.5f));
+	shaderPBR->setMat4("model", model);
+	cubeModel->draw();
 
 	//draw point light as cube
 	shaderLight->Bind();

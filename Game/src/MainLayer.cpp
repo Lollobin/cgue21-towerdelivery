@@ -92,14 +92,14 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//set point lights PBR
 	shaderPBR->Bind();
-	shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -7.0f);
-	shaderPBR->setVec3("lightColor[0]", 1.0f, 1.0f, 1.0f);
-	shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -7.0f);
-	shaderPBR->setVec3("lightColor[1]", 1.0f, 1.0f, 1.0f);
-	shaderPBR->setVec3("lightPositions[2]", -0.5f, 2.0f, -7.0f);
-	shaderPBR->setVec3("lightColor[2]", 1.0f, 1.0f, 1.0f);
-	shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -7.0f);
-	shaderPBR->setVec3("lightColor[3]", 1.0f, 1.0f, 1.0f);
+	shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[0]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[1]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[2]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[2]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
 
 
 	//create floor

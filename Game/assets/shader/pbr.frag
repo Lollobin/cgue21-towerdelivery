@@ -132,7 +132,7 @@ void main()
     float NdotL = max(dot(N, L), 0.0);        
 
     // add to outgoing radiance Lo
-    Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again  
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again  
     }
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).

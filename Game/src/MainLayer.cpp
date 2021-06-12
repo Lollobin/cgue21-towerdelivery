@@ -90,17 +90,16 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	roughness = loadTexture("assets/textures/rustediron_roughness.png");
 	ao = loadTexture("assets/textures/rustediron_ao.png");
 
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, albedo);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, normal);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, metallic);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, roughness);
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, ao);
+	//set point lights PBR
+	shaderPBR->Bind();
+	shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -7.0f);
+	shaderPBR->setVec3("lightColor[0]", 1.0f, 1.0f, 1.0f);
+	shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -7.0f);
+	shaderPBR->setVec3("lightColor[1]", 1.0f, 1.0f, 1.0f);
+	shaderPBR->setVec3("lightPositions[2]", -0.5f, 2.0f, -7.0f);
+	shaderPBR->setVec3("lightColor[2]", 1.0f, 1.0f, 1.0f);
+	shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -7.0f);
+	shaderPBR->setVec3("lightColor[3]", 1.0f, 1.0f, 1.0f);
 
 
 	//create floor
@@ -300,7 +299,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	//prepare for rendering
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// 1. render scene into floating point framebuffer
@@ -371,11 +370,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shader->setFloat("pointLights[1].linear", 0.09f);
 	shader->setFloat("pointLights[1].quadratic", 0.032f);
 
-	//set point lights PBR
-	shaderPBR->Bind();
-	shaderPBR->setVec3("lightPosition", 0.0f, 3.0f, 0.0f);
-	shaderPBR->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-
 	
 	/*
 	//set spotlight
@@ -398,6 +392,13 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//prepare drawing objects
 	glm::mat4 model = glm::mat4(1.0f);
 
+
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+	shader->Bind();
 	//draw character
 	shader->setMat4("model", characterController->GetModelMatrix());
 	characterModel->Draw(*shader);
@@ -415,7 +416,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
 	}
-
 
 	//draw random cube to test pbr + texture
 	shaderPBR->Bind();
@@ -477,8 +477,14 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[horizontal]);
 	shaderFinal->setBool("bloom", bloom);
 	shaderFinal->setFloat("exposure", exposure);
+
 	renderQuad();
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
 }
 
 void MainLayer::OnEvent(TowerDelivery::Event& event) {

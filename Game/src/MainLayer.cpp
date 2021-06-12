@@ -310,6 +310,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	//handle camera zoom
 	playerCamera->SetZoom(10.0f);
+	//playerCamera->OnUpdate(ts);
 
 	btVector3 t_playerPos = glm2bt(characterController->GetPosition());
 	btVector3 t_cameraPos = glm2bt(playerCamera->GetPosition());

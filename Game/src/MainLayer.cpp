@@ -86,11 +86,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	// load PBR material textures
 	// --------------------------
-	albedo = loadTexture("assets/textures/rustediron_albedo.png");
-	normal = loadTexture("assets/textures/rustediron_normal.png");
-	metallic = loadTexture("assets/textures/rustediron_metallic.png");
-	roughness = loadTexture("assets/textures/rustediron_roughness.png");
-	ao = loadTexture("assets/textures/rustediron_ao.png");
+	albedo = TowerDelivery::loadTexture("assets/textures/rustediron_albedo.png");
+	normal = TowerDelivery::loadTexture("assets/textures/rustediron_normal.png");
+	metallic = TowerDelivery::loadTexture("assets/textures/rustediron_metallic.png");
+	roughness = TowerDelivery::loadTexture("assets/textures/rustediron_roughness.png");
+	ao = TowerDelivery::loadTexture("assets/textures/rustediron_ao.png");
 
 	//set point lights PBR
 	shaderPBR->Bind();

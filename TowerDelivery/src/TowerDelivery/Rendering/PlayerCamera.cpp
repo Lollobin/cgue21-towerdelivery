@@ -36,6 +36,11 @@ glm::vec3 TowerDelivery::PlayerCamera::GetPosition()
 	return m_position;
 }
 
+void TowerDelivery::PlayerCamera::SetZoom(float distance)
+{
+	m_zoom = distance;
+}
+
 void TowerDelivery::PlayerCamera::updateCameraVectors(Timestep ts) {
 	//update camera angle
 

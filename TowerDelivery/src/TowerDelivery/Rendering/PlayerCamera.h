@@ -16,6 +16,8 @@ namespace TowerDelivery {
 		glm::mat4 GetViewMatrix();
 		glm::vec3 GetPosition();
 
+		void SetZoom(float distance);
+
 	private:
 		void updateCameraVectors(Timestep ts);
 

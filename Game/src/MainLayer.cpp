@@ -307,6 +307,25 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		TD_TRACE("You lost the game!");
 	}
 
+
+	//handle camera zoom
+	playerCamera->SetZoom(10.0f);
+
+	btVector3 t_playerPos = glm2bt(characterController->GetPosition());
+	btVector3 t_cameraPos = glm2bt(playerCamera->GetPosition());
+
+	btCollisionWorld::ClosestRayResultCallback res(t_playerPos, t_cameraPos);
+	dynamicsWorld->rayTest(t_playerPos, t_cameraPos, res);
+
+	if (res.hasHit()) {
+		btVector3 hitposition = res.m_hitPointWorld;
+
+		//float camDistance = t_playerPos.distance(t_cameraPos);
+		float hitDistance = t_playerPos.distance(hitposition);
+
+		playerCamera->SetZoom(hitDistance - 0.1f);
+	}
+
 	//prepare for rendering
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

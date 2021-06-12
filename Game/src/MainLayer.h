@@ -19,8 +19,12 @@ private:
 	bool OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event);
 	bool OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event);
 
-	//could be moved to another class
 	void renderQuad();
+
+	inline btVector3 glm2bt(const glm::vec3& vec)
+	{
+		return { vec.x, vec.y, vec.z };
+	}
 
 private:
 	//settings
@@ -37,6 +41,7 @@ private:
 	//rendering
 	TowerDelivery::Camera* camera;
 	TowerDelivery::PlayerCamera* playerCamera;
+	float didJustCollide = false;
 
 	glm::mat4 projectionMatrix;
 

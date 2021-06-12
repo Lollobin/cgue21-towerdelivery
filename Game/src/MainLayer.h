@@ -21,7 +21,6 @@ private:
 
 	//could be moved to another class
 	void renderQuad();
-	unsigned int loadTexture(char const* path);
 
 private:
 	//settings

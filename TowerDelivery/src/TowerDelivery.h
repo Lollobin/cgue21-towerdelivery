@@ -27,6 +27,7 @@
 #include "TowerDelivery/Rendering/Shader.h"
 #include "TowerDelivery/Rendering/VertexArray.h"
 #include "TowerDelivery/Rendering/Model.h"
+#include "TowerDelivery/Rendering/Texture.h"
 // -----------------------------------
 
 // ---Scene---------------------------

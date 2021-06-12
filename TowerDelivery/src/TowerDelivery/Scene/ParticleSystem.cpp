@@ -53,12 +53,12 @@ TowerDelivery::ParticleSystem::~ParticleSystem()
 }
 
 void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPosition) {
-	// Generate 10 new particule each millisecond,
+	// Generate x new particule each millisecond,
 	// but limit this to 16 ms (60 fps), or if you have 1 long frame (1sec),
 	// newparticles will be huge and the next frame even longer.
-	int newparticles = (int)(ts * 100.0);
-	if (newparticles > (int)(0.016f * 100.0))
-		newparticles = (int)(0.016f * 100.0);
+	int newparticles = (int)(ts * 1000.0);
+	if (newparticles > (int)(0.016f * 1000.0))
+		newparticles = (int)(0.016f * 1000.0);
 
 	for (int i = 0; i < newparticles; i++) {
 		int particleIndex = FindUnusedParticle();
@@ -87,107 +87,6 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 		ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 1.1f;
 	}
 
-	SimulateParticles(ts, CameraPosition);
-}
-
-void TowerDelivery::ParticleSystem::Draw()
-{
-	// Update the buffers that OpenGL uses for rendering.
-	// There are much more sophisticated means to stream data from the CPU to the GPU,
-	// but this is outside the scope of this tutorial.
-	// http://www.opengl.org/wiki/Buffer_Object_Streaming
-
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
-
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(10);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(
-		10, // attribute. No particular reason for 0, but must match the layout in the shader.
-		3, // size
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
-	);
-
-	// 2nd attribute buffer : positions of particles' centers
-	glEnableVertexAttribArray(11);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	glVertexAttribPointer(
-		11, // attribute. No particular reason for 1, but must match the layout in the shader.
-		4, // size : x + y + z + size => 4
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
-	);
-
-	// 3rd attribute buffer : particles' colors
-	glEnableVertexAttribArray(12);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	glVertexAttribPointer(
-		12, // attribute. No particular reason for 2, but must match the layout in the shader.
-		4, // size : r + g + b + a => 4
-		GL_UNSIGNED_BYTE, // type
-		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
-		0, // stride
-		(void*)0 // array buffer offset
-	);
-
-	// These functions are specific to glDrawArrays*Instanced*.
-	// The first parameter is the attribute buffer we're talking about.
-	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
-	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
-	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
-	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
-
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
-
-	
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glDisable(GL_BLEND);
-}
-
-int TowerDelivery::ParticleSystem::FindUnusedParticle()
-{
-	for (int i = LastUsedParticle; i < MaxParticles; i++) {
-		if (ParticlesContainer[i].life < 0) {
-			LastUsedParticle = i;
-			return i;
-		}
-	}
-
-	for (int i = 0; i < LastUsedParticle; i++) {
-		if (ParticlesContainer[i].life < 0) {
-			LastUsedParticle = i;
-			return i;
-		}
-	}
-
-	return 0; // All particles are taken, override the first one
-}
-
-void TowerDelivery::ParticleSystem::SortParticles()
-{
-	std::sort(&ParticlesContainer[0], &ParticlesContainer[MaxParticles]);
-}
-
-void TowerDelivery::ParticleSystem::SimulateParticles(Timestep ts, glm::vec3 CameraPosition)
-{
 	ParticlesCount = 0;
 	for (int i = 0; i < MaxParticles; i++) {
 		Particle& p = ParticlesContainer[i]; // shortcut
@@ -225,4 +124,99 @@ void TowerDelivery::ParticleSystem::SimulateParticles(Timestep ts, glm::vec3 Cam
 
 	SortParticles();
 	TD_INFO("Particles Count: {0}", ParticlesCount);
+}
+
+void TowerDelivery::ParticleSystem::Draw()
+{
+	// Update the buffers that OpenGL uses for rendering.
+	// There are much more sophisticated means to stream data from the CPU to the GPU,
+	// but this is outside the scope of this tutorial.
+	// http://www.opengl.org/wiki/Buffer_Object_Streaming
+
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
+
+	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// 1rst attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	glVertexAttribPointer(
+		0, // attribute. No particular reason for 0, but must match the layout in the shader.
+		3, // size
+		GL_FLOAT, // type
+		GL_FALSE, // normalized?
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+
+	// 2nd attribute buffer : positions of particles' centers
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glVertexAttribPointer(
+		1, // attribute. No particular reason for 1, but must match the layout in the shader.
+		4, // size : x + y + z + size => 4
+		GL_FLOAT, // type
+		GL_FALSE, // normalized?
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+
+	// 3rd attribute buffer : particles' colors
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	glVertexAttribPointer(
+		2, // attribute. No particular reason for 2, but must match the layout in the shader.
+		4, // size : r + g + b + a => 4
+		GL_UNSIGNED_BYTE, // type
+		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+
+	// These functions are specific to glDrawArrays*Instanced*.
+	// The first parameter is the attribute buffer we're talking about.
+	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
+	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
+	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
+	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
+
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glDisable(GL_BLEND);
+}
+
+int TowerDelivery::ParticleSystem::FindUnusedParticle()
+{
+	for (int i = LastUsedParticle; i < MaxParticles; i++) {
+		if (ParticlesContainer[i].life < 0) {
+			LastUsedParticle = i;
+			return i;
+		}
+	}
+
+	for (int i = 0; i < LastUsedParticle; i++) {
+		if (ParticlesContainer[i].life < 0) {
+			LastUsedParticle = i;
+			return i;
+		}
+	}
+
+	return 0; // All particles are taken, override the first one
+}
+
+void TowerDelivery::ParticleSystem::SortParticles()
+{
+	std::sort(&ParticlesContainer[0], &ParticlesContainer[MaxParticles]);
 }

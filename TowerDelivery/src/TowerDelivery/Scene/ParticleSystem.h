@@ -32,13 +32,13 @@ namespace TowerDelivery {
 		void Draw();
 
 	private:
-		int ParticlesCount = 0;
+		unsigned int ParticlesCount = 0;
+		const int MaxParticles = 10000;
 
-		const int MaxParticles = 1000;
-		Particle ParticlesContainer[1000];
+		Particle ParticlesContainer[10000];
 
-		inline static GLfloat* g_particule_position_size_data = new GLfloat[1000 * 4];
-		inline static GLubyte* g_particule_color_data = new GLubyte[1000 * 4];
+		inline static GLfloat* g_particule_position_size_data = new GLfloat[10000 * 4];
+		inline static GLubyte* g_particule_color_data = new GLubyte[10000 * 4];
 
 		GLuint billboard_vertex_buffer;
 		GLuint particles_position_buffer;
@@ -49,6 +49,5 @@ namespace TowerDelivery {
 	private:
 		int FindUnusedParticle();
 		void SortParticles();
-		void SimulateParticles(Timestep ts, glm::vec3 CameraPosition);
 	};
 }

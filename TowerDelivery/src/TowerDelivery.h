@@ -33,4 +33,5 @@
 #include "TowerDelivery/Scene/CharacterController.h"
 #include "TowerDelivery/Scene/GameObject.h"
 #include "TowerDelivery/Scene/DetectionArea.h"
+#include "TowerDelivery/Scene/ParticleSystem.h"
 // -----------------------------------

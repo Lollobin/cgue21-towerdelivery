@@ -45,6 +45,7 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderLight;
 	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
+	std::shared_ptr<TowerDelivery::Shader> shaderParticle;
 
 	unsigned int hdrFBO;
 	unsigned int colorBuffers[2];
@@ -72,6 +73,7 @@ private:
 	unsigned int tex_diff_container;
 	unsigned int tex_spec_container;
 	unsigned int tex_diff_pavement;
+	unsigned int tex_particle;
 
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;
@@ -79,4 +81,7 @@ private:
 	//detection areas
 	TowerDelivery::DetectionArea* loseArea;
 	bool lost = false;
+
+	//particle systems
+	TowerDelivery::ParticleSystem* particleSystem;
 };

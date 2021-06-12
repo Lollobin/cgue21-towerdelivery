@@ -33,10 +33,12 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//setup shaders
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	shader.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/main.frag"));
 	shaderLight.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/light_source.frag"));
 	shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
+	shaderParticle.reset(new TowerDelivery::Shader("assets/shader/particle.vert", "assets/shader/particle.frag"));
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -58,6 +60,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_pavement = loadTexture("assets/textures/pavement_diffuse.png");
 	tex_diff_container = loadTexture("assets/textures/container_diffuse.png");
 	tex_spec_container = loadTexture("assets/textures/container_specular.png");
+	tex_particle = loadTexture("assets/textures/particle.dds");
 
 	//create areas for win and lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -67,6 +70,9 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
+
+	//setup particle systems
+	particleSystem = new TowerDelivery::ParticleSystem();
 
 	//create floor
 	{
@@ -362,6 +368,27 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->Draw(shader.get());
 	}
 
+	//draw particle systems
+
+	shaderParticle->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex_particle);
+
+	shaderParticle->setInt("myTextureSampler", 0);
+
+	glm::mat4 ViewMatrix = playerCamera->GetViewMatrix();
+
+	shaderParticle->setVec3("CameraRight_worldspace", glm::vec3(ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]));
+	shaderParticle->setVec3("CameraUp_worldspace", glm::vec3(ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]));
+
+	glm::mat4 ViewProjectionMatrix = projectionMatrix * ViewMatrix;
+	shaderParticle->setMat4("VP", ViewProjectionMatrix);
+
+	particleSystem->OnUpdate(ts, playerCamera->GetPosition());
+	particleSystem->Draw();
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	//draw point light as cube
 	shaderLight->Bind();
 	model = glm::mat4(1.0f);
@@ -444,7 +471,7 @@ bool MainLayer::OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event) {
 
 void MainLayer::renderQuad()
 {
-	if (quadVAO == 0)
+	//if (quadVAO == 0)
 	{
 		float quadVertices[] = {
 			// positions        // texture Coords

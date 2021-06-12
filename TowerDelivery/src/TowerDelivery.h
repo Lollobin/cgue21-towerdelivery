@@ -27,10 +27,12 @@
 #include "TowerDelivery/Rendering/Shader.h"
 #include "TowerDelivery/Rendering/VertexArray.h"
 #include "TowerDelivery/Rendering/Model.h"
+#include "TowerDelivery/Rendering/Texture.h"
 // -----------------------------------
 
 // ---Scene---------------------------
 #include "TowerDelivery/Scene/CharacterController.h"
 #include "TowerDelivery/Scene/GameObject.h"
 #include "TowerDelivery/Scene/DetectionArea.h"
+#include "TowerDelivery/Scene/ParticleSystem.h"
 // -----------------------------------

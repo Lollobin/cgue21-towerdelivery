@@ -46,6 +46,8 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
 	std::shared_ptr<TowerDelivery::Shader> shaderParticle;
 
+	std::shared_ptr<TowerDelivery::Shader> shaderPBR;
+
 	unsigned int hdrFBO;
 	unsigned int colorBuffers[2];
 	unsigned int rboDepth;
@@ -63,6 +65,7 @@ private:
 	//opengl models
 	TowerDelivery::Model* ourModel;
 	TowerDelivery::VertexArray* lightModel;
+	TowerDelivery::VertexArray* cubeModel;
 
 	//bullet
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
@@ -72,6 +75,13 @@ private:
 	unsigned int tex_diff_container;
 	unsigned int tex_spec_container;
 	unsigned int tex_diff_pavement;
+
+	unsigned int albedo;
+	unsigned int normal;
+	unsigned int metallic;
+	unsigned int roughness;
+	unsigned int ao;
+
 	unsigned int tex_particle;
 
 	//game objects

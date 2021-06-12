@@ -40,6 +40,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 	shaderParticle.reset(new TowerDelivery::Shader("assets/shader/particle.vert", "assets/shader/particle.frag"));
 
+	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
+
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
@@ -71,6 +73,35 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
+
+	//TEST PB RENDER
+	cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
+
+	shaderPBR->Bind();
+	shaderPBR->setInt("albedoMap", 0);
+	shaderPBR->setInt("normalMap", 1);
+	shaderPBR->setInt("metallicMap", 2);
+	shaderPBR->setInt("roughnessMap", 3);
+	shaderPBR->setInt("aoMap", 4);
+
+	// load PBR material textures
+	// --------------------------
+	albedo = loadTexture("assets/textures/rustediron_albedo.png");
+	normal = loadTexture("assets/textures/rustediron_normal.png");
+	metallic = loadTexture("assets/textures/rustediron_metallic.png");
+	roughness = loadTexture("assets/textures/rustediron_roughness.png");
+	ao = loadTexture("assets/textures/rustediron_ao.png");
+
+	//set point lights PBR
+	shaderPBR->Bind();
+	shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[0]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[1]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[2]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[2]", 10.0f, 10.0f, 10.0f);
+	shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
+	shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
 
 	//setup particle systems
 	particleSystem = new TowerDelivery::ParticleSystem();
@@ -277,7 +308,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	//prepare for rendering
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// 1. render scene into floating point framebuffer
@@ -291,8 +322,14 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->Bind();
 	shaderLight->setMat4("projection", projectionMatrix);
 
+	// initialize static shader uniforms before rendering
+	// --------------------------------------------------
+	shaderPBR->Bind();
+	shaderPBR->setMat4("projection", projectionMatrix);
+  
 	shaderParticle->Bind();
 	shaderParticle->setMat4("projection", projectionMatrix);
+
 
 	if (useDebugCamera) {
 		shader->Bind();
@@ -311,6 +348,10 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		shader->Bind();
 		shader->setVec3("viewPos", playerCamera->GetPosition());
 		shader->setMat4("view", playerCamera->GetViewMatrix());
+
+		shaderPBR->Bind();
+		shaderPBR->setVec3("camPos", playerCamera->GetPosition());
+		shaderPBR->setMat4("view", playerCamera->GetViewMatrix());
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", playerCamera->GetViewMatrix());
@@ -347,6 +388,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shader->setFloat("pointLights[1].linear", 0.09f);
 	shader->setFloat("pointLights[1].quadratic", 0.032f);
 
+	
 	/*
 	//set spotlight
 
@@ -362,19 +404,29 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	*/
 
 	//set shininess for all models
+	shader->Bind();
 	shader->setFloat("material.shininess", 1.0f);
 
 	//prepare drawing objects
 	glm::mat4 model = glm::mat4(1.0f);
 
+
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+
+	shader->Bind();
 	//draw character
 	shader->setMat4("model", characterController->GetModelMatrix());
 	characterModel->Draw(*shader);
-
+	
+	/*
 	//draw tower
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f));
 	shader->setMat4("model", model);
 	ourModel->Draw(*shader);
+	*/
 
 	//draw game objects
 	for each (TowerDelivery::GameObject * gameObject in m_gameObjects)
@@ -383,6 +435,26 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->Draw(shader.get());
 	}
 
+	//draw random cube to test pbr + texture
+	shaderPBR->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, albedo);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, normal);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, metallic);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ao);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-0.5f, 2.0f, -10.0f));
+	model = glm::scale(model, glm::vec3(0.5f));
+	shaderPBR->setMat4("model", model);
+	cubeModel->draw();
+  
 	//draw particle systems
 
 	shaderParticle->Bind();
@@ -437,7 +509,14 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[horizontal]);
 	shaderFinal->setBool("bloom", bloom);
 	shaderFinal->setFloat("exposure", exposure);
+
 	renderQuad();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
 }
 
 void MainLayer::OnEvent(TowerDelivery::Event& event) {

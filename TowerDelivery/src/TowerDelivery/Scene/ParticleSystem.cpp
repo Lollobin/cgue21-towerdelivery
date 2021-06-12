@@ -26,17 +26,56 @@ TowerDelivery::ParticleSystem::ParticleSystem()
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+	// 1rst attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(
+		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+
 	// The VBO containing the positions and sizes of the particles
 	glGenBuffers(1, &particles_position_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(
+		1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+		4,                                // size : x + y + z + size => 4
+		GL_FLOAT,                         // type
+		GL_FALSE,                         // normalized?
+		0,                                // stride
+		(void*)0                          // array buffer offset
+	);
+
 	// The VBO containing the colors of the particles
 	glGenBuffers(1, &particles_color_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(
+		2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+		4,                                // size : r + g + b + a => 4
+		GL_UNSIGNED_BYTE,                 // type
+		GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+		0,                                // stride
+		(void*)0                          // array buffer offset
+	);
+
+	// These functions are specific to glDrawArrays*Instanced*.
+	// The first parameter is the attribute buffer we're talking about.
+	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
+	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
+	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
+	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
 
 	glBindVertexArray(0);
 }
@@ -61,10 +100,16 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 
 	for (int i = 0; i < newparticles; i++) {
 		int particleIndex = FindUnusedParticle();
-		ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
-		ParticlesContainer[particleIndex].pos = glm::vec3(0.0f, 1.0f, 0.0f);
+		ParticlesContainer[particleIndex].life = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.5)); // This particle will live 5 seconds.
 
-		float spread = 1.5f;
+		float degree = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 360));
+		float distance = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
+		float xpos = cos(degree);//*distance;
+		float zpos = sin(degree);//*distance;
+
+		ParticlesContainer[particleIndex].pos = glm::vec3(xpos, 0.0f, zpos);
+
+		float spread = 0.5f;
 		glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
 		// Very bad way to generate a random direction;
 		// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
@@ -75,15 +120,25 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 			(rand() % 2000 - 1000.0f) / 1000.0f
 		);
 
-		ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+		//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+
+		float randspeed = 0.2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.6));
+		ParticlesContainer[particleIndex].speed = maindir * randspeed;
 
 		// Very bad way to generate a random color
-		ParticlesContainer[particleIndex].r = rand() % 256;
-		ParticlesContainer[particleIndex].g = rand() % 256;
-		ParticlesContainer[particleIndex].b = rand() % 256;
-		ParticlesContainer[particleIndex].a = (rand() % 256) / 3;
+		//ParticlesContainer[particleIndex].r = rand() % 256;
+		//ParticlesContainer[particleIndex].g = rand() % 256;
+		//ParticlesContainer[particleIndex].b = rand() % 256;
+		//ParticlesContainer[particleIndex].a = rand() % 256;
 
-		ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.001f;
+		unsigned char intensity = rand() % 56 + 200;
+
+		ParticlesContainer[particleIndex].r = 256;
+		ParticlesContainer[particleIndex].g = intensity;
+		ParticlesContainer[particleIndex].b = intensity;
+		ParticlesContainer[particleIndex].a = (rand() % 156) + 100;
+
+		ParticlesContainer[particleIndex].size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.2));
 	}
 
 	//simulate particles
@@ -96,9 +151,13 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 			p.life -= ts;
 			if (p.life > 0.0f) {
 				// Simulate simple physics : gravity only, no collisions
-				p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float)ts * 0.5f;
+				p.speed += glm::vec3(0.0f, 9.81f / 5.f, 0.0f) * (float)ts * 0.5f;
 				p.pos += p.speed * (float)ts;
 				p.cameradistance = glm::length2(p.pos - CameraPosition);
+
+				if (p.life < 1.0f)
+					p.size = p.size * p.life;
+
 				//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
 
 				// Fill the GPU buffer
@@ -145,56 +204,11 @@ void TowerDelivery::ParticleSystem::Draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(
-		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	// 2nd attribute buffer : positions of particles' centers
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	glVertexAttribPointer(
-		1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-		4,                                // size : x + y + z + size => 4
-		GL_FLOAT,                         // type
-		GL_FALSE,                         // normalized?
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
-
-	// 3rd attribute buffer : particles' colors
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	glVertexAttribPointer(
-		2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-		4,                                // size : r + g + b + a => 4
-		GL_UNSIGNED_BYTE,                 // type
-		GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
-
-
-	// These functions are specific to glDrawArrays*Instanced*.
-	// The first parameter is the attribute buffer we're talking about.
-	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
-	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
-	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
-	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
-
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(2);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//glDisable(GL_BLEND);
 	glBindVertexArray(0);

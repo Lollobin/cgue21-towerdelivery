@@ -245,11 +245,16 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shader->Bind();
 	shader->setInt("material.diffuse", 0);
 	shader->setInt("material.specular", 1);
+
 	shaderBlur->Bind();
 	shaderBlur->setInt("image", 0);
+
 	shaderFinal->Bind();
 	shaderFinal->setInt("scene", 0);
 	shaderFinal->setInt("bloomBlur", 1);
+
+	shaderParticle->Bind();
+	shaderParticle->setInt("myTextureSampler", 0);
 }
 
 void MainLayer::OnAttach()
@@ -286,6 +291,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->Bind();
 	shaderLight->setMat4("projection", projectionMatrix);
 
+	shaderParticle->Bind();
+	shaderParticle->setMat4("projection", projectionMatrix);
+
 	if (useDebugCamera) {
 		shader->Bind();
 		shader->setVec3("viewPos", camera->Position);
@@ -293,6 +301,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", camera->GetViewMatrix());
+
+		shaderParticle->Bind();
+		shaderParticle->setMat4("view", camera->GetViewMatrix());
 
 		camera->OnUpdate(ts);
 	}
@@ -303,6 +314,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", playerCamera->GetViewMatrix());
+
+		shaderParticle->Bind();
+		shaderParticle->setMat4("view", playerCamera->GetViewMatrix());
 
 		playerCamera->OnUpdate(ts);
 	}
@@ -376,15 +390,8 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex_particle);
 
-	shaderParticle->setInt("myTextureSampler", 0);
-
-	glm::mat4 ViewMatrix = playerCamera->GetViewMatrix();
-
-	shaderParticle->setVec3("CameraRight_worldspace", glm::vec3(ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]));
-	shaderParticle->setVec3("CameraUp_worldspace", glm::vec3(ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]));
-
-	glm::mat4 ViewProjectionMatrix =  projectionMatrix*ViewMatrix;
-	shaderParticle->setMat4("VP", ViewProjectionMatrix);
+	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.5f));
+	shaderParticle->setMat4("model", model);
 
 	particleSystem->OnUpdate(ts, playerCamera->GetPosition());
 	particleSystem->Draw();

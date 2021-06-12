@@ -40,6 +40,8 @@ namespace TowerDelivery {
 		inline static GLfloat* g_particule_position_size_data = new GLfloat[10000 * 4];
 		inline static GLubyte* g_particule_color_data = new GLubyte[10000 * 4];
 
+		GLuint VertexArrayID;
+
 		GLuint billboard_vertex_buffer;
 		GLuint particles_position_buffer;
 		GLuint particles_color_buffer;

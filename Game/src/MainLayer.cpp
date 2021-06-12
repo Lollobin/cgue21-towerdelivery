@@ -383,7 +383,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderParticle->setVec3("CameraRight_worldspace", glm::vec3(ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]));
 	shaderParticle->setVec3("CameraUp_worldspace", glm::vec3(ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]));
 
-	glm::mat4 ViewProjectionMatrix = projectionMatrix * ViewMatrix;
+	glm::mat4 ViewProjectionMatrix =  projectionMatrix*ViewMatrix;
 	shaderParticle->setMat4("VP", ViewProjectionMatrix);
 
 	particleSystem->OnUpdate(ts, playerCamera->GetPosition());
@@ -472,7 +472,7 @@ bool MainLayer::OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event) {
 
 void MainLayer::renderQuad()
 {
-	//if (quadVAO == 0)
+	if (quadVAO == 0)
 	{
 		float quadVertices[] = {
 			// positions        // texture Coords

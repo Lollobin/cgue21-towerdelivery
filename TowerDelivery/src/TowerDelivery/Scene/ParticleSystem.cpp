@@ -5,7 +5,6 @@
 
 TowerDelivery::ParticleSystem::ParticleSystem()
 {
-	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
@@ -22,24 +21,24 @@ TowerDelivery::ParticleSystem::ParticleSystem()
 		 -0.5f,  0.5f, 0.0f,
 		  0.5f,  0.5f, 0.0f,
 	};
-	GLuint billboard_vertex_buffer;
+
 	glGenBuffers(1, &billboard_vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	// The VBO containing the positions and sizes of the particles
-	GLuint particles_position_buffer;
 	glGenBuffers(1, &particles_position_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
 	// The VBO containing the colors of the particles
-	GLuint particles_color_buffer;
 	glGenBuffers(1, &particles_color_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+
+	glBindVertexArray(0);
 }
 
 TowerDelivery::ParticleSystem::~ParticleSystem()
@@ -84,9 +83,10 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 		ParticlesContainer[particleIndex].b = rand() % 256;
 		ParticlesContainer[particleIndex].a = (rand() % 256) / 3;
 
-		ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 1.1f;
+		ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.001f;
 	}
 
+	//simulate particles
 	ParticlesCount = 0;
 	for (int i = 0; i < MaxParticles; i++) {
 		Particle& p = ParticlesContainer[i]; // shortcut
@@ -123,11 +123,12 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 	}
 
 	SortParticles();
-	TD_INFO("Particles Count: {0}", ParticlesCount);
+	//TD_INFO("Particles Count: {0}", ParticlesCount);
 }
 
 void TowerDelivery::ParticleSystem::Draw()
 {
+	glBindVertexArray(VertexArrayID);
 	// Update the buffers that OpenGL uses for rendering.
 	// There are much more sophisticated means to stream data from the CPU to the GPU,
 	// but this is outside the scope of this tutorial.
@@ -148,37 +149,38 @@ void TowerDelivery::ParticleSystem::Draw()
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
 	glVertexAttribPointer(
-		0, // attribute. No particular reason for 0, but must match the layout in the shader.
-		3, // size
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
+		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
 	);
 
 	// 2nd attribute buffer : positions of particles' centers
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
 	glVertexAttribPointer(
-		1, // attribute. No particular reason for 1, but must match the layout in the shader.
-		4, // size : x + y + z + size => 4
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
+		1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+		4,                                // size : x + y + z + size => 4
+		GL_FLOAT,                         // type
+		GL_FALSE,                         // normalized?
+		0,                                // stride
+		(void*)0                          // array buffer offset
 	);
 
 	// 3rd attribute buffer : particles' colors
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
 	glVertexAttribPointer(
-		2, // attribute. No particular reason for 2, but must match the layout in the shader.
-		4, // size : r + g + b + a => 4
-		GL_UNSIGNED_BYTE, // type
-		GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
-		0, // stride
-		(void*)0 // array buffer offset
+		2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+		4,                                // size : r + g + b + a => 4
+		GL_UNSIGNED_BYTE,                 // type
+		GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+		0,                                // stride
+		(void*)0                          // array buffer offset
 	);
+
 
 	// These functions are specific to glDrawArrays*Instanced*.
 	// The first parameter is the attribute buffer we're talking about.
@@ -195,6 +197,7 @@ void TowerDelivery::ParticleSystem::Draw()
 	glDisableVertexAttribArray(2);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//glDisable(GL_BLEND);
+	glBindVertexArray(0);
 }
 
 int TowerDelivery::ParticleSystem::FindUnusedParticle()

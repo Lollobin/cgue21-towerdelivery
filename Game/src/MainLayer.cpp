@@ -33,10 +33,12 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//setup shaders
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	shader.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/main.frag"));
 	shaderLight.reset(new TowerDelivery::Shader("assets/shader/main.vert", "assets/shader/light_source.frag"));
 	shaderBlur.reset(new TowerDelivery::Shader("assets/shader/blur.vert", "assets/shader/blur.frag"));
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
+	shaderParticle.reset(new TowerDelivery::Shader("assets/shader/particle.vert", "assets/shader/particle.frag"));
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -55,9 +57,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	ourModel = new TowerDelivery::Model("assets/models/tower/tower1.obj");
 
 	//load textures
-	tex_diff_pavement = loadTexture("assets/textures/pavement_diffuse.png");
-	tex_diff_container = loadTexture("assets/textures/container_diffuse.png");
-	tex_spec_container = loadTexture("assets/textures/container_specular.png");
+	tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
+	tex_diff_container = TowerDelivery::loadTexture("assets/textures/container_diffuse.png");
+	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
+	tex_particle = TowerDelivery::loadDDS("assets/textures/particle.dds");
+
 
 	//create areas for win and lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -67,6 +71,9 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
+
+	//setup particle systems
+	particleSystem = new TowerDelivery::ParticleSystem();
 
 	//create floor
 	{
@@ -238,11 +245,16 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shader->Bind();
 	shader->setInt("material.diffuse", 0);
 	shader->setInt("material.specular", 1);
+
 	shaderBlur->Bind();
 	shaderBlur->setInt("image", 0);
+
 	shaderFinal->Bind();
 	shaderFinal->setInt("scene", 0);
 	shaderFinal->setInt("bloomBlur", 1);
+
+	shaderParticle->Bind();
+	shaderParticle->setInt("myTextureSampler", 0);
 }
 
 void MainLayer::OnAttach()
@@ -279,6 +291,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->Bind();
 	shaderLight->setMat4("projection", projectionMatrix);
 
+	shaderParticle->Bind();
+	shaderParticle->setMat4("projection", projectionMatrix);
+
 	if (useDebugCamera) {
 		shader->Bind();
 		shader->setVec3("viewPos", camera->Position);
@@ -286,6 +301,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", camera->GetViewMatrix());
+
+		shaderParticle->Bind();
+		shaderParticle->setMat4("view", camera->GetViewMatrix());
 
 		camera->OnUpdate(ts);
 	}
@@ -296,6 +314,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 		shaderLight->Bind();
 		shaderLight->setMat4("view", playerCamera->GetViewMatrix());
+
+		shaderParticle->Bind();
+		shaderParticle->setMat4("view", playerCamera->GetViewMatrix());
 
 		playerCamera->OnUpdate(ts);
 	}
@@ -361,6 +382,20 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
 	}
+
+	//draw particle systems
+
+	shaderParticle->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex_particle);
+
+	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.5f));
+	shaderParticle->setMat4("model", model);
+
+	particleSystem->OnUpdate(ts, playerCamera->GetPosition());
+	particleSystem->Draw();
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//draw point light as cube
 	shaderLight->Bind();
@@ -469,40 +504,3 @@ void MainLayer::renderQuad()
 	glBindVertexArray(0);
 }
 
-unsigned int MainLayer::loadTexture(char const* path)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-
-	if (data)
-	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
-}

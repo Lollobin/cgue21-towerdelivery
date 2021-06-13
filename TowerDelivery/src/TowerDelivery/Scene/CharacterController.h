@@ -21,6 +21,9 @@ namespace TowerDelivery {
 		void Jump();
 
 		glm::vec3 GetPosition();
+		void SetPosition(glm::vec3 position);
+
+
 		glm::vec2 GetOrientation();
 		glm::mat4 GetModelMatrix();
 		float GetRotation();
@@ -68,7 +71,5 @@ namespace TowerDelivery {
 		float m_rotation;
 
 		glm::vec2 m_lookDir;
-
-
 	};
 }

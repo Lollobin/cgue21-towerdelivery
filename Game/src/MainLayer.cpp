@@ -43,7 +43,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
 
 	//setup character
-	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
+	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
@@ -86,11 +86,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	// load PBR material textures
 	// --------------------------
-	albedo = loadTexture("assets/textures/rustediron_albedo.png");
-	normal = loadTexture("assets/textures/rustediron_normal.png");
-	metallic = loadTexture("assets/textures/rustediron_metallic.png");
-	roughness = loadTexture("assets/textures/rustediron_roughness.png");
-	ao = loadTexture("assets/textures/rustediron_ao.png");
+	albedo = TowerDelivery::loadTexture("assets/textures/rustediron_albedo.png");
+	normal = TowerDelivery::loadTexture("assets/textures/rustediron_normal.png");
+	metallic = TowerDelivery::loadTexture("assets/textures/rustediron_metallic.png");
+	roughness = TowerDelivery::loadTexture("assets/textures/rustediron_roughness.png");
+	ao = TowerDelivery::loadTexture("assets/textures/rustediron_ao.png");
 
 	//set point lights PBR
 	shaderPBR->Bind();
@@ -305,6 +305,26 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	if (loseArea->Contains(characterController) && !lost) {
 		lost = true;
 		TD_TRACE("You lost the game!");
+	}
+
+
+	//handle camera zoom
+	playerCamera->SetZoom(10.0f);
+	//playerCamera->OnUpdate(ts);
+
+	btVector3 t_playerPos = glm2bt(characterController->GetPosition());
+	btVector3 t_cameraPos = glm2bt(playerCamera->GetPosition());
+
+	btCollisionWorld::ClosestRayResultCallback res(t_playerPos, t_cameraPos);
+	dynamicsWorld->rayTest(t_playerPos, t_cameraPos, res);
+
+	if (res.hasHit()) {
+		btVector3 hitposition = res.m_hitPointWorld;
+
+		//float camDistance = t_playerPos.distance(t_cameraPos);
+		float hitDistance = t_playerPos.distance(hitposition);
+
+		playerCamera->SetZoom(hitDistance - 0.1f);
 	}
 
 	//prepare for rendering
@@ -530,6 +550,10 @@ bool MainLayer::OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
 	if (event.GetKeyCode() == TD_KEY_F2) {
 		useDebugCamera = !useDebugCamera;
 	}
+	if (event.GetKeyCode() == TD_KEY_SPACE) {
+		characterController->Jump();
+	}
+
 	return true;
 }
 

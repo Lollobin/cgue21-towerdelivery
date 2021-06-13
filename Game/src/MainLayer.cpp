@@ -43,7 +43,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
 
 	//setup character
-	characterController = new TowerDelivery::CharacterController(0.5f, 0.5f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
+	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
@@ -550,6 +550,10 @@ bool MainLayer::OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
 	if (event.GetKeyCode() == TD_KEY_F2) {
 		useDebugCamera = !useDebugCamera;
 	}
+	if (event.GetKeyCode() == TD_KEY_SPACE) {
+		characterController->Jump();
+	}
+
 	return true;
 }
 

@@ -10,16 +10,14 @@
 
 //Character Controller Class, implements CharacterController.h
 namespace TowerDelivery {
-
 	//Constructor, that takes radius, height, mass, spawn Position and which Wolrd we are in and sets speed, deceleration, jump impuls, rotation and mouse Sensivity to fixed values
 	CharacterController::CharacterController(float radius, float height, float mass, btVector3 spawnPos, btDiscreteDynamicsWorld* dynamicsWorld)
 		:m_pDynamicsWorld(dynamicsWorld), m_maxSpeed(4.0f), m_deceleration(10.0f), m_manualVelocity(0.0f, 0.0f, 0.0f),
-		m_jumpImpulse(500.0f), m_jumpRechargeTime(1.0f), m_jumpRechargeTimer(0.0f), m_onGround(true), m_lookDir(glm::vec2(0.0f, 0.0f)),
-		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f)
+		m_jumpImpulse(500.0f), m_jumpRechargeTime(1.0f), m_jumpRechargeTimer(0.0f), m_onGround(false), m_lookDir(glm::vec2(0.0f, 0.0f)),
+		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f), m_height(height)
 	{
-
 		//m_pCollisionShape = new btCapsuleShape(radius, height);
-		m_pCollisionShape = new btBoxShape(btVector3(1.17f/2.0f,1.8f,1.23f/2.0f));
+		m_pCollisionShape = new btBoxShape(btVector3(1.17f / 2.0f, height, 1.23f / 2.0f));
 
 		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 
@@ -51,6 +49,26 @@ namespace TowerDelivery {
 
 	//sets Keybinds for walking and jumping lets the Player control which way the character faces by mouse position
 	void CharacterController::OnUpdate(Timestep ts) {
+		//update Transform
+		m_pMotionState->getWorldTransform(m_motionTransform);
+
+		//check if character is on ground
+		btVector3 t_playerPos = m_pRigidBody->getWorldTransform().getOrigin();
+		btVector3 t_groundPos = t_playerPos - btVector3(0.0f, m_height + 0.1f, 0.0f);//(t_playerPos.x(), t_playerPos.y() - m_height - 0.1f, t_playerPos.z());
+		btCollisionWorld::ClosestRayResultCallback res(t_playerPos, t_groundPos);
+
+		m_pDynamicsWorld->rayTest(t_playerPos, t_groundPos, res);
+
+		if (res.hasHit()) {
+			//TD_TRACE("floor");
+			m_onGround = true;
+			m_jumpRechargeTimer = m_jumpRechargeTime;
+		}
+		else {
+			//TD_TRACE("air");
+			m_onGround = false;
+		}
+
 		//check arrow keys for walking
 		if (Input::IsKeyPressed(TD_KEY_W))
 			Walk(m_lookDir);
@@ -60,10 +78,6 @@ namespace TowerDelivery {
 			Walk(glm::vec2(m_lookDir[1], -m_lookDir[0]));
 		if (Input::IsKeyPressed(TD_KEY_D))
 			Walk(glm::vec2(-m_lookDir[1], m_lookDir[0]));
-
-		//check space key for jumping
-		if (Input::IsKeyPressed(TD_KEY_SPACE))
-			Jump();
 
 		//update rotation based on mouse X
 		if (m_firstUpdate) {
@@ -80,9 +94,6 @@ namespace TowerDelivery {
 
 		//TD_TRACE("Rotation: {0}", m_rotation);
 
-		//update Transform
-		m_pMotionState->getWorldTransform(m_motionTransform);
-
 		UpdatePosition(ts);
 		UpdateVelocity(ts);
 		UpdateLookDir();
@@ -90,6 +101,8 @@ namespace TowerDelivery {
 		// Update jump timer
 		if (m_jumpRechargeTimer < m_jumpRechargeTime)
 			m_jumpRechargeTimer += ts.GetSeconds();
+
+		//TD_TRACE("{0}", m_jumpRechargeTimer);
 	}
 
 	void CharacterController::Walk(const glm::vec2 dir)
@@ -121,7 +134,7 @@ namespace TowerDelivery {
 		}
 	}
 
-	glm::vec3 CharacterController::GetPosition(){
+	glm::vec3 CharacterController::GetPosition() {
 		btVector3 position = m_motionTransform.getOrigin();
 		return glm::vec3(position.x(), position.y(), position.z());
 	}
@@ -138,7 +151,7 @@ namespace TowerDelivery {
 		btScalar btModelMatrix[16];
 
 		m_pMotionState->getWorldTransform(trans);
-		trans.getOpenGLMatrix(btModelMatrix);		
+		trans.getOpenGLMatrix(btModelMatrix);
 
 		model = btScalar2mat4(btModelMatrix);
 
@@ -153,7 +166,6 @@ namespace TowerDelivery {
 	}
 
 	void CharacterController::UpdatePosition(Timestep ts) {
-		//m_previousPosition = m_pRigidBody->getWorldTransform().getOrigin();
 	}
 
 	void CharacterController::UpdateVelocity(Timestep ts)

@@ -64,7 +64,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
 	tex_particle = TowerDelivery::loadDDS("assets/textures/particle.dds");
 
-
 	//create areas for win and lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
 
@@ -73,6 +72,29 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
+
+	//setup check points
+	particleSystem = new TowerDelivery::ParticleSystem();
+
+	cp_models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
+	cp_models[1] = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 0.0f, 0.0f));
+	cp_models[2] = glm::translate(glm::mat4(1.0f), glm::vec3(-9.0f, 0.0f, 0.0f));
+	cp_models[3] = glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, 0.0f, 0.0f));
+
+	cp_areas[0] = new TowerDelivery::DetectionArea(glm::vec3(-3.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+	cp_areas[1] = new TowerDelivery::DetectionArea(glm::vec3(-6.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+	cp_areas[2] = new TowerDelivery::DetectionArea(glm::vec3(-9.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+	cp_areas[3] = new TowerDelivery::DetectionArea(glm::vec3(-12.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+
+	cp_spawnPos[0] = glm::vec3(-3.0f, 2.0f, 0.0f);
+	cp_spawnPos[1] = glm::vec3(-6.0f, 2.0f, 0.0f);
+	cp_spawnPos[2] = glm::vec3(-9.0f, 2.0f, 0.0f);
+	cp_spawnPos[3] = glm::vec3(-12.0f, 2.0f, 0.0f);
+
+	cp_reached[0] = false;
+	cp_reached[1] = false;
+	cp_reached[2] = false;
+	cp_reached[3] = false;
 
 	//TEST PB RENDER
 	cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
@@ -102,9 +124,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderPBR->setVec3("lightColors[2]", 10.0f, 10.0f, 10.0f);
 	shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
 	shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
-
-	//setup particle systems
-	particleSystem = new TowerDelivery::ParticleSystem();
 
 	//create floor
 	{
@@ -303,10 +322,34 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	//check win and lose conditions
 	if (loseArea->Contains(characterController) && !lost) {
-		lost = true;
-		TD_TRACE("You lost the game!");
+		lives--;
+
+		if (lives == 0) {
+			lost = true;
+			TD_TRACE("You lost the game!");
+		}
+		else {
+			TD_TRACE("{0} lives left!", lives);
+
+			for (int i = 3; i >= 0; i--) {
+				if (cp_reached[i] == true) {
+					characterController->SetPosition(cp_spawnPos[i]);
+					break;
+				}
+			}
+		}
 	}
 
+	//check if a checkpoint has been reached
+	//TD_TRACE("Checkpoint 0 reached: {0}", cp_reached[0]);
+	//TD_TRACE("Character in checkpoint 0: {0}", cp_areas[0]->Contains(characterController));
+
+	for (unsigned int i = 0; i < 4; i++) {
+		if (cp_reached[i] == false && cp_areas[i]->Contains(characterController)) {
+			cp_reached[i] = true;
+			TD_TRACE("You have reached Checkpoint {0}", i);
+		}
+	}
 
 	//handle camera zoom
 	playerCamera->SetZoom(10.0f);
@@ -346,10 +389,9 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	// --------------------------------------------------
 	shaderPBR->Bind();
 	shaderPBR->setMat4("projection", projectionMatrix);
-  
+
 	shaderParticle->Bind();
 	shaderParticle->setMat4("projection", projectionMatrix);
-
 
 	if (useDebugCamera) {
 		shader->Bind();
@@ -408,7 +450,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shader->setFloat("pointLights[1].linear", 0.09f);
 	shader->setFloat("pointLights[1].quadratic", 0.032f);
 
-	
 	/*
 	//set spotlight
 
@@ -430,7 +471,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//prepare drawing objects
 	glm::mat4 model = glm::mat4(1.0f);
 
-
 	//glActiveTexture(GL_TEXTURE0);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 	//glActiveTexture(GL_TEXTURE1);
@@ -440,7 +480,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	//draw character
 	shader->setMat4("model", characterController->GetModelMatrix());
 	characterModel->Draw(*shader);
-	
+
 	/*
 	//draw tower
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f));
@@ -474,19 +514,23 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	model = glm::scale(model, glm::vec3(0.5f));
 	shaderPBR->setMat4("model", model);
 	cubeModel->draw();
-  
-	//draw particle systems
+
+	//draw checkpoints
 
 	shaderParticle->Bind();
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex_particle);
-
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.5f));
-	shaderParticle->setMat4("model", model);
-
 	particleSystem->OnUpdate(ts, playerCamera->GetPosition());
-	particleSystem->Draw();
+
+	for (unsigned int i = 0; i < 4; i++) {
+		if (cp_reached[i] == false) {
+			model = cp_models[i];
+			shaderParticle->setMat4("model", model);
+			particleSystem->Draw();
+		}
+	}
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//draw point light as cube
@@ -536,7 +580,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
 }
 
 void MainLayer::OnEvent(TowerDelivery::Event& event) {
@@ -606,4 +649,3 @@ void MainLayer::renderQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
-

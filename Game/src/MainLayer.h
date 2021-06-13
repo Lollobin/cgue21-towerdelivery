@@ -98,4 +98,13 @@ private:
 
 	//particle systems
 	TowerDelivery::ParticleSystem* particleSystem;
+
+	//game logic
+	unsigned int lives = 3;
+
+	glm::mat4 cp_models[4];
+	bool cp_reached[4];
+	TowerDelivery::DetectionArea* cp_areas[4];
+	glm::vec3 cp_spawnPos[4];
+
 };

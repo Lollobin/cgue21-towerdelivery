@@ -139,6 +139,11 @@ namespace TowerDelivery {
 		return glm::vec3(position.x(), position.y(), position.z());
 	}
 
+	void CharacterController::SetPosition(glm::vec3 position)
+	{
+		m_pRigidBody->getWorldTransform().getOrigin().setValue(position.x, position.y, position.z);
+	}
+
 	glm::vec2 CharacterController::GetOrientation()
 	{
 		return m_lookDir;

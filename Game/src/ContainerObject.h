@@ -17,9 +17,13 @@ public:
 		btDiscreteDynamicsWorld* dynamicsWorld,
 		ContainerModel modelNum,
 		TowerDelivery::Model* model,
-		ContainerColor color,
 		glm::vec3 position,
-		glm::vec3 rotation);
+		glm::vec3 rotation,
+		unsigned int albedo,
+		unsigned int normal,
+		unsigned int metallic,
+		unsigned int roughness,
+		unsigned int ao);
 
 	~ContainerObject();
 

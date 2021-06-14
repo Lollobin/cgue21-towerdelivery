@@ -1,8 +1,9 @@
 #include "ContainerObject.h"
 
 ContainerObject::ContainerObject(TowerDelivery::Shader* shader, btDiscreteDynamicsWorld* dynamicsWorld,
-	ContainerModel modelNum, TowerDelivery::Model* model, ContainerColor color, glm::vec3 position, glm::vec3 rotation)
-	:m_color(color), m_pShader(shader), m_pModel(model)
+	ContainerModel modelNum, TowerDelivery::Model* model, glm::vec3 position, glm::vec3 rotation, unsigned int albedo,
+	unsigned int normal, unsigned int metallic, unsigned int roughness, unsigned int ao)
+	:m_pShader(shader), m_pModel(model)
 {
 	//set container model
 	switch (modelNum) {
@@ -10,10 +11,13 @@ ContainerObject::ContainerObject(TowerDelivery::Shader* shader, btDiscreteDynami
 		m_size = glm::vec3(12.2f, 3.45f, 5.0f);
 		break;
 	case model2:
+		m_size = glm::vec3(12.2f, 5.3f, 5.0f);
 		break;
 	case model3:
+		m_size = glm::vec3(16.3f, 5.3f, 5.0f);
 		break;
 	case model4:
+		m_size = glm::vec3(12.2f, 7.4f, 5.0f);
 		break;
 	}
 
@@ -46,14 +50,11 @@ ContainerObject::ContainerObject(TowerDelivery::Shader* shader, btDiscreteDynami
 	m_pBulletBody->getMotionState()->setWorldTransform(transform);
 	m_pBulletBody->setCenterOfMassTransform(transform);
 
-	//load textures
-	t_albedo = TowerDelivery::loadTexture("assets/textures/container/albedo.png");
-
-	t_normal = TowerDelivery::loadTexture("assets/textures/container/normal.png");
-	t_metallic = TowerDelivery::loadTexture("assets/textures/container/metallic.png");
-	t_roughness = TowerDelivery::loadTexture("assets/textures/container/roughness.png");
-	t_ao = TowerDelivery::loadTexture("assets/textures/container/ao.png");
-
+	t_albedo = albedo;
+	t_normal = normal;
+	t_metallic = metallic;
+	t_roughness = roughness;
+	t_ao = ao;
 }
 
 void ContainerObject::Draw()

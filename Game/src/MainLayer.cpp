@@ -62,12 +62,17 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
 
-	// load PBR material textures
-	albedo = TowerDelivery::loadTexture("assets/textures/rustediron_albedo.png");
-	normal = TowerDelivery::loadTexture("assets/textures/rustediron_normal.png");
-	metallic = TowerDelivery::loadTexture("assets/textures/rustediron_metallic.png");
-	roughness = TowerDelivery::loadTexture("assets/textures/rustediron_roughness.png");
-	ao = TowerDelivery::loadTexture("assets/textures/rustediron_ao.png");
+	c_albedo_black = TowerDelivery::loadTexture("assets/textures/container/albedo_black.png");
+	c_albedo_blue = TowerDelivery::loadTexture("assets/textures/container/albedo_blue.png");
+	c_albedo_green = TowerDelivery::loadTexture("assets/textures/container/albedo_green.png");
+	c_albedo_grey = TowerDelivery::loadTexture("assets/textures/container/albedo_grey.png");
+	c_albedo_orange = TowerDelivery::loadTexture("assets/textures/container/albedo_orange.png");
+	c_albedo_red = TowerDelivery::loadTexture("assets/textures/container/albedo_red.png");
+	c_albedo_white = TowerDelivery::loadTexture("assets/textures/container/albedo_white.png");
+	c_normal = TowerDelivery::loadTexture("assets/textures/container/normal.png");
+	c_metallic = TowerDelivery::loadTexture("assets/textures/container/metallic.png");
+	c_roughness = TowerDelivery::loadTexture("assets/textures/container/roughness.png");
+	c_ao = TowerDelivery::loadTexture("assets/textures/container/ao.png");
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -77,42 +82,126 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	m_gameObjects.push_back(m_loseArea);
 
 	//setup check points
-	particleSystem = new TowerDelivery::ParticleSystem();
+	{
+		particleSystem = new TowerDelivery::ParticleSystem();
 
-	cp_models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
-	cp_models[1] = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 0.0f, 0.0f));
-	cp_models[2] = glm::translate(glm::mat4(1.0f), glm::vec3(-9.0f, 0.0f, 0.0f));
-	cp_models[3] = glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, 0.0f, 0.0f));
+		cp_models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
+		cp_models[1] = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 0.0f, 0.0f));
+		cp_models[2] = glm::translate(glm::mat4(1.0f), glm::vec3(-9.0f, 0.0f, 0.0f));
+		cp_models[3] = glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, 0.0f, 0.0f));
 
-	cp_areas[0] = new TowerDelivery::DetectionArea(glm::vec3(-3.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-	cp_areas[1] = new TowerDelivery::DetectionArea(glm::vec3(-6.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-	cp_areas[2] = new TowerDelivery::DetectionArea(glm::vec3(-9.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-	cp_areas[3] = new TowerDelivery::DetectionArea(glm::vec3(-12.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+		cp_areas[0] = new TowerDelivery::DetectionArea(glm::vec3(-3.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+		cp_areas[1] = new TowerDelivery::DetectionArea(glm::vec3(-6.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+		cp_areas[2] = new TowerDelivery::DetectionArea(glm::vec3(-9.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+		cp_areas[3] = new TowerDelivery::DetectionArea(glm::vec3(-12.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
 
-	cp_spawnPos[0] = glm::vec3(-3.0f, 2.0f, 0.0f);
-	cp_spawnPos[1] = glm::vec3(-6.0f, 2.0f, 0.0f);
-	cp_spawnPos[2] = glm::vec3(-9.0f, 2.0f, 0.0f);
-	cp_spawnPos[3] = glm::vec3(-12.0f, 2.0f, 0.0f);
+		cp_spawnPos[0] = glm::vec3(-3.0f, 2.0f, 0.0f);
+		cp_spawnPos[1] = glm::vec3(-6.0f, 2.0f, 0.0f);
+		cp_spawnPos[2] = glm::vec3(-9.0f, 2.0f, 0.0f);
+		cp_spawnPos[3] = glm::vec3(-12.0f, 2.0f, 0.0f);
 
-	cp_reached[0] = false;
-	cp_reached[1] = false;
-	cp_reached[2] = false;
-	cp_reached[3] = false;
+		cp_reached[0] = false;
+		cp_reached[1] = false;
+		cp_reached[2] = false;
+		cp_reached[3] = false;
+	}
 
 	//create cube to test pbr
 	cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
 
 	//create containers
-	container1 = new TowerDelivery::Model("assets/models/container/container1.obj");
-	container2 = new TowerDelivery::Model("assets/models/container/container2.obj");
-	container3 = new TowerDelivery::Model("assets/models/container/container3.obj");
-	container4 = new TowerDelivery::Model("assets/models/container/container4.obj");
+	{
+		containerType1 = new TowerDelivery::Model("assets/models/container/container1.obj");
+		containerType2 = new TowerDelivery::Model("assets/models/container/container2.obj");
+		containerType3 = new TowerDelivery::Model("assets/models/container/container3.obj");
+		containerType4 = new TowerDelivery::Model("assets/models/container/container4.obj");
 
 
-	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
-
-
-
+		container1 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(1.56f, 2.3277f, -4.9344f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container1);
+		container2 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(9.9759f, 3.1237f, -0.34716f), glm::vec3(0.0f, 90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container2);
+		container3 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(1.4744f, 9.715f, 6.6981f), glm::vec3(90.0f, -90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container3);
+		container4 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(15.355f, 3.0915f, -0.34916f), glm::vec3(0.0f, -90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container4);
+		container5 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(-1.2851f, 3.2039f, 3.549f), glm::vec3(180.0f, 0.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container5);
+		container6 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(-2.5231f, 3.0915f, 9.3131f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container6);
+		container7 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(9.9759f, 3.0915f, 9.3131f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container7);
+		container8 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(4.7234f, 3.0915f, 16.913f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container8);
+		container9 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(15.641f, 7.6725f, 14.969f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container9);
+		container10 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(24.482f, 2.3121f, 13.681f), glm::vec3(0.0f, 90.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container10);
+		container11 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(14.831f, 8.4459f, 2.2828f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container11);
+		container12 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(14.438f, 9.4187f, 7.2223f), glm::vec3(180.0f, 0.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container12);
+		container13 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(-4.017f, 13.448f, 9.9435f), glm::vec3(270.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container13);
+		container14 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(-4.017f, 12.532f, 15.544f), glm::vec3(90.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container14);
+		container15 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(4.079f, 9.5254f, 15.104f), glm::vec3(180.0f, 0.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container15);
+		container16 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(-1.2851f, 18.155f, 1.9854f), glm::vec3(-180.0f, 0.0f, 270.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container16);
+		container17 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(23.123f, 10.424f, 13.207f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container17);
+		container18 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(20.052f, 20.157f, 5.4737f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container18);
+		container19 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(14.705f, 20.294f, 9.296f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container19);
+		container20 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-2.1687f, 20.722f, 9.9149f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container20);
+		container21 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(21.856f, 25.013f, 12.401f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container21);
+		container22 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-1.0128f, 25.879f, -0.7676f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container22);
+		container23 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(15.721f, 24.031f, 16.981f), glm::vec3(90.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container23);
+		container24 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(2.4552f, 30.662f, 13.595f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container24);
+		container25 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(23.014f, 36.418f, 4.9557f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container25);
+		container26 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(13.629f, 29.921f, 4.8622f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container26);
+		container27 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(14.711f, 29.958f, 9.8735f), glm::vec3(0.0f, 0.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container27);
+		container28 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(2.7215f, 30.229f, 3.251f), glm::vec3(0.0f, 90.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container28);
+		container29 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(3.101f, 36.488f, 8.5148f), glm::vec3(0.0f, 180.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container29);
+		container30 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-5.0122f, 40.501f, 15.193f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container30);
+		container31 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(14.953f, 37.972f, 15.927f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container31);
+		container32 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(23.736f, 41.255f, 14.263f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container32);
+		container33 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(19.317f, 46.439f, 6.3541f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container33);
+		container34 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(14.813f, 46.87f, 13.254f), glm::vec3(0.0f, 0.0f, 180.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container34);
+		container35 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(15.731f, 46.909f, 18.26f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container35);
+		container36 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(4.6018f, 44.732f, 17.959f), glm::vec3(0.0f, -90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container36);
+		container37 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(25.834f, 52.95f, 14.536f), glm::vec3(0.0f, 90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container37);
+		container38 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(20.434f, 53.717f, 8.6974f), glm::vec3(-90.0f, 0.0f, -90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container38);
+		container39 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(20.583f, 56.473f, 14.082f), glm::vec3(90.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container39);
+		container40 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(20.333f, 52.1f, 22.482f), glm::vec3(0.0f, 90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container40);
+		container41 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(15.321f, 51.217f, 19.786f), glm::vec3(0.0f, 90.0f, 0.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container41);
+		container42 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(15.131f, 59.445f, 10.946f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container42);
+	}
 
 	//create floor
 	{
@@ -187,7 +276,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 		boxShape->calculateLocalInertia(mass, localInertia);
 
-		startTransform.setOrigin(btVector3(0, 5, -4));
+		startTransform.setOrigin(btVector3(0, 5, -10));
 
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
@@ -475,7 +564,11 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
 	}
-	testContainer->Draw();
+
+	for each (ContainerObject * container in m_containers)
+	{
+		container->Draw();
+	}
 
 	//draw cube to test pbr + texture
 	shaderPBR->Bind();

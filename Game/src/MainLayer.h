@@ -51,6 +51,7 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
 	std::shared_ptr<TowerDelivery::Shader> shaderParticle;
+	std::shared_ptr<TowerDelivery::Shader> shaderText;
 
 	std::shared_ptr<TowerDelivery::Shader> shaderPBR;
 
@@ -102,6 +103,9 @@ private:
 
 	//game logic
 	unsigned int lives = 3;
+	unsigned int packages = 4;
+	unsigned int packagesCollected = 0;
+
 
 	glm::mat4 cp_models[4];
 	bool cp_reached[4];
@@ -115,5 +119,8 @@ private:
 	TowerDelivery::Model* container2;
 	TowerDelivery::Model* container3;
 	TowerDelivery::Model* container4;
+
+	//text renderer
+	TowerDelivery::TextRenderer* text;
 
 };

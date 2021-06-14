@@ -1,6 +1,5 @@
 #include "MainLayer.h"
 
-
 MainLayer::MainLayer(TowerDelivery::Application* game)
 	:Layer("Example"), useDebugCamera(false), m_Game(game)
 {
@@ -44,6 +43,13 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	stbi_set_flip_vertically_on_load(true);
 
+	//setup text
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	text = new TowerDelivery::TextRenderer(window_width, window_height);
+	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
+
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
@@ -61,13 +67,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_container = TowerDelivery::loadTexture("assets/textures/container_diffuse.png");
 	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
-
-	// load PBR material textures
-	albedo = TowerDelivery::loadTexture("assets/textures/rustediron_albedo.png");
-	normal = TowerDelivery::loadTexture("assets/textures/rustediron_normal.png");
-	metallic = TowerDelivery::loadTexture("assets/textures/rustediron_metallic.png");
-	roughness = TowerDelivery::loadTexture("assets/textures/rustediron_roughness.png");
-	ao = TowerDelivery::loadTexture("assets/textures/rustediron_ao.png");
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -108,11 +107,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	container3 = new TowerDelivery::Model("assets/models/container/container3.obj");
 	container4 = new TowerDelivery::Model("assets/models/container/container4.obj");
 
-
-	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
-
-
-
+	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, container1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
 
 	//create floor
 	{
@@ -146,7 +141,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//create static cube
 	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(12.2f/2.0f, 3.45f/2.0f, 5.0f/2.0f));
+		btCollisionShape* boxShape = new btBoxShape(btVector3(12.2f / 2.0f, 3.45f / 2.0f, 5.0f / 2.0f));
 
 		btTransform startTransform;
 		startTransform.setIdentity();
@@ -341,7 +336,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
 		shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
 	}
-
 }
 
 void MainLayer::OnAttach()
@@ -357,7 +351,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	dynamicsWorld->stepSimulation(1.0f / 60.0f);
 	characterController->OnUpdate(ts);
 
-	//check win and lose conditions
+	//check lose condition
 	if (loseArea->Contains(characterController) && !lost) {
 		lives--;
 
@@ -368,12 +362,16 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		else {
 			TD_TRACE("{0} lives left!", lives);
 
+			glm::vec3 respawnPos(0.0f, 4.0f, 0.0f);
+
 			for (int i = 3; i >= 0; i--) {
 				if (cp_reached[i] == true) {
-					characterController->SetPosition(cp_spawnPos[i]);
+					respawnPos = cp_spawnPos[i];
 					break;
 				}
 			}
+
+			characterController->SetPosition(respawnPos);
 		}
 	}
 
@@ -384,7 +382,8 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	for (unsigned int i = 0; i < 4; i++) {
 		if (cp_reached[i] == false && cp_areas[i]->Contains(characterController)) {
 			cp_reached[i] = true;
-			TD_TRACE("You have reached Checkpoint {0}", i);
+			TD_TRACE("You have collected Package {0}", i);
+			packagesCollected++;
 		}
 	}
 
@@ -521,6 +520,17 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->setMat4("model", model);
 	shaderLight->setVec3("lightColor", glm::vec3(10.0f, 10.0f, 10.0f));
 	lightModel->draw();
+
+	//render HUD
+	text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);
+	text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 70.0f, 0.4f);
+
+	if (lost) {
+		text->RenderText("You Lost!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if (packagesCollected == packages) {
+		text->RenderText("You Won!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f);
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

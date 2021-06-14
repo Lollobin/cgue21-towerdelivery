@@ -48,6 +48,8 @@ namespace TowerDelivery {
 
 		int LastUsedParticle = 0;
 
+		float particleTimer;
+
 	private:
 		int FindUnusedParticle();
 		void SortParticles();

@@ -4,6 +4,7 @@
 #include <glm/gtx/norm.hpp>
 
 TowerDelivery::ParticleSystem::ParticleSystem()
+	:particleTimer(1.0f)
 {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
@@ -94,11 +95,13 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 	// Generate x new particule each millisecond,
 	// but limit this to 16 ms (60 fps), or if you have 1 long frame (1sec),
 	// newparticles will be huge and the next frame even longer.
-	int newparticles = (int)(ts * 1000.0);
-	if (newparticles > (int)(0.016f * 1000.0))
-		newparticles = (int)(0.016f * 1000.0);
+	
+	int newparticles = (int)(particleTimer * 10.0);
+	if (newparticles > (int)(0.016f * 10.0))
+		newparticles = (int)(0.016f * 10.0);
 
-	for (int i = 0; i < newparticles; i++) {
+	for (int i = 0; i < 1; i++) {
+		particleTimer = 0.0f;
 		int particleIndex = FindUnusedParticle();
 		ParticlesContainer[particleIndex].life = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.5)); // This particle will live 5 seconds.
 
@@ -136,9 +139,9 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 		ParticlesContainer[particleIndex].r = 256;
 		ParticlesContainer[particleIndex].g = intensity;
 		ParticlesContainer[particleIndex].b = intensity;
-		ParticlesContainer[particleIndex].a = (rand() % 156) + 100;
+		ParticlesContainer[particleIndex].a = (rand() % 256);
 
-		ParticlesContainer[particleIndex].size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.2));
+		ParticlesContainer[particleIndex].size =0.2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.2));
 	}
 
 	//simulate particles

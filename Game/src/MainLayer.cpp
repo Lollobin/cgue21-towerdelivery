@@ -62,7 +62,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
 	tex_diff_container = TowerDelivery::loadTexture("assets/textures/container_diffuse.png");
 	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
-	tex_particle = TowerDelivery::loadDDS("assets/textures/particle.dds");
+	//tex_particle = TowerDelivery::loadDDS("assets/textures/particle.dds");
+	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
 
 	//create areas for win and lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);

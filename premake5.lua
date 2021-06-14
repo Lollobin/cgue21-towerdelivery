@@ -18,6 +18,7 @@ IncludeDir["inih"] = "TowerDelivery/vendor/inih/include"
 IncludeDir["spdlog"] = "TowerDelivery/vendor/spdlog/include"
 IncludeDir["bullet"] = "TowerDelivery/vendor/bullet"
 IncludeDir["assimp"] = "TowerDelivery/vendor/assimp/include"
+IncludeDir["freeType"] = "TowerDelivery/vendor/freeType/include"
 
 
 group "Dependencies"
@@ -63,11 +64,13 @@ project "TowerDelivery"
 		"%{IncludeDir.inih}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.bullet}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.freeType}"
 	}
 
 	libdirs {
-	"%{prj.name}/vendor/bulletLibs"
+	"%{prj.name}/vendor/bulletLibs",
+	"%{prj.name}/vendor/freeType/lib"
 	}
 
 	links {
@@ -94,7 +97,8 @@ project "TowerDelivery"
 		links {
 			"BulletCollision_vs2010_x64_debug.lib",
 			"BulletDynamics_vs2010_x64_debug.lib",
-			"LinearMath_vs2010_x64_debug.lib"
+			"LinearMath_vs2010_x64_debug.lib",
+			"freetype.lib"
 		}
 
 	filter "configurations:Release"
@@ -105,7 +109,8 @@ project "TowerDelivery"
 		links {
 			"BulletCollision_vs2010_x64_release.lib",
 			"BulletDynamics_vs2010_x64_release.lib",
-			"LinearMath_vs2010_x64_release.lib"
+			"LinearMath_vs2010_x64_release.lib",
+			"freetype.lib"
 		}
 
 
@@ -133,7 +138,8 @@ project	"Game"
 		"%{IncludeDir.bullet}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.freeType}",
 	}
 
 	links {

@@ -89,6 +89,18 @@ private:
 	unsigned int roughness;
 	unsigned int ao;
 
+	unsigned int c_albedo_black;
+	unsigned int c_albedo_blue;
+	unsigned int c_albedo_green;
+	unsigned int c_albedo_grey;
+	unsigned int c_albedo_orange;
+	unsigned int c_albedo_red;
+	unsigned int c_albedo_white;
+	unsigned int c_normal;
+	unsigned int c_metallic;
+	unsigned int c_roughness;
+	unsigned int c_ao;
+
 	unsigned int tex_particle;
 
 	//game objects
@@ -113,12 +125,58 @@ private:
 	glm::vec3 cp_spawnPos[4];
 
 	//containers
-	ContainerObject* testContainer;
+	std::vector<ContainerObject*> m_containers;
 
-	TowerDelivery::Model* container1;
-	TowerDelivery::Model* container2;
-	TowerDelivery::Model* container3;
-	TowerDelivery::Model* container4;
+	ContainerObject* container1;
+	ContainerObject* container2;
+	ContainerObject* container3;
+	ContainerObject* container4;
+	ContainerObject* container5;
+	ContainerObject* container6;
+	ContainerObject* container7;
+	ContainerObject* container8;
+	ContainerObject* container9;
+	ContainerObject* container10;
+	ContainerObject* container11;
+	ContainerObject* container12;
+	ContainerObject* container13;
+	ContainerObject* container14;
+	ContainerObject* container15;
+	ContainerObject* container16;
+	ContainerObject* container17;
+	ContainerObject* container18;
+	ContainerObject* container19;
+	ContainerObject* container20;
+	ContainerObject* container21;
+	ContainerObject* container22;
+	ContainerObject* container23;
+	ContainerObject* container24;
+	ContainerObject* container25;
+	ContainerObject* container26;
+	ContainerObject* container27;
+	ContainerObject* container28;
+	ContainerObject* container29;
+	ContainerObject* container30;
+	ContainerObject* container31;
+	ContainerObject* container32;
+	ContainerObject* container33;
+	ContainerObject* container34;
+	ContainerObject* container35;
+	ContainerObject* container36;
+	ContainerObject* container37;
+	ContainerObject* container38;
+	ContainerObject* container39;
+	ContainerObject* container40;
+	ContainerObject* container41;
+	ContainerObject* container42;
+	ContainerObject* container43;
+	ContainerObject* container44;
+	
+
+	TowerDelivery::Model* containerType1;
+	TowerDelivery::Model* containerType2;
+	TowerDelivery::Model* containerType3;
+	TowerDelivery::Model* containerType4;
 
 	//text renderer
 	TowerDelivery::TextRenderer* text;

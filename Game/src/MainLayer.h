@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TowerDelivery.h"
+#include "ContainerObject.h"
 
 class MainLayer : public TowerDelivery::Layer {
 
@@ -106,5 +107,13 @@ private:
 	bool cp_reached[4];
 	TowerDelivery::DetectionArea* cp_areas[4];
 	glm::vec3 cp_spawnPos[4];
+
+	//containers
+	ContainerObject* testContainer;
+
+	TowerDelivery::Model* container1;
+	TowerDelivery::Model* container2;
+	TowerDelivery::Model* container3;
+	TowerDelivery::Model* container4;
 
 };

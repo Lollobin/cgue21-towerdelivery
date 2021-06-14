@@ -28,6 +28,7 @@
 #include "TowerDelivery/Rendering/VertexArray.h"
 #include "TowerDelivery/Rendering/Model.h"
 #include "TowerDelivery/Rendering/Texture.h"
+#include "TowerDelivery/Rendering/TextRenderer.h"
 // -----------------------------------
 
 // ---Scene---------------------------

@@ -51,6 +51,7 @@ private:
 	std::shared_ptr<TowerDelivery::Shader> shaderBlur;
 	std::shared_ptr<TowerDelivery::Shader> shaderFinal;
 	std::shared_ptr<TowerDelivery::Shader> shaderParticle;
+	std::shared_ptr<TowerDelivery::Shader> shaderText;
 
 	std::shared_ptr<TowerDelivery::Shader> shaderPBR;
 
@@ -115,5 +116,8 @@ private:
 	TowerDelivery::Model* container2;
 	TowerDelivery::Model* container3;
 	TowerDelivery::Model* container4;
+
+	//text renderer
+	TowerDelivery::TextRenderer* text;
 
 };

@@ -41,8 +41,16 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 	shaderParticle.reset(new TowerDelivery::Shader("assets/shader/particle.vert", "assets/shader/particle.frag"));
 	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
+	//shaderText.reset(new TowerDelivery::Shader("assets/shader/text.vert", "assets/shader/text.frag"));
 
 	stbi_set_flip_vertically_on_load(true);
+
+	//setup text
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	text = new TowerDelivery::TextRenderer(window_width, window_height);
+	text->Load("assets/fonts/OCRAEXT.TTF", 12);
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -61,13 +69,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_container = TowerDelivery::loadTexture("assets/textures/container_diffuse.png");
 	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
-
-	// load PBR material textures
-	albedo = TowerDelivery::loadTexture("assets/textures/rustediron_albedo.png");
-	normal = TowerDelivery::loadTexture("assets/textures/rustediron_normal.png");
-	metallic = TowerDelivery::loadTexture("assets/textures/rustediron_metallic.png");
-	roughness = TowerDelivery::loadTexture("assets/textures/rustediron_roughness.png");
-	ao = TowerDelivery::loadTexture("assets/textures/rustediron_ao.png");
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -108,12 +109,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	container3 = new TowerDelivery::Model("assets/models/container/container3.obj");
 	container4 = new TowerDelivery::Model("assets/models/container/container4.obj");
 
-
-	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
-
-
-
-
+	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(),  model1, container1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
+	 
 	//create floor
 	{
 		btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
@@ -341,7 +338,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
 		shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
 	}
-
 }
 
 void MainLayer::OnAttach()
@@ -411,6 +407,11 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	// -----------------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	text->RenderText("test", 250.0f, 180.0f, 5.0f);
+	text->RenderText("text", 0.0f, 0.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	text->RenderText("text", 1280.0f, 720.0f, 7.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	text->RenderText("text", 100.0f, 100.0f, 3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	shader->Bind();
 	shader->setMat4("projection", projectionMatrix);

@@ -103,6 +103,9 @@ private:
 
 	//game logic
 	unsigned int lives = 3;
+	unsigned int packages = 4;
+	unsigned int packagesCollected = 0;
+
 
 	glm::mat4 cp_models[4];
 	bool cp_reached[4];

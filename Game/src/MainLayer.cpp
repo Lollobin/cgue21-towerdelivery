@@ -1,6 +1,5 @@
 #include "MainLayer.h"
 
-
 MainLayer::MainLayer(TowerDelivery::Application* game)
 	:Layer("Example"), useDebugCamera(false), m_Game(game)
 {
@@ -41,7 +40,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderFinal.reset(new TowerDelivery::Shader("assets/shader/final.vert", "assets/shader/final.frag"));
 	shaderParticle.reset(new TowerDelivery::Shader("assets/shader/particle.vert", "assets/shader/particle.frag"));
 	shaderPBR.reset(new TowerDelivery::Shader("assets/shader/pbr.vert", "assets/shader/pbr.frag"));
-	//shaderText.reset(new TowerDelivery::Shader("assets/shader/text.vert", "assets/shader/text.frag"));
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -50,7 +48,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	text = new TowerDelivery::TextRenderer(window_width, window_height);
-	text->Load("assets/fonts/OCRAEXT.TTF", 12);
+	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
@@ -109,8 +107,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	container3 = new TowerDelivery::Model("assets/models/container/container3.obj");
 	container4 = new TowerDelivery::Model("assets/models/container/container4.obj");
 
-	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(),  model1, container1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
-	 
+	testContainer = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, container1, black, glm::vec3(10.5f, 3.45f / 2.0f, -2.5f), glm::vec3(0.0f, 0.0f, 90.0f));
+
 	//create floor
 	{
 		btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
@@ -143,7 +141,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//create static cube
 	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(12.2f/2.0f, 3.45f/2.0f, 5.0f/2.0f));
+		btCollisionShape* boxShape = new btBoxShape(btVector3(12.2f / 2.0f, 3.45f / 2.0f, 5.0f / 2.0f));
 
 		btTransform startTransform;
 		startTransform.setIdentity();
@@ -353,7 +351,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	dynamicsWorld->stepSimulation(1.0f / 60.0f);
 	characterController->OnUpdate(ts);
 
-	//check win and lose conditions
+	//check lose condition
 	if (loseArea->Contains(characterController) && !lost) {
 		lives--;
 
@@ -364,12 +362,16 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		else {
 			TD_TRACE("{0} lives left!", lives);
 
+			glm::vec3 respawnPos(0.0f, 4.0f, 0.0f);
+
 			for (int i = 3; i >= 0; i--) {
 				if (cp_reached[i] == true) {
-					characterController->SetPosition(cp_spawnPos[i]);
+					respawnPos = cp_spawnPos[i];
 					break;
 				}
 			}
+
+			characterController->SetPosition(respawnPos);
 		}
 	}
 
@@ -380,7 +382,8 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	for (unsigned int i = 0; i < 4; i++) {
 		if (cp_reached[i] == false && cp_areas[i]->Contains(characterController)) {
 			cp_reached[i] = true;
-			TD_TRACE("You have reached Checkpoint {0}", i);
+			TD_TRACE("You have collected Package {0}", i);
+			packagesCollected++;
 		}
 	}
 
@@ -407,11 +410,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	// -----------------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	text->RenderText("test", 250.0f, 180.0f, 5.0f);
-	text->RenderText("text", 0.0f, 0.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	text->RenderText("text", 1280.0f, 720.0f, 7.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	text->RenderText("text", 100.0f, 100.0f, 3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	shader->Bind();
 	shader->setMat4("projection", projectionMatrix);
@@ -522,6 +520,17 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	shaderLight->setMat4("model", model);
 	shaderLight->setVec3("lightColor", glm::vec3(10.0f, 10.0f, 10.0f));
 	lightModel->draw();
+
+	//render HUD
+	text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);
+	text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 70.0f, 0.4f);
+
+	if (lost) {
+		text->RenderText("You Lost!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if (packagesCollected == packages) {
+		text->RenderText("You Won!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f);
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -52,8 +52,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
 
 	//setup character
-	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
-	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
+	characterController = new TowerDelivery::CharacterController(0.5f, 1.7f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
+	characterModel = new TowerDelivery::Model("assets/models/character/character1.obj");
 
 	//setup cameras
 	playerCamera = new TowerDelivery::PlayerCamera(characterController);

@@ -132,8 +132,8 @@ private:
 	TowerDelivery::DetectionArea* cp_areas[4];
 	glm::vec3 cp_spawnPos[4];
 
-	//glm::vec3 spawnPos = glm::vec3(-2.28f, 8.0f, -5.04f);
-	glm::vec3 spawnPos = glm::vec3(-0.62, 40.0, 8.39);
+	glm::vec3 spawnPos = glm::vec3(-2.28f, 8.0f, -5.04f);
+	//glm::vec3 spawnPos = glm::vec3(-0.62, 40.0, 8.39);
 
 	//containers
 	std::vector<ContainerObject*> m_containers;
@@ -195,5 +195,8 @@ private:
 	std::vector<glm::vec3> dc_positions;
 	std::vector<glm::vec3> dc_sizes;
 	std::vector<btRigidBody*> dc_bodies;
+	std::vector<glm::vec3> light_positions;
+	std::vector<glm::vec3> light_colors;
+
 
 };

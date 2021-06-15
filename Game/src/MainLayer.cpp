@@ -69,18 +69,19 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
 
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
-
-	c_albedo_black = TowerDelivery::loadTexture("assets/textures/container/albedo_black.png");
-	c_albedo_blue = TowerDelivery::loadTexture("assets/textures/container/albedo_blue.png");
-	c_albedo_green = TowerDelivery::loadTexture("assets/textures/container/albedo_green.png");
-	c_albedo_grey = TowerDelivery::loadTexture("assets/textures/container/albedo_grey.png");
-	c_albedo_orange = TowerDelivery::loadTexture("assets/textures/container/albedo_orange.png");
-	c_albedo_red = TowerDelivery::loadTexture("assets/textures/container/albedo_red.png");
-	c_albedo_white = TowerDelivery::loadTexture("assets/textures/container/albedo_white.png");
-	c_normal = TowerDelivery::loadTexture("assets/textures/container/normal.png");
-	c_metallic = TowerDelivery::loadTexture("assets/textures/container/metallic.png");
-	c_roughness = TowerDelivery::loadTexture("assets/textures/container/roughness.png");
-	c_ao = TowerDelivery::loadTexture("assets/textures/container/ao.png");
+	
+	c_albedo_black = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_black.png");
+	c_albedo_blue = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_blue.png");
+	c_albedo_green = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_green.png");
+	c_albedo_grey = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_grey.png");
+	c_albedo_orange = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_orange.png");
+	c_albedo_red = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_red.png");
+	c_albedo_white = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_white.png");
+	c_normal = TowerDelivery::loadTexture("assets/textures/chipped-paint/normal.png");
+	c_metallic = TowerDelivery::loadTexture("assets/textures/chipped-paint/metallic.png");
+	c_roughness = TowerDelivery::loadTexture("assets/textures/chipped-paint/roughness.png");
+	c_ao = TowerDelivery::loadTexture("assets/textures/chipped-paint/ao.png");
+	
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -369,8 +370,35 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	}
 
 	//set point lights PBR
-	{
-		shaderPBR->Bind();
+	light_positions.push_back(glm::vec3(16.81, 20.0, 3.72));
+	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
+	light_positions.push_back(glm::vec3(3.0, 15.0, 2.75));
+	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
+	light_positions.push_back(glm::vec3(12.4, 18.0, 13.54));
+	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
+	light_positions.push_back(glm::vec3(2.44, 26.0, 10.48));
+	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
+	light_positions.push_back(glm::vec3(3.81, 36.0, 5.39));
+	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
+	light_positions.push_back(glm::vec3(23.44, 35.0, 11.14));
+	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+	light_positions.push_back(glm::vec3(7.02, 49.18, 9.84));
+	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+	light_positions.push_back(glm::vec3(17.49, 60.0, 15.18));
+	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+	light_positions.push_back(glm::vec3(23.67, 62.44, 14.08));
+	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+	light_positions.push_back(glm::vec3(15.26, 75.0, 10.76));
+	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+
+
+	shaderPBR->Bind();
+	for (unsigned int i = 0; i < light_positions.size(); i++) {
+		shaderPBR->setVec3("lightPositions["+std::to_string(i)+"]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
+		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
+		}
+		
+	/*
 		shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -15.0f);
 		shaderPBR->setVec3("lightColors[0]", 50.0f, 50.0f, 50.0f);
 		shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -15.0f);
@@ -379,7 +407,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		shaderPBR->setVec3("lightColors[2]", 10.0f, 10.0f, 10.0f);
 		shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
 		shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
-	}
+		*/
+
 }
 
 void MainLayer::OnAttach()
@@ -592,12 +621,15 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	//draw point light as cube
 	shaderLight->Bind();
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-6.5f, 2.0f, -10.0f));
-	model = glm::scale(model, glm::vec3(0.5f));
-	shaderLight->setMat4("model", model);
-	shaderLight->setVec3("lightColor", glm::vec3(10.0f, 10.0f, 10.0f));
-	lightModel->draw();
+
+	for (unsigned int i = 0; i < light_positions.size(); i++) {
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(light_positions[i].x, light_positions[i].y, light_positions[i].z));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shaderLight->setMat4("model", model);
+		shaderLight->setVec3("lightColor", glm::vec3(light_colors[i].x, light_colors[i].y, light_colors[i].z));
+		lightModel->draw();
+	}
 
 	//render HUD
 	text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);

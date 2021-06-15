@@ -209,7 +209,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container41);
 		container42 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(15.131f, 59.445f, 10.946f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_white, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container42);
-		container43 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(13.629f, 29.921f, -0.10338f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
+		container43 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(13.629f, 29.921f, -0.10338f), glm::vec3(0.0f, 180.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container43);
 	}
 

@@ -17,7 +17,7 @@ namespace TowerDelivery {
 		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f), m_height(height)
 	{
 		//m_pCollisionShape = new btCapsuleShape(1.17f / 2.0f, height);
-		m_pCollisionShape = new btBoxShape(btVector3(1.17f / 2.0f, height, 1.23f / 2.0f));
+		m_pCollisionShape = new btBoxShape(btVector3(0.84f / 2.0f, height/ 2.0f, 0.64f / 2.0f));
 
 		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 

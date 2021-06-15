@@ -33,6 +33,7 @@ private:
 	unsigned int window_height;
 	unsigned int refresh_rate;
 	bool fullscreen;
+	bool showFPS;
 
 	float exposure;
 

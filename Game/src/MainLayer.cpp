@@ -9,6 +9,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	window_height = reader.GetInteger("window", "height", 768);
 	refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
 	fullscreen = reader.GetBoolean("window", "fullscreen", false);
+	showFPS = reader.GetBoolean("window", "showFPS", false);
 	exposure = (float)reader.GetReal("rendering", "exposure", 1.0f);
 
 	if (fullscreen) {
@@ -29,7 +30,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	btDbvtBroadphase* broadphase = new btDbvtBroadphase();
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 	dynamicsWorld.reset(new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collision_configuration));
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));
+	dynamicsWorld->setGravity(btVector3(0, -20, 0));
 
 	//setup shaders
 	glEnable(GL_DEPTH_TEST);
@@ -629,13 +630,18 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	//render HUD
 	text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);
-	text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 70.0f, 0.4f);
+	text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 80.0f, 0.4f);
 
 	if (lost) {
 		text->RenderText("You Lost!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 	else if (packagesCollected == packages) {
 		text->RenderText("You Won!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f);
+	}
+
+	if (showFPS) {
+		int fps = 1.0f / ts;
+		text->RenderText("FPS " + std::to_string(fps), window_width - 150.f, 40.f, 0.4);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -690,7 +696,7 @@ bool MainLayer::OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
 		useDebugCamera = !useDebugCamera;
 	}
 	if (event.GetKeyCode() == TD_KEY_SPACE) {
-		characterController->Jump();
+		//characterController->Jump();
 	}
 
 	return true;

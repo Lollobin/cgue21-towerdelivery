@@ -10,6 +10,9 @@ namespace TowerDelivery {
 
 	GameObject::~GameObject()
 	{
+		//delete m_modelMatrix;
+
+		//delete this;
 	}
 
 	void GameObject::OnUpdate()

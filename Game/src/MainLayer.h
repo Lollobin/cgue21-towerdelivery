@@ -27,6 +27,8 @@ private:
 		return { vec.x, vec.y, vec.z };
 	}
 
+	void GenerateDynamicCubes();
+
 private:
 	//settings
 	unsigned int window_width;
@@ -195,6 +197,8 @@ private:
 	std::vector<glm::vec3> dc_positions;
 	std::vector<glm::vec3> dc_sizes;
 	std::vector<btRigidBody*> dc_bodies;
+	std::vector<TowerDelivery::GameObject*> dc_gameObjects;
+
 	std::vector<glm::vec3> light_positions;
 	std::vector<glm::vec3> light_colors;
 

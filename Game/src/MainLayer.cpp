@@ -69,7 +69,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
 
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
-	
+
 	c_albedo_black = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_black.png");
 	c_albedo_blue = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_blue.png");
 	c_albedo_green = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_green.png");
@@ -81,7 +81,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	c_metallic = TowerDelivery::loadTexture("assets/textures/chipped-paint/metallic.png");
 	c_roughness = TowerDelivery::loadTexture("assets/textures/chipped-paint/roughness.png");
 	c_ao = TowerDelivery::loadTexture("assets/textures/chipped-paint/ao.png");
-	
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
@@ -213,7 +212,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container43);
 	}
 
-	dc_positions.push_back(glm::vec3(6.84, 15.0, 15.35));
+	dc_positions.push_back(glm::vec3(6.84, 13.0, 15.35));
 	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
 
 	dc_positions.push_back(glm::vec3(1.48, 15.0, 7.99));
@@ -237,36 +236,9 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	dc_positions.push_back(glm::vec3(20.27, 62.61, 8.69));
 	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
 
+	GenerateDynamicCubes();
 
-	for (unsigned int i = 0; i < dc_positions.size(); i++)
-	{
-		btCollisionShape* boxShape = new btBoxShape(glm2bt(dc_sizes[i] / 2.0f));
 
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar mass(1000.f);
-
-		bool isDynamic = true;
-
-		btVector3 localInertia(0, 0, 0);
-
-		boxShape->calculateLocalInertia(mass, localInertia);
-
-		startTransform.setOrigin(glm2bt(dc_positions[i]));
-
-		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-		btRigidBody* bt_dynamicCube = new btRigidBody(rbInfo);
-
-		dynamicsWorld->addRigidBody(bt_dynamicCube);
-
-		dc_bodies.push_back(bt_dynamicCube);
-
-		TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(dc_sizes[i].x, dc_sizes[i].y, dc_sizes[i].z));
-		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, &tex_diff_cube, bt_dynamicCube, &tex_spec_cube);
-		m_gameObjects.push_back(m_dynamicCube);
-	}
 
 	// configure (floating point) framebuffers
 	// ---------------------------------------
@@ -324,7 +296,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shader->Bind();
 	shader->setInt("material.diffuse", 0);
 	shader->setInt("material.specular", 1);
-	shader->setFloat("material.shininess", 1.0f);
+	shader->setFloat("material.shininess", 0.5f);
 
 	shaderBlur->Bind();
 	shaderBlur->setInt("image", 0);
@@ -343,72 +315,53 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderPBR->setInt("roughnessMap", 3);
 	shaderPBR->setInt("aoMap", 4);
 
-	//set main shader lights
-	{
+	glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+
+	//set point lights
+	light_positions.push_back(glm::vec3(16.81, 20.0, 3.72));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(3.0, 15.0, 2.75));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(12.4, 18.0, 13.54));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(2.44, 26.0, 10.48));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(3.81, 36.0, 5.39));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(23.44, 35.0, 11.14));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(7.02, 49.18, 9.84));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(17.49, 60.0, 15.18));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(23.67, 62.44, 14.08));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+	light_positions.push_back(glm::vec3(15.26, 75.0, 10.76));
+	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
+
+	for (unsigned int i = 0; i < light_positions.size(); i++) {
+		shaderPBR->Bind();
+		shaderPBR->setVec3("lightPositions[" + std::to_string(i) + "]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
+		//shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
+		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 18.0f, 13.2f, 3.8f);
+
 		shader->Bind();
-
-		shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("dirLight.diffuse", 0.1f, 0.1f, 0.1f);
-		shader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-
-		shader->setVec3("pointLights[0].position", 0.0f, 3.0f, 0.0f);
-		shader->setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[0].diffuse", 1.0f, 1.0f, 1.0f);
-		shader->setVec3("pointLights[0].specular", 2.0f, 2.0f, 2.0f);
-		shader->setFloat("pointLights[0].constant", 1.0f);
-		shader->setFloat("pointLights[0].linear", 0.09f);
-		shader->setFloat("pointLights[0].quadratic", 0.032f);
-
-		shader->setVec3("pointLights[1].position", -6.5f, 2.0f, -10.0f);
-		shader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		shader->setVec3("pointLights[1].diffuse", 5.0f, 5.0f, 5.0f);
-		shader->setVec3("pointLights[1].specular", 2.0f, 2.0f, 2.0f);
-		shader->setFloat("pointLights[1].constant", 1.0f);
-		shader->setFloat("pointLights[1].linear", 0.09f);
-		shader->setFloat("pointLights[1].quadratic", 0.032f);
+		shader->setVec3("pointLights[" + std::to_string(i) + "].position", light_positions[i].x, light_positions[i].y, light_positions[i].z);
+		shader->setVec3("pointLights[" + std::to_string(i) + "].ambient", 0.1f, 0.1f, 0.1f);
+		shader->setVec3("pointLights[" + std::to_string(i) + "].diffuse", 1.0f, 1.0f, 1.0f);
+		shader->setVec3("pointLights[" + std::to_string(i) + "].specular", 2.0f, 2.0f, 2.0f);
+		shader->setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
+		shader->setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
+		shader->setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
 	}
 
-	//set point lights PBR
-	light_positions.push_back(glm::vec3(16.81, 20.0, 3.72));
-	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
-	light_positions.push_back(glm::vec3(3.0, 15.0, 2.75));
-	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
-	light_positions.push_back(glm::vec3(12.4, 18.0, 13.54));
-	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
-	light_positions.push_back(glm::vec3(2.44, 26.0, 10.48));
-	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
-	light_positions.push_back(glm::vec3(3.81, 36.0, 5.39));
-	light_colors.push_back(glm::vec3(50.0f, 50.0f, 50.0f));
-	light_positions.push_back(glm::vec3(23.44, 35.0, 11.14));
-	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
-	light_positions.push_back(glm::vec3(7.02, 49.18, 9.84));
-	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
-	light_positions.push_back(glm::vec3(17.49, 60.0, 15.18));
-	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
-	light_positions.push_back(glm::vec3(23.67, 62.44, 14.08));
-	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
-	light_positions.push_back(glm::vec3(15.26, 75.0, 10.76));
-	light_colors.push_back(glm::vec3(100.0f, 100.0f, 100.0f));
+	//set main shader lights
+	shader->Bind();
 
-
-	shaderPBR->Bind();
-	for (unsigned int i = 0; i < light_positions.size(); i++) {
-		shaderPBR->setVec3("lightPositions["+std::to_string(i)+"]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
-		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
-		}
-		
-	/*
-		shaderPBR->setVec3("lightPositions[0]", -0.5f, 2.0f, -15.0f);
-		shaderPBR->setVec3("lightColors[0]", 50.0f, 50.0f, 50.0f);
-		shaderPBR->setVec3("lightPositions[1]", -0.5f, 2.0f, -15.0f);
-		shaderPBR->setVec3("lightColors[1]", 50.0f, 50.0f, 50.0f);
-		shaderPBR->setVec3("lightPositions[2]", -0.5f, 2.0f, -15.0f);
-		shaderPBR->setVec3("lightColors[2]", 10.0f, 10.0f, 10.0f);
-		shaderPBR->setVec3("lightPositions[3]", -0.5f, 2.0f, -15.0f);
-		shaderPBR->setVec3("lightColors[3]", 10.0f, 10.0f, 10.0f);
-		*/
-
+	shader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+	shader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+	shader->setVec3("dirLight.diffuse", 0.01f, 0.01f, 0.01f);
+	shader->setVec3("dirLight.specular", 0.05f, 0.05f, 0.05f);
 }
 
 void MainLayer::OnAttach()
@@ -420,11 +373,10 @@ void MainLayer::OnDetach()
 }
 
 void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
-	
 	characterController->OnUpdate(ts);
 
-	glm::vec3 pos = characterController->GetPosition();
-	TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
+	//glm::vec3 pos = characterController->GetPosition();
+	//TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
 
 	//check lose condition
 	if (loseArea->Contains(characterController) && !lost) {
@@ -448,28 +400,15 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 			characterController->SetPosition(respawnPos);
 
-			for (unsigned int i = 0; i < dc_bodies.size();i++) {
-
-				
-
-				btTransform transform;
-				dc_bodies[i]->getMotionState()->getWorldTransform(transform);
-				btQuaternion quatrot;
-				quatrot.setEuler(0,0,0);
-				transform.setRotation(quatrot);
-				
-
-				//btQuaternion quatPos;
-				//quatPos.setValue(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z);
-				//transform.setOrigin(btVector3(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z));
-
-
-				dc_bodies[i]->getMotionState()->setWorldTransform(transform);
-				dc_bodies[i]->setCenterOfMassTransform(transform);
-
-				dc_bodies[i]->getWorldTransform().getOrigin().setValue(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z);
+			for each (btRigidBody * body in dc_bodies) {
+				delete body->getMotionState();
+				delete body->getCollisionShape();
+				dynamicsWorld->removeRigidBody(body);
+				delete body;
 			}
-
+			dc_bodies.clear();
+			dc_gameObjects.clear();
+			GenerateDynamicCubes();
 		}
 	}
 
@@ -504,7 +443,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	//prepare for rendering
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// 1. render scene into floating point framebuffer
@@ -574,7 +513,16 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	{
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
+
 	}
+
+	for each (TowerDelivery::GameObject * dynamicCube in dc_gameObjects)
+	{
+		dynamicCube->OnUpdate();
+		dynamicCube->Draw(shader.get());
+
+	}
+
 
 	for each (ContainerObject * container in m_containers)
 	{
@@ -753,4 +701,38 @@ void MainLayer::renderQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+void MainLayer::GenerateDynamicCubes()
+{
+	for (unsigned int i = 0; i < dc_positions.size(); i++)
+	{
+		btCollisionShape* boxShape = new btBoxShape(glm2bt(dc_sizes[i] / 2.0f));
+
+		btTransform startTransform;
+		startTransform.setIdentity();
+
+		btScalar mass(1000.f);
+
+		bool isDynamic = true;
+
+		btVector3 localInertia(0, 0, 0);
+
+		boxShape->calculateLocalInertia(mass, localInertia);
+
+		startTransform.setOrigin(glm2bt(dc_positions[i]));
+
+		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
+		btRigidBody* bt_dynamicCube = new btRigidBody(rbInfo);
+
+		dynamicsWorld->addRigidBody(bt_dynamicCube);
+
+		dc_bodies.push_back(bt_dynamicCube);
+
+		TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(dc_sizes[i].x, dc_sizes[i].y, dc_sizes[i].z));
+		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, &tex_diff_cube, bt_dynamicCube, &tex_spec_cube);
+		//m_gameObjects.push_back(m_dynamicCube);
+		dc_gameObjects.push_back(m_dynamicCube);
+	}
 }

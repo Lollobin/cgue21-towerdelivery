@@ -86,3 +86,5 @@ void ContainerObject::Draw()
 
 	m_pModel->Draw(*m_pShader);
 }
+
+

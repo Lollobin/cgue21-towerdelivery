@@ -52,7 +52,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
 
 	//setup character
-	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(0.0f, 3.0f, 0.0f), dynamicsWorld.get());
+	characterController = new TowerDelivery::CharacterController(0.5f, 1.8f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
@@ -64,9 +64,10 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
 
 	//load textures
-	tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
-	tex_diff_container = TowerDelivery::loadTexture("assets/textures/container_diffuse.png");
-	tex_spec_container = TowerDelivery::loadTexture("assets/textures/container_specular.png");
+	//tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
+	tex_diff_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/albedo.png");
+	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
+
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
 
 	c_albedo_black = TowerDelivery::loadTexture("assets/textures/container/albedo_black.png");
@@ -84,7 +85,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
 	TowerDelivery::VertexArray* gl_loseArea = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 20.0f, 100.0f));
-	TowerDelivery::GameObject* m_loseArea = new TowerDelivery::GameObject(gl_loseArea, &tex_diff_container);
+	TowerDelivery::GameObject* m_loseArea = new TowerDelivery::GameObject(gl_loseArea, &tex_diff_cube);
 	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
 	m_gameObjects.push_back(m_loseArea);
 
@@ -92,20 +93,20 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	{
 		particleSystem = new TowerDelivery::ParticleSystem();
 
-		cp_models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
-		cp_models[1] = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 0.0f, 0.0f));
-		cp_models[2] = glm::translate(glm::mat4(1.0f), glm::vec3(-9.0f, 0.0f, 0.0f));
-		cp_models[3] = glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, 0.0f, 0.0f));
+		cp_models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(15.47, 10.0, 2.32));
+		cp_models[1] = glm::translate(glm::mat4(1.0f), glm::vec3(-4.2, 19.0, 15.48));
+		cp_models[2] = glm::translate(glm::mat4(1.0f), glm::vec3(-0.62, 40.0, 8.39));
+		cp_models[3] = glm::translate(glm::mat4(1.0f), glm::vec3(15.09, 65.34, 10.96));
 
-		cp_areas[0] = new TowerDelivery::DetectionArea(glm::vec3(-3.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-		cp_areas[1] = new TowerDelivery::DetectionArea(glm::vec3(-6.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-		cp_areas[2] = new TowerDelivery::DetectionArea(glm::vec3(-9.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
-		cp_areas[3] = new TowerDelivery::DetectionArea(glm::vec3(-12.0f, 2.0f, 0.0f), 2.0f, 4.0f, 2.0f);
+		cp_areas[0] = new TowerDelivery::DetectionArea(glm::vec3(15.47, 11.97, 2.32), 2.0f, 4.0f, 2.0f);
+		cp_areas[1] = new TowerDelivery::DetectionArea(glm::vec3(-4.2, 20.43, 15.48), 2.0f, 4.0f, 2.0f);
+		cp_areas[2] = new TowerDelivery::DetectionArea(glm::vec3(-0.62, 41.98, 8.39), 2.0f, 4.0f, 2.0f);
+		cp_areas[3] = new TowerDelivery::DetectionArea(glm::vec3(15.09, 67.34, 10.96), 2.0f, 4.0f, 2.0f);
 
-		cp_spawnPos[0] = glm::vec3(-3.0f, 2.0f, 0.0f);
-		cp_spawnPos[1] = glm::vec3(-6.0f, 2.0f, 0.0f);
-		cp_spawnPos[2] = glm::vec3(-9.0f, 2.0f, 0.0f);
-		cp_spawnPos[3] = glm::vec3(-12.0f, 2.0f, 0.0f);
+		cp_spawnPos[0] = glm::vec3(15.47, 13.0, 2.32);
+		cp_spawnPos[1] = glm::vec3(-4.2, 21.0, 15.48);
+		cp_spawnPos[2] = glm::vec3(-0.62, 43.0, 8.39);
+		cp_spawnPos[3] = glm::vec3(15.09, 68.34, 10.96);
 
 		cp_reached[0] = false;
 		cp_reached[1] = false;
@@ -114,16 +115,14 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	}
 
 	//create cube to test pbr
-	cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
+	//cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
 
 	//create containers
-
 	{
 		containerType1 = new TowerDelivery::Model("assets/models/container/container1.obj");
 		containerType2 = new TowerDelivery::Model("assets/models/container/container2.obj");
 		containerType3 = new TowerDelivery::Model("assets/models/container/container3.obj");
 		containerType4 = new TowerDelivery::Model("assets/models/container/container4.obj");
-
 
 		container1 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(1.56f, 2.3277f, -4.9344f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_red, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container1);
@@ -137,7 +136,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container5);
 		container6 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(-2.5231f, 3.0915f, 9.3131f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_grey, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container6);
-		container7 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(9.9759f, 3.0915f, 9.3131f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_black, c_normal, c_metallic, c_roughness, c_ao);
+		container7 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(14.552f, 3.0915f, 9.3131f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_black, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container7);
 		container8 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model4, containerType4, glm::vec3(0.20066f, 3.0915f, 16.913f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container8);
@@ -163,11 +162,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container18);
 		container19 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(14.705f, 20.294f, 9.296f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_green, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container19);
-		container20 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-2.1687f, 20.722f, 9.9149f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
+		container20 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-2.1687f, 20.3f, 9.9149f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container20);
-		container21 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(21.856f, 25.013f, 12.401f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
+		container21 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(23.594f, 25.013f, 12.318f), glm::vec3(0.0f, 0.0f, -90.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container21);
-		container22 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-1.0128f, 25.879f, -0.7676f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_red, c_normal, c_metallic, c_roughness, c_ao);
+		container22 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(-1.0128f, 25.879f, -0.7676f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_black, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container22);
 		container23 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model3, containerType3, glm::vec3(15.721f, 24.031f, 16.981f), glm::vec3(180.0f, 0.0f, 90.0f), c_albedo_orange, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container23);
@@ -209,75 +208,43 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container41);
 		container42 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model2, containerType2, glm::vec3(15.131f, 59.445f, 10.946f), glm::vec3(0.0f, 0.0f, 90.0f), c_albedo_white, c_normal, c_metallic, c_roughness, c_ao);
 		m_containers.push_back(container42);
-		
+		container43 = new ContainerObject(shaderPBR.get(), dynamicsWorld.get(), model1, containerType1, glm::vec3(13.629f, 29.921f, -0.10338f), glm::vec3(0.0f, 0.0f, 0.0f), c_albedo_blue, c_normal, c_metallic, c_roughness, c_ao);
+		m_containers.push_back(container43);
 	}
 
-	//create floor
-	{
-		btCollisionShape* groundShape = new btBoxShape(btVector3(20.0f, 0.5f, 20.0f));
+	dc_positions.push_back(glm::vec3(6.84, 15.0, 15.35));
+	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
 
-		collisionShapes.push_back(groundShape);
+	dc_positions.push_back(glm::vec3(1.48, 15.0, 7.99));
+	dc_sizes.push_back(glm::vec3(4.0f, 4.0f, 4.0f));
+
+	dc_positions.push_back(glm::vec3(-5.15, 30.0, -0.73));
+	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
+
+	dc_positions.push_back(glm::vec3(17.01, 37.0, 0.62));
+	dc_sizes.push_back(glm::vec3(3.0f, 6.0f, 3.0f));
+
+	dc_positions.push_back(glm::vec3(15.92, 36.0, 7.68));
+	dc_sizes.push_back(glm::vec3(4.0f, 4.0f, 4.0f));
+
+	dc_positions.push_back(glm::vec3(11.01, 35.0, 1.91));
+	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
+
+	dc_positions.push_back(glm::vec3(-1.16, 46.02, 15.16));
+	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
+
+	dc_positions.push_back(glm::vec3(20.27, 62.61, 8.69));
+	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
+
+
+	for (unsigned int i = 0; i < dc_positions.size(); i++)
+	{
+		btCollisionShape* boxShape = new btBoxShape(glm2bt(dc_sizes[i] / 2.0f));
 
 		btTransform startTransform;
 		startTransform.setIdentity();
 
-		btScalar mass(0.f);
-
-		bool isDynamic = false;
-
-		btVector3 localInertia(0, 0, 0);
-
-		groundShape->calculateLocalInertia(mass, localInertia);
-
-		startTransform.setOrigin(btVector3(0.0f, -0.5f, 0.0f));
-
-		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-		btRigidBody* bt_floor = new btRigidBody(rbInfo);
-
-		dynamicsWorld->addRigidBody(bt_floor);
-
-		TowerDelivery::VertexArray* gl_floor = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(40.0f, 1.0f, 40.0f));
-		TowerDelivery::GameObject* m_floor = new TowerDelivery::GameObject(gl_floor, &tex_diff_pavement, bt_floor);
-		m_gameObjects.push_back(m_floor);
-	}
-
-	//create static cube
-	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(12.2f / 2.0f, 3.45f / 2.0f, 5.0f / 2.0f));
-
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar mass(0.f);
-
-		bool isDynamic = false;
-
-		btVector3 localInertia(0, 0, 0);
-
-		boxShape->calculateLocalInertia(mass, localInertia);
-
-		startTransform.setOrigin(btVector3(10.5f, 3.45f / 2.0f, -10.5f));
-
-		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-		btRigidBody* bt_staticCube = new btRigidBody(rbInfo);
-
-		dynamicsWorld->addRigidBody(bt_staticCube);
-
-		TowerDelivery::VertexArray* gl_staticCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(12.2f, 3.45f, 5.0f));
-		TowerDelivery::GameObject* m_staticCube = new TowerDelivery::GameObject(gl_staticCube, &tex_diff_pavement, bt_staticCube);
-		m_gameObjects.push_back(m_staticCube);
-	}
-
-	//create dynamic cube
-	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
-
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar mass(100.f);
+		btScalar mass(1000.f);
 
 		bool isDynamic = true;
 
@@ -285,7 +252,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 		boxShape->calculateLocalInertia(mass, localInertia);
 
-		startTransform.setOrigin(btVector3(0, 5, -10));
+		startTransform.setOrigin(glm2bt(dc_positions[i]));
 
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
@@ -293,37 +260,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 		dynamicsWorld->addRigidBody(bt_dynamicCube);
 
-		TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(2.0f, 2.0f, 2.0f));
-		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, &tex_diff_container, bt_dynamicCube, &tex_spec_container);
+		dc_bodies.push_back(bt_dynamicCube);
+
+		TowerDelivery::VertexArray* gl_dynamicCube = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(dc_sizes[i].x, dc_sizes[i].y, dc_sizes[i].z));
+		TowerDelivery::GameObject* m_dynamicCube = new TowerDelivery::GameObject(gl_dynamicCube, &tex_diff_cube, bt_dynamicCube, &tex_spec_cube);
 		m_gameObjects.push_back(m_dynamicCube);
-	}
-
-	//create platform
-	{
-		btCollisionShape* boxShape = new btBoxShape(btVector3(2.5f, 0.1f, 2.5f));
-
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar mass(0.f);
-
-		bool isDynamic = false;
-
-		btVector3 localInertia(0, 0, 0);
-
-		boxShape->calculateLocalInertia(mass, localInertia);
-
-		startTransform.setOrigin(btVector3(5.5f, 7.0f, -17.5f));
-
-		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, boxShape, localInertia);
-		btRigidBody* bt_platform = new btRigidBody(rbInfo);
-
-		dynamicsWorld->addRigidBody(bt_platform);
-
-		TowerDelivery::VertexArray* gl_platform = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 0.2f, 5.0f));
-		TowerDelivery::GameObject* m_platform = new TowerDelivery::GameObject(gl_platform, &tex_diff_pavement, bt_platform);
-		m_gameObjects.push_back(m_platform);
 	}
 
 	// configure (floating point) framebuffers
@@ -450,9 +391,11 @@ void MainLayer::OnDetach()
 }
 
 void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
-	//update world and character
-	dynamicsWorld->stepSimulation(1.0f / 60.0f);
+	
 	characterController->OnUpdate(ts);
+
+	glm::vec3 pos = characterController->GetPosition();
+	TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
 
 	//check lose condition
 	if (loseArea->Contains(characterController) && !lost) {
@@ -465,7 +408,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		else {
 			TD_TRACE("{0} lives left!", lives);
 
-			glm::vec3 respawnPos(0.0f, 4.0f, 0.0f);
+			glm::vec3 respawnPos = spawnPos;
 
 			for (int i = 3; i >= 0; i--) {
 				if (cp_reached[i] == true) {
@@ -475,8 +418,34 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 			}
 
 			characterController->SetPosition(respawnPos);
+
+			for (unsigned int i = 0; i < dc_bodies.size();i++) {
+
+				
+
+				btTransform transform;
+				dc_bodies[i]->getMotionState()->getWorldTransform(transform);
+				btQuaternion quatrot;
+				quatrot.setEuler(0,0,0);
+				transform.setRotation(quatrot);
+				
+
+				//btQuaternion quatPos;
+				//quatPos.setValue(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z);
+				//transform.setOrigin(btVector3(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z));
+
+
+				dc_bodies[i]->getMotionState()->setWorldTransform(transform);
+				dc_bodies[i]->setCenterOfMassTransform(transform);
+
+				dc_bodies[i]->getWorldTransform().getOrigin().setValue(dc_positions[i].x, dc_positions[i].y, dc_positions[i].z);
+			}
+
 		}
 	}
+
+	//update world and character
+	dynamicsWorld->stepSimulation(1.0f / 60.0f);
 
 	//check if a checkpoint has been reached
 	//TD_TRACE("Checkpoint 0 reached: {0}", cp_reached[0]);
@@ -583,6 +552,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		container->Draw();
 	}
 
+	/*
 	//draw cube to test pbr + texture
 	shaderPBR->Bind();
 
@@ -602,6 +572,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	model = glm::scale(model, glm::vec3(0.5f));
 	shaderPBR->setMat4("model", model);
 	cubeModel->draw();
+	*/
 
 	//draw checkpoints (particle systems)
 	shaderParticle->Bind();

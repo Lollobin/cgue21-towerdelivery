@@ -37,6 +37,7 @@ public:
 			matrix[12], matrix[13], matrix[14], matrix[15]);
 	};
 
+
 private:
 	btRigidBody* m_pBulletBody;
 	TowerDelivery::Model* m_pModel;

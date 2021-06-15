@@ -80,15 +80,19 @@ private:
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
 	//textures
-	unsigned int tex_diff_container;
-	unsigned int tex_spec_container;
-	unsigned int tex_diff_pavement;
+	//unsigned int tex_diff_container;
+	//unsigned int tex_spec_container;
+	//unsigned int tex_diff_pavement;
 
+
+	/*
 	unsigned int albedo;
 	unsigned int normal;
 	unsigned int metallic;
 	unsigned int roughness;
 	unsigned int ao;
+	*/
+
 
 	unsigned int c_albedo_black;
 	unsigned int c_albedo_blue;
@@ -103,6 +107,9 @@ private:
 	unsigned int c_ao;
 
 	unsigned int tex_particle;
+
+	unsigned int tex_diff_cube;
+	unsigned int tex_spec_cube;
 
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;
@@ -124,6 +131,9 @@ private:
 	bool cp_reached[4];
 	TowerDelivery::DetectionArea* cp_areas[4];
 	glm::vec3 cp_spawnPos[4];
+
+	//glm::vec3 spawnPos = glm::vec3(-2.28f, 8.0f, -5.04f);
+	glm::vec3 spawnPos = glm::vec3(-0.62, 40.0, 8.39);
 
 	//containers
 	std::vector<ContainerObject*> m_containers;
@@ -181,5 +191,9 @@ private:
 
 	//text renderer
 	TowerDelivery::TextRenderer* text;
+
+	std::vector<glm::vec3> dc_positions;
+	std::vector<glm::vec3> dc_sizes;
+	std::vector<btRigidBody*> dc_bodies;
 
 };

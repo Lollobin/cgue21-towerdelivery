@@ -90,6 +90,8 @@ void main()
     else
         BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
+
+    result = pow(result, vec3(2.2));
     FragColor = vec4(result, 1.0);
 }
 

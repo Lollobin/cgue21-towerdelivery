@@ -14,6 +14,7 @@ uniform sampler2D myTextureSampler;
 void main(){
 	// Output color = color of the texture at the specified UV
 	color = texture( myTextureSampler, UV );// * particlecolor;
+    color =pow(color,vec4(2.2));
 
 	float brightness = dot(vec3(color), vec3(0.2126, 0.7152, 0.0722));
 

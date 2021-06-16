@@ -125,16 +125,25 @@ void main()
     Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again  
     }
     //ambient lighting with environment lighting.
-    vec3 ambient = vec3(0.07) * albedo * ao;
+    vec3 ambient = vec3(0.04) * albedo * ao;
     
     vec3 color = ambient + Lo;
 
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+     
 
-    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+       // check whether result is higher than some threshold, if so, output as bloom threshold color
+    float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 1.0)
+        BrightColor = vec4(color, 1.0);
+    else
+        BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+       
+    // HDR tonemapping
+    //color = color / (color + vec3(1.0));
+    // gamma correct
+    //color = pow(color, vec3(1.0/2.2));
+
+
     FragColor = vec4(color, 1.0);
 
 }

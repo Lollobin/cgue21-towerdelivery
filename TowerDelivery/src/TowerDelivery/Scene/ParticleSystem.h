@@ -33,12 +33,12 @@ namespace TowerDelivery {
 
 	private:
 		unsigned int ParticlesCount = 0;
-		const int MaxParticles = 10000;
+		const int MaxParticles = 500;
 
-		Particle ParticlesContainer[10000];
+		Particle ParticlesContainer[500];
 
-		inline static GLfloat* g_particule_position_size_data = new GLfloat[10000 * 4];
-		inline static GLubyte* g_particule_color_data = new GLubyte[10000 * 4];
+		inline static GLfloat* g_particule_position_size_data = new GLfloat[500 * 4];
+		inline static GLubyte* g_particule_color_data = new GLubyte[500 * 4];
 
 		GLuint VertexArrayID;
 

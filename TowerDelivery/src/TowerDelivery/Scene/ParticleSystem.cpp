@@ -70,10 +70,6 @@ TowerDelivery::ParticleSystem::ParticleSystem()
 		(void*)0                          // array buffer offset
 	);
 
-	// These functions are specific to glDrawArrays*Instanced*.
-	// The first parameter is the attribute buffer we're talking about.
-	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
-	// http://www.opengl.org/sdk/docs/man/xhtml/glVertexAttribDivisor.xml
 	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
 	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
 	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
@@ -106,40 +102,15 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 		ParticlesContainer[particleIndex].life = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.5)); // This particle will live 5 seconds.
 
 		float degree = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 360));
-		float distance = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
-		float xpos = cos(degree);//*distance;
-		float zpos = sin(degree);//*distance;
+		float xpos = cos(degree);
+		float zpos = sin(degree);
 
 		ParticlesContainer[particleIndex].pos = glm::vec3(xpos, 0.0f, zpos);
 
-		float spread = 0.5f;
-		glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
-		// Very bad way to generate a random direction;
-		// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
-		// combined with some user-controlled parameters (main direction, spread, etc)
-		glm::vec3 randomdir = glm::vec3(
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f
-		);
-
-		//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+		glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);;
 
 		float randspeed = 0.2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.6));
 		ParticlesContainer[particleIndex].speed = maindir * randspeed;
-
-		// Very bad way to generate a random color
-		//ParticlesContainer[particleIndex].r = rand() % 256;
-		//ParticlesContainer[particleIndex].g = rand() % 256;
-		//ParticlesContainer[particleIndex].b = rand() % 256;
-		//ParticlesContainer[particleIndex].a = rand() % 256;
-
-		unsigned char intensity = rand() % 56 + 200;
-
-		ParticlesContainer[particleIndex].r = 256;
-		ParticlesContainer[particleIndex].g = intensity;
-		ParticlesContainer[particleIndex].b = intensity;
-		ParticlesContainer[particleIndex].a = (rand() % 256);
 
 		ParticlesContainer[particleIndex].size =0.2 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.2));
 	}
@@ -169,11 +140,6 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 				g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
 
 				g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
-
-				g_particule_color_data[4 * ParticlesCount + 0] = p.r;
-				g_particule_color_data[4 * ParticlesCount + 1] = p.g;
-				g_particule_color_data[4 * ParticlesCount + 2] = p.b;
-				g_particule_color_data[4 * ParticlesCount + 3] = p.a;
 			}
 			else {
 				// Particles that just died will be put at the end of the buffer in SortParticles();
@@ -185,7 +151,7 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 	}
 
 	SortParticles();
-	//TD_INFO("Particles Count: {0}", ParticlesCount);
+	TD_INFO("Particles Count: {0}", ParticlesCount);
 }
 
 void TowerDelivery::ParticleSystem::Draw()
@@ -209,11 +175,6 @@ void TowerDelivery::ParticleSystem::Draw()
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
 
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-	//glDisableVertexAttribArray(2);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glDisable(GL_BLEND);
 	glBindVertexArray(0);
 }
 

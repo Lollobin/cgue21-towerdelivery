@@ -9,10 +9,6 @@ layout(location = 2) in vec4 color; // Position of the center of the particule a
 out vec2 UV;
 out vec4 particlecolor;
 
-//// Values that stay constant for the whole mesh.
-//uniform vec3 CameraRight_worldspace;
-//uniform vec3 CameraUp_worldspace;
-
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
@@ -23,7 +19,7 @@ void main()
 	vec3 CameraUp_worldspace = vec3(view[0][1], view[1][1], view[2][1]);
 	
 	
-	float particleSize = xyzs.w; // because we encoded it this way.
+	float particleSize = xyzs.w;
 	vec3 particleCenter_wordspace = xyzs.xyz;
 	
 	vec3 vertexPosition_worldspace = 

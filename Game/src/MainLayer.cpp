@@ -333,30 +333,19 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//set point lights
 	light_positions.push_back(glm::vec3(16.81, 20.0, 3.72));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(3.0, 15.0, 2.75));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(12.4, 18.0, 13.54));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(2.44, 26.0, 10.48));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(3.81, 36.0, 5.39));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(23.44, 35.0, 11.14));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(7.02, 49.18, 9.84));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(17.49, 60.0, 15.18));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(23.67, 62.44, 14.08));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 	light_positions.push_back(glm::vec3(15.26, 75.0, 10.76));
-	light_colors.push_back(glm::vec3(18.0f, 13.2f, 3.8f));
 
 	for (unsigned int i = 0; i < light_positions.size(); i++) {
 		shaderPBR->Bind();
 		shaderPBR->setVec3("lightPositions[" + std::to_string(i) + "]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
-		//shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
 		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 1.0f * 45.0f, 1.0f * 45.0f, 1.0f * 45.0f);
 
 		shader->Bind();
@@ -388,9 +377,6 @@ void MainLayer::OnDetach()
 
 void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	characterController->OnUpdate(ts);
-
-	//glm::vec3 pos = camera->Position;
-	//TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
 
 	//check lose condition
 	if (loseArea->Contains(characterController) && !lost) {
@@ -434,10 +420,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 #ifdef TD_RELEASE
 	dynamicsWorld->stepSimulation(ts, 1);
 #endif
-
-	//check if a checkpoint has been reached
-	//TD_TRACE("Checkpoint 0 reached: {0}", cp_reached[0]);
-	//TD_TRACE("Character in checkpoint 0: {0}", cp_areas[0]->Contains(characterController));
 
 	for (unsigned int i = 0; i < 4; i++) {
 		if (cp_reached[i] == false && cp_areas[i]->Contains(characterController)) {
@@ -539,10 +521,10 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 
 	shaderPBR->setMat4("model", characterController->GetModelMatrix());
 
-	characterModel->Draw(*shader);
+	characterModel->Draw(*shaderPBR);
 
-	shader->Bind();
 	//draw game objects
+	shader->Bind();
 	for each (TowerDelivery::GameObject * gameObject in m_gameObjects)
 	{
 		gameObject->OnUpdate();
@@ -584,7 +566,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 		model = glm::translate(model, glm::vec3(light_positions[i].x, light_positions[i].y, light_positions[i].z));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shaderLight->setMat4("model", model);
-		shaderLight->setVec3("lightColor", glm::vec3(light_colors[i].x, light_colors[i].y, light_colors[i].z));
+		shaderLight->setVec3("lightColor", glm::vec3(1.0f * 45.0f, 1.0f * 45.0f, 1.0f * 45.0f));
 		lightModel->draw();
 	}
 

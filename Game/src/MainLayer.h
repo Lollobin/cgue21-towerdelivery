@@ -84,6 +84,7 @@ private:
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
+	//texures
 	unsigned int c_albedo_black;
 	unsigned int c_albedo_blue;
 	unsigned int c_albedo_green;
@@ -131,7 +132,6 @@ private:
 	glm::vec3 cp_spawnPos[4];
 
 	glm::vec3 spawnPos = glm::vec3(-2.28f, 8.0f, -5.04f);
-	//glm::vec3 spawnPos = glm::vec3(-0.62, 40.0, 8.39);
 
 	//containers
 	std::vector<ContainerObject*> m_containers;
@@ -179,8 +179,6 @@ private:
 	ContainerObject* container41;
 	ContainerObject* container42;
 	ContainerObject* container43;
-	ContainerObject* container44;
-	
 
 	TowerDelivery::Model* containerType1;
 	TowerDelivery::Model* containerType2;
@@ -190,13 +188,15 @@ private:
 	//text renderer
 	TowerDelivery::TextRenderer* text;
 
+	//dynamic cubes
 	std::vector<glm::vec3> dc_positions;
 	std::vector<glm::vec3> dc_sizes;
 	std::vector<btRigidBody*> dc_bodies;
 	std::vector<TowerDelivery::GameObject*> dc_gameObjects;
 
+	//lights for shader
 	std::vector<glm::vec3> light_positions;
-	std::vector<glm::vec3> light_colors;
+
 
 
 };

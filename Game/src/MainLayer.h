@@ -113,6 +113,9 @@ private:
 	unsigned int tex_diff_cube;
 	unsigned int tex_spec_cube;
 
+	unsigned int tex_diff_floor;
+	unsigned int tex_spec_floor;
+
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;
 

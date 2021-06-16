@@ -58,13 +58,16 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	//setup cameras
 	playerCamera = new TowerDelivery::PlayerCamera(characterController);
 	camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
-	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
+	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.5f, 100.0f);
 
 	//setup model for point lights
 	lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
 
 	//load textures
 	//tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
+	tex_diff_floor = TowerDelivery::loadTexture("assets/textures/floor/albedo.png");
+	tex_spec_floor = TowerDelivery::loadTexture("assets/textures/florr/metallic.png");
+
 	tex_diff_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/albedo.png");
 	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
 
@@ -83,10 +86,10 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	c_ao = TowerDelivery::loadTexture("assets/textures/chipped-paint/ao.png");
 
 	//create area for lose condition
-	loseArea = new TowerDelivery::DetectionArea(glm::vec3(0.0f, -15.0f, 0.0f), 100.0f, 20.0f, 100.0f);
-	TowerDelivery::VertexArray* gl_loseArea = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(100.0f, 20.0f, 100.0f));
-	TowerDelivery::GameObject* m_loseArea = new TowerDelivery::GameObject(gl_loseArea, &tex_diff_cube);
-	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -15.f, 0.0f)));
+	loseArea = new TowerDelivery::DetectionArea(glm::vec3(10.0f, -15.0f, 9.0f), 100.0f, 14.6f, 100.0f);
+	TowerDelivery::VertexArray* gl_loseArea = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(60.0f, 1.5f, 60.0f));
+	TowerDelivery::GameObject* m_loseArea = new TowerDelivery::GameObject(gl_loseArea, &tex_diff_floor);
+	m_loseArea->SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, -1.0f, 10.0f)));
 	m_gameObjects.push_back(m_loseArea);
 
 	//setup check points
@@ -212,6 +215,8 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		m_containers.push_back(container43);
 	}
 
+	//create dynamic cubes
+
 	dc_positions.push_back(glm::vec3(6.84, 13.0, 15.35));
 	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
 
@@ -237,8 +242,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	dc_sizes.push_back(glm::vec3(2.0f, 2.0f, 2.0f));
 
 	GenerateDynamicCubes();
-
-
 
 	// configure (floating point) framebuffers
 	// ---------------------------------------
@@ -343,7 +346,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		shaderPBR->Bind();
 		shaderPBR->setVec3("lightPositions[" + std::to_string(i) + "]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
 		//shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
-		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 18.0f, 13.2f, 3.8f);
+		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 0.7f * 25.0f, 0.5 * 25.0f, 0.9f * 25.0f);
 
 		shader->Bind();
 		shader->setVec3("pointLights[" + std::to_string(i) + "].position", light_positions[i].x, light_positions[i].y, light_positions[i].z);
@@ -375,7 +378,7 @@ void MainLayer::OnDetach()
 void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	characterController->OnUpdate(ts);
 
-	//glm::vec3 pos = characterController->GetPosition();
+	glm::vec3 pos = camera->Position;
 	//TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
 
 	//check lose condition
@@ -413,7 +416,13 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	//update world and character
+#ifdef TD_DEBUG
 	dynamicsWorld->stepSimulation(1.0f / 60.0f);
+#endif
+
+#ifdef TD_RELEASE
+	dynamicsWorld->stepSimulation(ts, 10);
+#endif
 
 	//check if a checkpoint has been reached
 	//TD_TRACE("Checkpoint 0 reached: {0}", cp_reached[0]);
@@ -513,16 +522,13 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	{
 		gameObject->OnUpdate();
 		gameObject->Draw(shader.get());
-
 	}
 
 	for each (TowerDelivery::GameObject * dynamicCube in dc_gameObjects)
 	{
 		dynamicCube->OnUpdate();
 		dynamicCube->Draw(shader.get());
-
 	}
-
 
 	for each (ContainerObject * container in m_containers)
 	{
@@ -659,7 +665,7 @@ bool MainLayer::OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event) {
 
 	//TD_WARN("triggered resize event: {0}, {1}", window_width, window_height);
 
-	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.1f, 100.0f);
+	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.5f, 100.0f);
 
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)window_width, (GLsizei)window_height);
 

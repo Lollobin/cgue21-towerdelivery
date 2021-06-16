@@ -12,6 +12,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
 	fullscreen = reader.GetBoolean("window", "fullscreen", false);
 	showFPS = reader.GetBoolean("window", "showFPS", false);
+	showHUD = reader.GetBoolean("window", "showHUD", true);
 	exposure = (float)reader.GetReal("rendering", "exposure", 1.0f);
 
 	game->GetWindow().SetRefreshRate(refresh_rate);
@@ -36,20 +37,13 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	stbi_set_flip_vertically_on_load(true);
 
-	//setup text
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	text = new TowerDelivery::TextRenderer(window_width, window_height);
-	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
-
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.84f, 1.7f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
 	playerCamera = new TowerDelivery::PlayerCamera(characterController);
-	camera = new TowerDelivery::Camera(glm::vec3(0.0f, 1.0f, 4.0f));
+	camera = new TowerDelivery::Camera(glm::vec3(-25.0f, 16.0f, -20.0f));
 	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.5f, 100.0f);
 
 	//setup model for point lights
@@ -118,7 +112,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		cp_reached[2] = false;
 		cp_reached[3] = false;
 	}
-
 
 	//create containers
 	{
@@ -306,6 +299,12 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		game->GetWindow().SetSize(window_width, window_height);
 	}
 
+	//setup text
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	text = new TowerDelivery::TextRenderer(window_width, window_height);
+	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
 
 	//shader configuration
 	shader->Bind();
@@ -330,7 +329,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	shaderPBR->setInt("roughnessMap", 3);
 	shaderPBR->setInt("aoMap", 4);
 
-	glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+	glClearColor(0.072, 0.144, 0.304, 1.0f);
 
 	//set point lights
 	light_positions.push_back(glm::vec3(16.81, 20.0, 3.72));
@@ -358,7 +357,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		shaderPBR->Bind();
 		shaderPBR->setVec3("lightPositions[" + std::to_string(i) + "]", light_positions[i].x, light_positions[i].y, light_positions[i].z);
 		//shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", light_colors[i].x, light_colors[i].y, light_colors[i].z);
-		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 0.7f * 25.0f, 0.5 * 25.0f, 0.9f * 25.0f);
+		shaderPBR->setVec3("lightColors[" + std::to_string(i) + "]", 1.0f * 45.0f, 1.0f * 45.0f, 1.0f * 45.0f);
 
 		shader->Bind();
 		shader->setVec3("pointLights[" + std::to_string(i) + "].position", light_positions[i].x, light_positions[i].y, light_positions[i].z);
@@ -390,7 +389,7 @@ void MainLayer::OnDetach()
 void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	characterController->OnUpdate(ts);
 
-	glm::vec3 pos = camera->Position;
+	//glm::vec3 pos = camera->Position;
 	//TD_TRACE("x: {0} y: {1} z: {2}", pos.x, pos.y, pos.z);
 
 	//check lose condition
@@ -590,19 +589,22 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	}
 
 	//render HUD
-	text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);
-	text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 80.0f, 0.4f);
 
-	if (lost) {
-		text->RenderText("You Lost!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	else if (packagesCollected == packages) {
-		text->RenderText("You Won!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f);
-	}
+	if (showHUD) {
+		text->RenderText("Lives left: " + std::to_string(lives), 30.0f, 40.0f, 0.4f);
+		text->RenderText("Packages collected: " + std::to_string(packagesCollected) + "/" + std::to_string(packages), 30.0f, 80.0f, 0.4f);
 
-	if (showFPS) {
-		int fps = 1.0f / ts;
-		text->RenderText("FPS " + std::to_string(fps), window_width - 150.f, 40.f, 0.4);
+		if (showFPS) {
+			int fps = 1.0f / ts;
+			text->RenderText("FPS " + std::to_string(fps), 30.0f, 120.0f, 0.4);
+		}
+
+		if (lost) {
+			text->RenderText("You Lost!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else if (packagesCollected == packages) {
+			text->RenderText("You Won!", window_width / 2.0f - 380.0f, window_height / 2.0f - 50.0f, 2.0f);
+		}
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -655,6 +657,9 @@ void MainLayer::OnEvent(TowerDelivery::Event& event) {
 bool MainLayer::OnKeyPressedEvent(TowerDelivery::KeyPressedEvent& event) {
 	if (event.GetKeyCode() == TD_KEY_F2) {
 		useDebugCamera = !useDebugCamera;
+	}
+	if (event.GetKeyCode() == TD_KEY_F3) {
+		showHUD = !showHUD;
 	}
 	if (event.GetKeyCode() == TD_KEY_SPACE) {
 		//characterController->Jump();

@@ -38,6 +38,7 @@ private:
 	unsigned int refresh_rate;
 	bool fullscreen;
 	bool showFPS;
+	bool showHUD;
 
 	float exposure;
 

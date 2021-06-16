@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 // Default camera values
-const float YAW = -90.0f;
+const float YAW = 45.0f;
 const float PITCH = 0.0f;
 const float SPEED = 7.0f;
 const float SENSITIVITY = 7.0f;

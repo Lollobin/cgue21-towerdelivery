@@ -116,6 +116,12 @@ private:
 	unsigned int tex_diff_floor;
 	unsigned int tex_spec_floor;
 
+	unsigned int ch_basecolor;
+	unsigned int ch_normal;
+	unsigned int ch_metallic;
+	unsigned int ch_roughness;
+	unsigned int ch_ao;
+
 	//game objects
 	std::vector<TowerDelivery::GameObject*> m_gameObjects;
 

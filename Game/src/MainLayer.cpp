@@ -53,7 +53,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 
 	//setup character
 	characterController = new TowerDelivery::CharacterController(0.5f, 1.7f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
-	characterModel = new TowerDelivery::Model("assets/models/character/character1.obj");
+	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
 	playerCamera = new TowerDelivery::PlayerCamera(characterController);
@@ -71,8 +71,10 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	tex_diff_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/albedo.png");
 	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
 
+	//particle
 	tex_particle = TowerDelivery::loadTexture("assets/textures/box_particle.png");
 
+	//container
 	c_albedo_black = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_black.png");
 	c_albedo_blue = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_blue.png");
 	c_albedo_green = TowerDelivery::loadTexture("assets/textures/chipped-paint/albedo_green.png");
@@ -84,6 +86,13 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	c_metallic = TowerDelivery::loadTexture("assets/textures/chipped-paint/metallic.png");
 	c_roughness = TowerDelivery::loadTexture("assets/textures/chipped-paint/roughness.png");
 	c_ao = TowerDelivery::loadTexture("assets/textures/chipped-paint/ao.png");
+
+	//character
+	ch_basecolor = TowerDelivery::loadTexture("assets/textures/robot1/basecolor.png");
+	ch_normal = TowerDelivery::loadTexture("assets/textures/robot1/normal.png");
+	ch_metallic = TowerDelivery::loadTexture("assets/textures/robot1/metallic.png");
+	ch_roughness = TowerDelivery::loadTexture("assets/textures/robot1/roughness.png");
+	ch_ao = TowerDelivery::loadTexture("assets/textures/robot1/AO.png");
 
 	//create area for lose condition
 	loseArea = new TowerDelivery::DetectionArea(glm::vec3(10.0f, -15.0f, 9.0f), 100.0f, 14.6f, 100.0f);
@@ -117,8 +126,6 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 		cp_reached[3] = false;
 	}
 
-	//create cube to test pbr
-	//cubeModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(5.0f, 5.0f, 5.0f));
 
 	//create containers
 	{
@@ -513,10 +520,24 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	glm::mat4 model = glm::mat4(1.0f);
 
 	//draw character
-	shader->Bind();
-	shader->setMat4("model", characterController->GetModelMatrix());
+	shaderPBR->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, ch_basecolor);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, ch_normal);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, ch_metallic);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, ch_roughness);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ch_ao);
+
+	shaderPBR->setMat4("model", characterController->GetModelMatrix());
+
 	characterModel->Draw(*shader);
 
+	shader->Bind();
 	//draw game objects
 	for each (TowerDelivery::GameObject * gameObject in m_gameObjects)
 	{
@@ -534,28 +555,6 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 	{
 		container->Draw();
 	}
-
-	/*
-	//draw cube to test pbr + texture
-	shaderPBR->Bind();
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, albedo);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, normal);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, metallic);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, roughness);
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, ao);
-
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-0.5f, 2.0f, -10.0f));
-	model = glm::scale(model, glm::vec3(0.5f));
-	shaderPBR->setMat4("model", model);
-	cubeModel->draw();
-	*/
 
 	//draw checkpoints (particle systems)
 	shaderParticle->Bind();

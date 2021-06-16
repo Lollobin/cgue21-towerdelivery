@@ -151,7 +151,7 @@ void TowerDelivery::ParticleSystem::OnUpdate(Timestep ts, glm::vec3 CameraPositi
 	}
 
 	SortParticles();
-	TD_INFO("Particles Count: {0}", ParticlesCount);
+	//TD_INFO("Particles Count: {0}", ParticlesCount);
 }
 
 void TowerDelivery::ParticleSystem::Draw()

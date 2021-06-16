@@ -124,8 +124,8 @@ namespace TowerDelivery {
 
 	void CharacterController::Jump()
 	{
-		//if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
-		if (m_onGround)
+		if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
+		//if (m_onGround)
 		{
 			m_jumpRechargeTimer = 0.0f;
 			m_pRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));

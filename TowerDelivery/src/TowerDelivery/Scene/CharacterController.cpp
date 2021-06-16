@@ -14,10 +14,9 @@ namespace TowerDelivery {
 	CharacterController::CharacterController(float radius, float height, float mass, btVector3 spawnPos, btDiscreteDynamicsWorld* dynamicsWorld)
 		:m_pDynamicsWorld(dynamicsWorld), m_maxSpeed(10.0f), m_deceleration(7.0f), m_manualVelocity(0.0f, 0.0f, 0.0f),
 		m_jumpImpulse(720.0f), m_jumpRechargeTime(0.1f), m_jumpRechargeTimer(0.0f), m_onGround(false), m_lookDir(glm::vec2(0.0f, 0.0f)),
-		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f), m_height(height)
+		m_rotation(0.1f), m_firstUpdate(true), m_mouseSensitivity(20.0f), m_height(height), m_previousMouseX(0.0f)
 	{
-		//m_pCollisionShape = new btCapsuleShape(1.17f / 2.0f, height);
-		m_pCollisionShape = new btBoxShape(btVector3(0.84f / 2.0f, height/ 2.0f, 0.64f / 2.0f));
+		m_pCollisionShape = new btBoxShape(btVector3(0.84f / 2.0f, height / 2.0f, 0.64f / 2.0f));
 
 		m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
 
@@ -54,12 +53,12 @@ namespace TowerDelivery {
 
 		//check if character is on ground
 		btVector3 t_playerPos = m_pRigidBody->getWorldTransform().getOrigin();
-		btVector3 t_groundPos = t_playerPos - btVector3(0.0f, m_height + 0.1f, 0.0f);//(t_playerPos.x(), t_playerPos.y() - m_height - 0.1f, t_playerPos.z());
+		btVector3 t_groundPos = t_playerPos - btVector3(0.0f, m_height / 2.0f + 0.01f, 0.0f);
 		btCollisionWorld::ClosestRayResultCallback res(t_playerPos, t_groundPos);
 
 		m_pDynamicsWorld->rayTest(t_playerPos, t_groundPos, res);
 
-		float speedFactor = 1.0f;
+		float speedFactor = 60.0f * ts;
 
 		if (res.hasHit()) {
 			//TD_TRACE("floor");
@@ -69,7 +68,7 @@ namespace TowerDelivery {
 		else {
 			//TD_TRACE("air");
 			m_onGround = false;
-			speedFactor = 0.5f;
+			speedFactor = speedFactor * 0.5f;
 		}
 
 		//check arrow keys for walking
@@ -125,18 +124,18 @@ namespace TowerDelivery {
 
 	void CharacterController::Jump()
 	{
-		if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
-			//if (m_onGround)
+		//if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
+		if (m_onGround)
 		{
 			m_jumpRechargeTimer = 0.0f;
 			m_pRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
 
 			// Move upwards slightly so velocity isn't immediately canceled when it detects it as on ground next frame
-			const float jumpYOffset = 0.01f;
+			const float jumpYOffset = 0.0f;
 
-			float previousY = m_pRigidBody->getWorldTransform().getOrigin().getY();
+			//float previousY = m_pRigidBody->getWorldTransform().getOrigin().getY();
 
-			m_pRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
+			//m_pRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
 		}
 	}
 
@@ -191,9 +190,8 @@ namespace TowerDelivery {
 			m_manualVelocity -= m_manualVelocity * m_deceleration * ts.GetSeconds();
 		}
 		else {
-			m_manualVelocity -= m_manualVelocity * m_deceleration*0.7f * ts.GetSeconds();
+			m_manualVelocity -= m_manualVelocity * m_deceleration * 0.7f * ts.GetSeconds();
 		}
-		
 	}
 
 	void CharacterController::UpdateLookDir() {

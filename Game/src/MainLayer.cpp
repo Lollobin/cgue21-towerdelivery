@@ -5,22 +5,14 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 {
 	//load config
 	INIReader reader("assets/settings.ini");
-	window_width = reader.GetInteger("window", "width", 1280);
-	window_height = reader.GetInteger("window", "height", 768);
+	window_width = reader.GetInteger("window", "window_width", 1280);
+	window_height = reader.GetInteger("window", "window_height", 768);
+	fullscreen_width = reader.GetInteger("window", "fullscreen_width", 1920);
+	fullscreen_height = reader.GetInteger("window", "fullscreen_height", 1080);
 	refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
 	fullscreen = reader.GetBoolean("window", "fullscreen", false);
 	showFPS = reader.GetBoolean("window", "showFPS", false);
 	exposure = (float)reader.GetReal("rendering", "exposure", 1.0f);
-
-	if (fullscreen) {
-		game->GetWindow().SetFullscreen(fullscreen);
-		unsigned int* size = game->GetWindow().GetScreenSize();
-		TowerDelivery::WindowResizeEvent event(size[0], size[1]);
-		OnWindowResizeEvent(event);
-	}
-	else {
-		game->GetWindow().SetSize(window_width, window_height);
-	}
 
 	game->GetWindow().SetRefreshRate(refresh_rate);
 
@@ -52,7 +44,7 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	text->Load("assets/fonts/Montserrat-Regular.ttf", 72);
 
 	//setup character
-	characterController = new TowerDelivery::CharacterController(0.5f, 1.7f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
+	characterController = new TowerDelivery::CharacterController(0.84f, 1.7f, 60.0f, btVector3(spawnPos.x, spawnPos.y, spawnPos.z), dynamicsWorld.get());
 	characterModel = new TowerDelivery::Model("assets/models/character/character.obj");
 
 	//setup cameras
@@ -64,10 +56,11 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 	lightModel = new TowerDelivery::VertexArray(TowerDelivery::VertexArray::createCubeVertexArray(1.0f, 1.0f, 1.0f));
 
 	//load textures
-	//tex_diff_pavement = TowerDelivery::loadTexture("assets/textures/pavement_diffuse.png");
-	tex_diff_floor = TowerDelivery::loadTexture("assets/textures/floor/albedo.png");
-	tex_spec_floor = TowerDelivery::loadTexture("assets/textures/florr/metallic.png");
 
+	//floor
+	tex_diff_floor = TowerDelivery::loadTexture("assets/textures/floor/albedo.png");
+
+	//dynamic cubes
 	tex_diff_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/albedo.png");
 	tex_spec_cube = TowerDelivery::loadTexture("assets/textures/dynamic_cube/metallic.png");
 
@@ -302,6 +295,18 @@ MainLayer::MainLayer(TowerDelivery::Application* game)
 			std::cout << "Framebuffer not complete!" << std::endl;
 	}
 
+	if (fullscreen) {
+		game->GetWindow().SetFullscreen(fullscreen);
+		//unsigned int* size = game->GetWindow().GetScreenSize();
+		//TowerDelivery::WindowResizeEvent event(size[0], size[1]);
+		TowerDelivery::WindowResizeEvent event(fullscreen_width, fullscreen_height);
+		OnWindowResizeEvent(event);
+	}
+	else {
+		game->GetWindow().SetSize(window_width, window_height);
+	}
+
+
 	//shader configuration
 	shader->Bind();
 	shader->setInt("material.diffuse", 0);
@@ -428,7 +433,7 @@ void MainLayer::OnUpdate(TowerDelivery::Timestep ts) {
 #endif
 
 #ifdef TD_RELEASE
-	dynamicsWorld->stepSimulation(ts, 10);
+	dynamicsWorld->stepSimulation(ts, 1);
 #endif
 
 	//check if a checkpoint has been reached
@@ -666,7 +671,7 @@ bool MainLayer::OnWindowResizeEvent(TowerDelivery::WindowResizeEvent& event) {
 
 	projectionMatrix = glm::perspective(glm::radians(45.0f), (float)window_width / (float)window_height, 0.5f, 100.0f);
 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)window_width, (GLsizei)window_height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, window_width, window_height);
 
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei)window_width, (GLsizei)window_height, 0, GL_RGBA, GL_FLOAT, NULL);

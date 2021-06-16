@@ -33,6 +33,8 @@ private:
 	//settings
 	unsigned int window_width;
 	unsigned int window_height;
+	unsigned int fullscreen_width;
+	unsigned int fullscreen_height;
 	unsigned int refresh_rate;
 	bool fullscreen;
 	bool showFPS;
@@ -81,21 +83,6 @@ private:
 	std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 
-	//textures
-	//unsigned int tex_diff_container;
-	//unsigned int tex_spec_container;
-	//unsigned int tex_diff_pavement;
-
-
-	/*
-	unsigned int albedo;
-	unsigned int normal;
-	unsigned int metallic;
-	unsigned int roughness;
-	unsigned int ao;
-	*/
-
-
 	unsigned int c_albedo_black;
 	unsigned int c_albedo_blue;
 	unsigned int c_albedo_green;
@@ -114,7 +101,6 @@ private:
 	unsigned int tex_spec_cube;
 
 	unsigned int tex_diff_floor;
-	unsigned int tex_spec_floor;
 
 	unsigned int ch_basecolor;
 	unsigned int ch_normal;

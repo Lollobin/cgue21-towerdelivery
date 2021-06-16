@@ -21,6 +21,7 @@ namespace TowerDelivery {
 	// draws the model, and thus all its meshes
 	void Model::Draw(Shader& shader)
 	{
+
 		for (unsigned int i = 0; i < meshes.size(); i++)
 			meshes[i].Draw(shader);
 	}
@@ -120,6 +121,7 @@ namespace TowerDelivery {
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 				indices.push_back(face.mIndices[j]);
 		}
+		
 		// process materials
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
@@ -141,7 +143,7 @@ namespace TowerDelivery {
 		// 4. height maps
 		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
+		
 		// return a mesh object created from the extracted mesh data
 		return Mesh(vertices, indices, textures);
 	}
